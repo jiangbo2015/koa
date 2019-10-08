@@ -10,11 +10,6 @@
         "env_test": {
             "NODE_ENV": "test",
             "PORT": 5555
-        },
-        "watch": true,
-        "ignore_watch": [
-            "node_modules",
-            "public"
-        ]
+        }
     }]
 }
