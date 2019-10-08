@@ -7,7 +7,7 @@
     "start": "nodemon entry.js",
     "production": "pm2 start pm2.json --env production",
     "test": "pm2 start pm2.json --env test",
-    "hook": "micro hook.js -p 4000"
+    "hook": "pm2 start pm2.json --only hook"
   },
   "dependencies": {
     "@koa/cors": "^3.0.0",

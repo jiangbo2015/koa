@@ -11,5 +11,8 @@
             "NODE_ENV": "test",
             "PORT": 5555
         }
+    },{
+        "name": "hook",
+        "script": "micro hook.js -p 4000"
     }]
 }
