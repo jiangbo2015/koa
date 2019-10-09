@@ -1,8 +1,10 @@
 const exec = require("child_process").execSync
-const send = require("micro").send
+const { send, json } = require("micro")
 module.exports = (req, res) => {
-	console.log(res)
 	try {
+		const data = json(res)
+		console.log(data)
+		console.log(data.body)
 		exec("git pull && yarn")
 		// exec("cd ../koa-prod && git pull && yarn")
 		console.log(
