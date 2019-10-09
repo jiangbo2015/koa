@@ -13,6 +13,9 @@
         }
     },{
         "name": "hook",
-        "script": "node hook.js"
+        "script": "node hook.js",
+        "env": {
+            "PORT": 4000
+        }
     }]
 }
