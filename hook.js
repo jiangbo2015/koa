@@ -1,15 +1,15 @@
-const exec = require("child_process").execSync
-const { send } = require("micro")
-module.exports = async (req, res) => {
-	try {
-		exec("git pull && yarn")
-		// exec("cd ../koa-prod && git pull && yarn && pm2 restart hook")
-		console.log(
-			`${new Date().toLocaleDateString()}-${new Date().toLocaleTimeString()}: received push event`
-		)
-		res.end("success")
-	} catch (err) {
-		console.log(err)
-		send(res, 500, "error")
-	}
-}
+// install with: npm install @octokit/webhooks
+const WebhooksApi = require("@octokit/webhooks")
+const webhooks = new WebhooksApi({
+	secret: "koa"
+})
+
+webhooks.on("*", ({ id, name, payload }) => {
+	console.log(id, name, payload)
+	console.log(name, "event received")
+})
+
+require("http")
+	.createServer(webhooks.middleware)
+	.listen(4000)
+// can now receive webhook events at port 4000

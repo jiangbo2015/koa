@@ -13,6 +13,6 @@
         }
     },{
         "name": "hook",
-        "script": "micro hook.js -p 4000"
+        "script": "node hook.js"
     }]
 }
