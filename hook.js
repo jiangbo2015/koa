@@ -6,7 +6,6 @@ const webhooks = new WebhooksApi({
 
 webhooks.on("*", ({ id, name, payload }) => {
 	console.log(id, name, payload)
-	console.log("event received")
 })
 
 require("http")
