@@ -8,7 +8,7 @@ const webhooks = new WebhooksApi({
 
 webhooks.on("*", ({ id, name, payload }) => {
 	let pullrestart = "git pull && yarn && pm2 restart hook"
-	console.log(payload.ref, "ref")
+	console.log(payload.ref, "ref test")
 	// master 分支
 	if (payload.ref.includes("master")) {
 		exec(`cd ../koa-prod && ${pullrestart}`)
