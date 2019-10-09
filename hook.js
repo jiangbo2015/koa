@@ -1,11 +1,9 @@
 const exec = require("child_process").execSync
-const { send, json } = require("micro")
+const { send } = require("micro")
 module.exports = async (req, res) => {
 	try {
-		const data = await json(res)
-		console.log(data)
 		exec("git pull && yarn")
-		// exec("cd ../koa-prod && git pull && yarn")
+		// exec("cd ../koa-prod && git pull && yarn && pm2 restart hook")
 		console.log(
 			`${new Date().toLocaleDateString()}-${new Date().toLocaleTimeString()}: received push event`
 		)
