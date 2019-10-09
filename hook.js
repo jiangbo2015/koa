@@ -10,10 +10,14 @@ webhooks.on("*", ({ id, name, payload }) => {
 	let pullrestart = "git pull && yarn && pm2 restart hook"
 	console.log(payload.ref, "ref test")
 	// master 分支
-	if (payload.ref.includes("master")) {
-		exec(`cd ../koa-prod && ${pullrestart}`)
-	} else {
-		exec(pullrestart)
+	try {
+		if (payload.ref.includes("master")) {
+			exec(`cd ../koa-prod && ${pullrestart}`)
+		} else {
+			exec(pullrestart)
+		}
+	} catch (err) {
+		console.log(err)
 	}
 })
 
