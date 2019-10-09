@@ -8,7 +8,7 @@ const webhooks = new WebhooksApi({
 
 webhooks.on("*", ({ id, name, payload }) => {
 	let pullrestart = "git pull && yarn && pm2 restart hook"
-	console.log(payload.ref, "ref")
+	console.log(payload.ref, "ref test dev")
 	// master 分支
 	try {
 		if (payload.ref.includes("master")) {
