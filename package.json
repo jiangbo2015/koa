@@ -1,10 +1,10 @@
 {
   "name": "koa-app",
   "version": "1.0.0",
-  "main": "entry.js",
+  "main": "src/entry.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon entry.js",
+    "start": "nodemon src/entry.js",
     "production": "pm2 start pm2.json --env production",
     "test": "pm2 start pm2.json --env test",
     "hook": "pm2 start pm2.json --only hook"
