@@ -5,17 +5,17 @@
         "append_env_to_name": true,
         "env_production": {
             "NODE_ENV": "production",
-            "PORT": 6666
+            "PORT": 3002
         },
         "env_test": {
             "NODE_ENV": "test",
-            "PORT": 5555
+            "PORT": 3001
         }
     },{
         "name": "hook",
         "script": "node hook.js",
         "env": {
-            "PORT": 4000
+            "PORT": 3000
         }
     }]
 }
