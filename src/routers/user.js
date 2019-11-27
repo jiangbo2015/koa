@@ -1,34 +1,77 @@
 import Router from "koa-router"
-import jwt from "jsonwebtoken"
 
-import config from "../config"
 import * as User from "../controlers/user"
 
 const router = new Router()
 
-// 登录
-router.get("/test", (ctx, next) => {
-	console.log("/test")
-	ctx.body = "test"
-})
-
+/**
+ * @api {post} /user/login 用户登录
+ * @apiName login
+ * @apiGroup User
+ *
+ * @apiParam {String} account 账号
+ * @apiParam {String} password 密码
+ *
+ * @apiSuccessExample {json} Success-Response:
+ * {
+    "success": true,
+    "data": {},
+    "message": "成功"
+}
+ * 
+ */
 router.post("/login", User.login)
-router.post("/add", User.add)
-router.post("/update", User.update)
-router.post("/deleteMany", User.deleteMany)
-router.post("/deleteById", User.deleteById)
-router.get("/getList", User.getList)
-router.get("/aggregate", User.aggregate)
-router.get("/getUserById", User.getUserById)
-router.get("/register", User.register)
-router.get("/getCurrentUser", User.getCurrentUser)
 
-router.get("/login12", (ctx, next) => {
-	console.log("/test")
-	const token = jwt.sign({ phone: "17317276707" }, config.secret)
-	ctx.body = {
-		token
-	}
-})
+/**
+ * @api {post} /user/add 添加用户
+ * @apiName add
+ * @apiGroup User
+ *
+ * @apiParam  {String} account 账号
+ * @apiParam  {String} password 密码
+ * @apiParam  {Number} role 角色 0-超级管理员，1-产品经理，2-视觉设计，3-用户
+ * @apiParam  {String} name 姓名
+ *
+ * @apiSuccessExample {type} Success-Response:
+ * {
+ *     success: true,
+ *     data: {}
+ * }
+ *
+ */
+
+router.post("/add", User.add)
+
+/**
+ * @api {get} /user/getList 获取用户列表
+ * @apiName getList
+ * @apiGroup User
+ * @apiSuccessExample {json} Success-Response:
+ *    {success: true, data: {}}
+ */
+router.get("/getList", User.getList)
+
+/**
+ * @api {post} /user/delete 删除用户
+ * @apiName delete
+ * @apiGroup User
+ *
+ * @apiParam  {String} _id 用户id
+ * @apiSuccessExample {json} Success-Response:
+ *    {success: true, data: {}}
+ */
+
+router.post("/delete", User.deleteById)
+
+/**
+ * @api {get} /user/getCurrentUser 获取当前用户
+ * @apiName getCurrentUser
+ * @apiGroup User
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {success: true, data: {}}
+ *
+ */
+router.get("/getCurrentUser", User.getCurrentUser)
 
 export default router.routes()

@@ -4,27 +4,28 @@ import config from "../config"
 import { response } from "../utils"
 import User from "../models/user"
 
-export const login = async (ctx, next) => {
-	console.log(ctx.request)
-	console.log(ctx.request.query)
-	console.log(ctx.request.query.name)
-	console.log(ctx.request.body)
-	ctx.body = {
-		success: true
-	}
-}
-
-export const register = async (ctx, next) => {
-	console.log(ctx.request)
-	console.log(ctx.request.query)
-	console.log(ctx.request.query.name)
-	console.log(ctx.request.body)
-	ctx.body = {
-		success: true
-	}
-}
-
+/**
+ * 获取token中的值
+ * @param {*} token
+ */
 const verify = token => jwt.verify(token.split(" ")[1], config.secret)
+
+export const login = async (ctx, next) => {
+	console.log(ctx.request.body)
+	const { account } = ctx.request.body
+	try {
+		const data = await User.findOne({ account })
+		if (!data) {
+			ctx.body = response(false, null, "用户名或密码错误")
+		} else {
+			let token = jwt.sign(account, config.secret)
+			data.token = token
+			ctx.body = response(true, data)
+		}
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
 
 export const getCurrentUser = async (ctx, next) => {
 	console.log(verify(ctx.headers.authorization))
@@ -35,10 +36,9 @@ export const getCurrentUser = async (ctx, next) => {
 
 export const add = async (ctx, next) => {
 	try {
-		const { phone, password, productId } = ctx.request.body
-		let user = new User({ phone, password })
-		user.products.push(productId)
-		let data = user.save()
+		const { account, password, role, name } = ctx.request.body
+		let user = new User({ account, password, role, name })
+		let data = await user.save()
 		ctx.body = response(true, data)
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
@@ -65,6 +65,15 @@ export const update = async (ctx, next) => {
 }
 
 export const getList = async (ctx, next) => {
+	try {
+		let data = await User.find()
+		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const getList2 = async (ctx, next) => {
 	try {
 		// 查询所有用户，并选择phone字段，不包括_id字段
 		// let data = await User.find(null, "phone -_id")

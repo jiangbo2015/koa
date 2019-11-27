@@ -1,4 +1,4 @@
-import Product from "../models/product"
+import Product from "../models/goods"
 import { response } from "../utils"
 import mongoose from "mongoose"
 

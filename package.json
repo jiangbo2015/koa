@@ -2,6 +2,10 @@
   "name": "koa-app",
   "version": "1.0.0",
   "main": "src/entry.js",
+  "nodemonConfig": {
+    "ignore": ["src/public/*"],
+    "delay": "2500"
+  },
   "license": "MIT",
   "scripts": {
     "start": "nodemon src/entry.js",
