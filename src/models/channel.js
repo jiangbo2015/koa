@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+const uniqueValidator = require("mongoose-unique-validator")
 
 /**
  * currency: 0-人民币，1-美元，2-欧元
@@ -6,13 +7,24 @@ import mongoose from "mongoose"
 const channelSchema = new mongoose.Schema(
 	{
 		name: String,
-		code: String,
-		currency: Number
+		code: {
+			type: String,
+			required: true,
+			unique: true
+		},
+		currency: {
+			type: Number,
+			required: true,
+			enum: [0, 1, 2]
+		}
 	},
 	{
-		versionKey: false
+		versionKey: false,
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
 	}
 )
+
+channelSchema.plugin(uniqueValidator)
 
 const ChannelModel = mongoose.model("channels", channelSchema)
 

@@ -1,25 +1,82 @@
 import mongoose from "mongoose"
+const uniqueValidator = require("mongoose-unique-validator")
+
 /**
  * 样式管理
  */
-const productBaseSchema = new mongoose.Schema(
+const styleSchema = new mongoose.Schema(
 	{
-		sytleNo: {
-			type: String
+		styleNo: {
+			type: String,
+			required: true
 		},
-		price: Number,
-		styleUrl: String,
-		size: String,
-		goose: String,
-		category: String,
-		plainColors: Array,
-		flowerColors: Array
+		price: {
+			type: Number,
+			required: true
+		},
+		imgUrl: {
+			type: String,
+			required: true
+		},
+		sizeId: {
+			type: String,
+			required: true
+		},
+		goodsId: {
+			type: mongoose.Schema.Types.ObjectId
+		},
+		categoryId: String,
+		plainColors: [
+			{
+				colorId: {
+					type: mongoose.Schema.Types.ObjectId
+				},
+				left: String,
+				front: String,
+				backend: String
+			}
+		],
+		flowerColors: [
+			{
+				colorId: {
+					type: mongoose.Schema.Types.ObjectId
+				},
+				left: String,
+				front: String,
+				backend: String
+			}
+		]
 	},
 	{
-		versionKey: false
+		versionKey: false,
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
 	}
 )
 
-const ProductBaseModel = mongoose.model("product-base", productBaseSchema)
+styleSchema.virtual("goodsInfo", {
+	ref: "goods",
+	localField: "goodsId",
+	foreignField: "_id",
+	justOne: true
+})
+styleSchema.virtual("plainColors.colorInfo", {
+	ref: "color",
+	localField: "plainColors.colorId",
+	foreignField: "_id",
+	justOne: true
+})
+styleSchema.virtual("flowerColors.colorInfo", {
+	ref: "color",
+	localField: "flowerColors.colorId",
+	foreignField: "_id",
+	justOne: true
+})
 
-export default ProductBaseModel
+styleSchema.set("toObject", { virtuals: true })
+styleSchema.set("toJSON", { virtuals: true })
+
+styleSchema.plugin(uniqueValidator)
+
+const StyleModel = mongoose.model("style", styleSchema)
+
+export default StyleModel

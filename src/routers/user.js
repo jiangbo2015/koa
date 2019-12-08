@@ -31,11 +31,20 @@ router.post("/login", User.login)
  * @apiParam  {String} password 密码
  * @apiParam  {Number} role 角色 0-超级管理员，1-产品经理，2-视觉设计，3-用户
  * @apiParam  {String} name 姓名
+ * @apiParam  {String} [email] 邮箱
+ * @apiParam  {String} [address] 地址
+ * @apiParam  {String} [contact] 联系人
+ * @apiParam  {String} [phone] 联系电话
+ * @apiParam  {String} [customerType] 客户类型
+ * @apiParam  {String} [remark] 备注
+ * @apiParam  {String} [channels] 管理的通道id,用英文逗号隔开
  *
  * @apiSuccessExample {type} Success-Response:
  * {
  *     success: true,
- *     data: {}
+ *     data: {
+ *          token: "qwertyuiopasdfghihp"
+ *     }
  * }
  *
  */
@@ -47,7 +56,7 @@ router.post("/add", User.add)
  * @apiName getList
  * @apiGroup User
  * @apiSuccessExample {json} Success-Response:
- *    {success: true, data: {}}
+ *    {"success": true, "data": {}}
  */
 router.get("/getList", User.getList)
 
@@ -58,7 +67,7 @@ router.get("/getList", User.getList)
  *
  * @apiParam  {String} _id 用户id
  * @apiSuccessExample {json} Success-Response:
- *    {success: true, data: {}}
+ *    {"success": true, "data": {}}
  */
 
 router.post("/delete", User.deleteById)
@@ -69,9 +78,23 @@ router.post("/delete", User.deleteById)
  * @apiGroup User
  *
  * @apiSuccessExample {json} Success-Response:
- *    {success: true, data: {}}
+ *    {"success": true, "data": {}}
  *
  */
 router.get("/getCurrentUser", User.getCurrentUser)
+
+/**
+ * @api {post} /user/update 更新用户信息
+ * @apiName update
+ * @apiGroup User
+ *
+ * @apiParam  {String} _id 用户id
+ * @apiParam  {Object} object 添加用户时用的那些字段
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ *
+ */
+router.post("/update", User.update)
 
 export default router.routes()

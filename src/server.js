@@ -19,7 +19,18 @@ const app = new Koa()
 app.use(logger())
 
 // 允许跨域处理
-app.use(cors({ origin: true }))
+app.use(
+	cors({
+		origin: function(ctx) {
+			return "*"
+			// return ctx.request.header.origin
+		},
+		maxAge: 5,
+		credentials: false,
+		allowMethods: ["GET", "POST"],
+		allowHeaders: ["Content-Type", "Authorization", "Accept"]
+	})
+)
 
 // 静态资源文件
 app.use(koaStatic(path.join(__dirname, "public")))

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "src/entry.js",
   "nodemonConfig": {
-    "ignore": ["src/public/*"],
+    "ignore": [
+      "src/public/*"
+    ],
     "delay": "2500"
   },
   "license": "MIT",
@@ -11,12 +13,14 @@
     "start": "nodemon src/entry.js",
     "production": "pm2 start pm2.json --env production",
     "test": "pm2 start pm2.json --env test",
-    "hook": "pm2 start pm2.json --only hook"
+    "hook": "pm2 start pm2.json --only hook",
+    "doc": "apidoc -i src/routers/ -o src/public/doc/"
   },
   "dependencies": {
     "@koa/cors": "^3.0.0",
     "babel-register": "^6.26.0",
     "fs-extra": "^8.1.0",
+    "json2xls": "^0.1.2",
     "koa": "^2.8.1",
     "koa-body": "^4.1.1",
     "koa-jwt": "^3.6.0",

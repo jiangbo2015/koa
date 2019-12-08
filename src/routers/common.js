@@ -29,13 +29,16 @@ router.post("/upload", async (ctx, next) => {
 		// 创建可读流
 		const reader = fse.createReadStream(file.path)
 
-		const folder = moment().format("YYYY-MM-DD")
-		let imgname = new Date().getTime()
-		let relativePath = `uploads/${folder}/${imgname}${path.extname(file.name)}`
-		let filePath = path.join(__dirname, "../" + relativePath)
+		let relativePath = [
+			`uploads`,
+			`${moment().format("YYYY-MM-DD")}`,
+			`${new Date().getTime()}${path.extname(file.name)}`
+		].join("/")
+		let absPath = path.join(__dirname, "../public/" + relativePath)
+		fse.ensureDirSync(path.dirname(absPath))
 
 		// 创建可写流
-		const upStream = fse.createWriteStream(filePath)
+		const upStream = fse.createWriteStream(absPath)
 		// 可读流通过管道写入可写流
 		reader.pipe(upStream)
 		ctx.body = response(true, { url: relativePath }, "成功")

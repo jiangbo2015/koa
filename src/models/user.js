@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-var uniqueValidator = require("mongoose-unique-validator")
+const uniqueValidator = require("mongoose-unique-validator")
 
 /**
  * role: 0-超级管理员，1-产品经理，2-视觉设计，3-用户
@@ -13,16 +13,27 @@ const userSchema = new mongoose.Schema(
 		},
 		name: { type: String, required: true },
 		password: { type: String, required: true },
+		email: String,
+		address: String,
+		remark: String,
+		contact: String,
+		phone: String,
+		customerType: String,
 		role: {
 			type: Number,
-			required: true
+			required: true,
+			enum: [0, 1, 2, 3]
 		},
-		channels: {
-			type: Array
-		}
+		channels: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "channels"
+			}
+		]
 	},
 	{
-		versionKey: false
+		versionKey: false,
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
 	}
 )
 

@@ -1,22 +1,11 @@
-import Color from "../models/color"
+import Size from "../models/size"
 import { response } from "../utils"
-import moment from "moment"
-
-const codePrefix = {
-	0: "S-",
-	1: "H-"
-}
 
 export const add = async (ctx, next) => {
 	try {
-		const { type, value } = ctx.request.body
-		const code = codePrefix[type] + moment().format("YYMMDDHHMMss")
-		let color = new Color({
-			type,
-			value,
-			code
-		})
-		let data = await color.save()
+		const body = ctx.request.body
+		let size = new Size(body)
+		let data = await size.save()
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
@@ -26,10 +15,9 @@ export const add = async (ctx, next) => {
 export const getList = async (ctx, next) => {
 	try {
 		let { query } = ctx.request
-		let data = await Color.find(query)
+		let data = await Size.find(query)
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
-		console.log(err)
 		ctx.body = response(false, null, err.message)
 	}
 }
@@ -37,7 +25,7 @@ export const getList = async (ctx, next) => {
 export const update = async (ctx, next) => {
 	try {
 		const { _id, value } = ctx.request.body
-		let data = await Color.findByIdAndUpdate({ _id }, { value }, { new: true })
+		let data = await Size.findByIdAndUpdate({ _id }, { value }, { new: true })
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		console.log(err)
@@ -48,7 +36,7 @@ export const update = async (ctx, next) => {
 export const del = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.body
-		let data = await Color.findByIdAndRemove({ _id })
+		let data = await Size.findByIdAndRemove({ _id })
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		console.log(err)

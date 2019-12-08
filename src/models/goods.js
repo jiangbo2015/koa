@@ -14,27 +14,23 @@ const goodsSchema = new mongoose.Schema(
 		},
 		category: [
 			{
-				name: String,
-				size: String
+				name: {
+					type: String,
+					required: true
+				},
+				size: String //使用字符串值作为value,不用关联
 			}
-		]
-		// users: [
-		// 	{
-		// 		type: mongoose.Schema.Types.ObjectId,
-		// 		ref: "users"
-		// 	}
-		// ]
+		],
+		imgUrl: String
 	},
 	{
 		versionKey: false,
-		timestamps: {
-			createdAt: true,
-			updatedAt: true
-		}
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
 	}
 )
 
 goodsSchema.plugin(paginate)
+
 goodsSchema.plugin(uniqueValidator)
 
 const goodsModel = mongoose.model("goods", goodsSchema)
