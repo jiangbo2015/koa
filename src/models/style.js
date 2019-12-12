@@ -65,9 +65,8 @@ const styleSchema = new mongoose.Schema(
 		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
 		// toJSON: {
 		// 	transform: function(doc, ret) {
-		// 		// console.log("doc:", doc)
-		// 		// console.log("ret:", ret)
-		// 	},
+		// 		console.log("ret:", doc)
+		// 	}
 		// }
 		// toObject: {
 		// 	transform: function(doc, ret) {

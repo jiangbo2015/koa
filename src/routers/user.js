@@ -102,13 +102,34 @@ router.post("/update", User.update)
  * @apiName update
  * @apiGroup User
  *
- * @apiParam  {String} styleIds 款式的id数组
- * @apiParam  {String} colorId 花色或者素色的id
+ * @apiParam  {String} styleAndColor 对象数组
+ *
+ * @apiParamExample  {json} Request-Example:
+ *    {
+ *  styleAndColor: [{
+ *      styleId: "款式id",
+ *      colorId: "款式对应的颜色id"
+ * }]
+ * }
  *
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  *
  */
 router.post("/addFavorite", User.addFavorite)
+
+/**
+ * @api {post} /user/updateFavorite 修改某个收藏
+ * @apiName update
+ * @apiGroup User
+ *
+ * @apiParam  {String} _id 该收藏的id
+ * @apiParam  {String} styleAndColor 款式和花色的对象数组
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ *
+ */
+router.post("/updateFavorite", User.updateFavorite)
 
 export default router.routes()

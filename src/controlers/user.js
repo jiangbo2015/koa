@@ -51,11 +51,11 @@ export const add = async (ctx, next) => {
 			password,
 			role,
 			name,
-			// channels: channels ? channels.split(",") : []
-			channels: {
-				cid: channels.split(","),
-				size: 10
-			}
+			channels
+			// channels: {
+			// 	cid: channels.split(","),
+			// 	size: 10
+			// }
 		})
 		let data = await user.save()
 		ctx.body = response(true, data)
@@ -66,14 +66,11 @@ export const add = async (ctx, next) => {
 
 export const update = async (ctx, next) => {
 	try {
-		const { _id, channels = "", ...others } = ctx.request.body
+		const { _id, ...others } = ctx.request.body
 		console.log("channels:", channels)
 		let data = await User.update(
 			{ _id },
-			{
-				channels: channels ? channels.split(",") : [],
-				...others
-			}
+			others
 			// {
 			// 	$addToSet: {
 			// 		products: productId
@@ -105,7 +102,8 @@ export const getList = async (ctx, next) => {
 
 export const addFavorite = async (ctx, next) => {
 	try {
-		const body = ctx.request.body
+		const { styleAndColor } = ctx.request.body
+		console.log(styleAndColor)
 		const currentUser = await getCurrentUser(ctx)
 		let data = await User.findOneAndUpdate(
 			{
@@ -113,8 +111,32 @@ export const addFavorite = async (ctx, next) => {
 			},
 			{
 				$push: {
-					favorites: body
+					favorites: { styleAndColor }
 				}
+			}
+		)
+		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const updateFavorite = async (ctx, next) => {
+	try {
+		const { _id, styleAndColor } = ctx.request.body
+		const currentUser = await getCurrentUser(ctx)
+		let data = await User.findOneAndUpdate(
+			{
+				account: currentUser.account,
+				"favorites._id": _id
+			},
+			{
+				$set: {
+					"favorites.$.styleAndColor": styleAndColor
+				}
+			},
+			{
+				new: true
 			}
 		)
 		ctx.body = response(true, data)
