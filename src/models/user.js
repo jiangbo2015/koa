@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
-const uniqueValidator = require("mongoose-unique-validator")
+import uniqueValidator from "mongoose-unique-validator"
+const hide = require("mongoose-hidden")()
 
 /**
  * role: 0-超级管理员，1-产品经理，2-视觉设计，3-用户
@@ -12,7 +13,7 @@ const userSchema = new mongoose.Schema(
 			unique: true
 		},
 		name: { type: String, required: true },
-		password: { type: String, required: true },
+		password: { type: String, required: true, hide: true },
 		email: String,
 		address: String,
 		remark: String,
@@ -29,6 +30,19 @@ const userSchema = new mongoose.Schema(
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "channels"
 			}
+		],
+		favorites: [
+			{
+				styleAndColor: [
+					{
+						styleId: {
+							type: mongoose.Schema.Types.ObjectId,
+							ref: "style"
+						},
+						colorId: String
+					}
+				]
+			}
 		]
 	},
 	{
@@ -38,6 +52,7 @@ const userSchema = new mongoose.Schema(
 )
 
 userSchema.plugin(uniqueValidator)
+userSchema.plugin(hide)
 
 const UserModel = mongoose.model("users", userSchema)
 

@@ -21,8 +21,8 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
 	try {
-		let data = await Channel.find().lean()
-
+		let data = await Channel.find()
+		// await assign("5deda268d7571c131607f877", "sizeIds", ["A", "B"])
 		ctx.body = response(true, data)
 	} catch (err) {
 		console.log(err)

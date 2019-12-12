@@ -85,4 +85,43 @@ router.post("/delete", Style.del)
  */
 router.post("/update", Style.update)
 
+/**
+ * @api {get} /style/detail 获取款式详情
+ * @apiName detail
+ * @apiGroup Style
+ *
+ * @apiParam  {String} _id 款式id
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ */
+router.get("/detail", Style.detail)
+
+/**
+ * @api {post} /style/assign 给通道分配尺寸，素色，花色
+ * @apiName assign
+ * @apiGroup Style
+ *
+ * @apiParam  {String} styleId 当前款式id
+ * @apiParam  {String} sizeIds size的id数组
+ * @apiParam  {String} plainColorIds 素色的id数组
+ * @apiParam  {String} flowerColorIds 花色的id数组
+ * @apiParam  {String} channelId 通道id
+ *
+ * @apiParamExample  {json} Request-Example:
+ *    {
+ *      _id: "款式的id",
+ *      sizeIds: ["尺寸M的id"],
+ *      plainColorIds: ["素色的id"]
+ *      flowerColorIds: ["花色的id"]
+ *      channelId: 通道的ID
+ * }
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ */
+router.post("/assign", Style.assign)
+
+router.post("/updateMany", Style.updateMany)
+
 export default router.routes()

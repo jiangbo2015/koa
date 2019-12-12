@@ -97,4 +97,18 @@ router.get("/getCurrentUser", User.getCurrentUser)
  */
 router.post("/update", User.update)
 
+/**
+ * @api {post} /user/addFavorite 添加收藏
+ * @apiName update
+ * @apiGroup User
+ *
+ * @apiParam  {String} styleIds 款式的id数组
+ * @apiParam  {String} colorId 花色或者素色的id
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ *
+ */
+router.post("/addFavorite", User.addFavorite)
+
 export default router.routes()

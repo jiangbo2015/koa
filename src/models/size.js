@@ -3,11 +3,15 @@ const uniqueValidator = require("mongoose-unique-validator")
 
 const sizeSchema = new mongoose.Schema(
 	{
-		name: {
-			type: String,
-			required: true,
-			unique: true
-		}
+		values: [
+			{
+				name: {
+					type: String,
+					required: true,
+					unique: true
+				}
+			}
+		]
 	},
 	{
 		versionKey: false,

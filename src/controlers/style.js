@@ -1,10 +1,10 @@
 import Style from "../models/style"
 import { response } from "../utils"
+import { getCurrentUser } from "./user"
 
 export const add = async (ctx, next) => {
 	try {
 		const { body } = ctx.request
-		console.log(body)
 		let style = new Style(body)
 		let data = await style.save()
 		ctx.body = response(true, data, "成功")
@@ -16,9 +16,10 @@ export const add = async (ctx, next) => {
 export const getList = async (ctx, next) => {
 	try {
 		let { query } = ctx.request
-		let data = await Style.find(query)
-			.populate("goodsInfo")
-			.populate("plainColors.colorInfo")
+		let data = await Style.find()
+		// .populate("test.color")
+		// .populate("goods")
+		// .populate("plainColors.color")
 
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
@@ -41,10 +42,109 @@ export const update = async (ctx, next) => {
 	}
 }
 
+/**
+ * 给当前款式下，对通道分配尺寸，素色，花色
+ * 先查找channels数组里面是否有该通道，若没有，则添加
+ * 若有，则更新
+ */
+export const assign = async (ctx, next) => {
+	try {
+		const { styleId, ...channel } = ctx.request.body
+
+		let data = await Style.findOneAndUpdate(
+			{
+				_id: styleId,
+				"channels.channelId": channel.channelId
+			},
+			{
+				$set: {
+					"channels.$": channel
+				}
+			},
+			{
+				new: true
+			}
+		)
+
+		if (!data) {
+			data = await Style.findOneAndUpdate(
+				{
+					_id: styleId
+				},
+				{
+					$push: {
+						channels: channel
+					}
+				}
+			)
+		}
+
+		ctx.body = response(true, data, "成功")
+	} catch (err) {
+		console.log(err)
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const updateMany = async (ctx, next) => {
+	try {
+		const body = ctx.request.body
+		let data = await Style.updateMany(
+			{},
+			{
+				...body
+			}
+		)
+		ctx.body = response(true, data, "成功")
+	} catch (err) {
+		console.log(err)
+		ctx.body = response(false, null, err.message)
+	}
+}
+
 export const del = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.body
 		let data = await Style.findByIdAndRemove({ _id })
+		ctx.body = response(true, data, "成功")
+	} catch (err) {
+		console.log(err)
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+/**
+ * 处理颜色对象，将color对象里的key放到最外层
+ */
+function mergeData(data) {
+	data.map(item => {
+		item.colorId = item.color._id
+		item.value = item.color.value
+		item.code = item.color.code
+		item.type = item.color.type
+		delete item.color
+	})
+}
+export const detail = async (ctx, next) => {
+	try {
+		const { _id, channelId } = ctx.request.query
+		// const { role } = await getCurrentUser(ctx, next)
+
+		let data = await Style.findById(_id)
+			// .populate("goods")
+			.populate({
+				path: "plainColors.color"
+			})
+			.populate({
+				path: "flowerColors.color"
+			})
+			.populate("size")
+			.select("-plainColors._id -flowerColors._id")
+
+		data = data.toJSON()
+
+		mergeData(data.plainColors)
+		mergeData(data.flowerColors)
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		console.log(err)

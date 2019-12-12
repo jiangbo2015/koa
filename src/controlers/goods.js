@@ -63,7 +63,7 @@ export const detail = async (ctx, next) => {
 		let styles = await Style.aggregate([
 			{
 				$match: {
-					goodsId: mongoose.Types.ObjectId(_id)
+					goods: mongoose.Types.ObjectId(_id)
 				}
 			},
 
@@ -79,8 +79,6 @@ export const detail = async (ctx, next) => {
 				}
 			}
 		])
-		// .populate("plainColors.colorInfo")
-		// .populate("flowerColors.colorInfo")
 
 		// 将分组好的款式添加到对应的分类上
 		data.category.map(item => {

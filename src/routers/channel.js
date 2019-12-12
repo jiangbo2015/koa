@@ -35,7 +35,7 @@ router.get("/getList", Channel.getList)
  * @apiGroup Channel
  *
  * @apiParam  {String} _id 通道id
- * *
+ *
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */

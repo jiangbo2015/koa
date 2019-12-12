@@ -26,15 +26,21 @@ export const login = async (ctx, next) => {
 	}
 }
 
-export const getCurrentUser = async (ctx, next) => {
-	try {
-		console.log(verify(ctx.headers.authorization))
-		const { account } = ctx.headers.authorization
-		const data = await User.findOne({ account })
-		ctx.body = response(true, data)
-	} catch (err) {
-		ctx.body = response(false, null, err.message)
-	}
+/**
+ * 兼容其他需要获取当前用户信息的地方，使用promise处理
+ */
+export const getCurrentUser = (ctx, next) => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const account = verify(ctx.headers.authorization)
+			const data = await User.findOne({ account })
+			ctx.body = response(true, data)
+			resolve(data)
+		} catch (err) {
+			ctx.body = response(false, null, err.message)
+			reject(err)
+		}
+	})
 }
 
 export const add = async (ctx, next) => {
@@ -91,6 +97,26 @@ export const getList = async (ctx, next) => {
 		}).populate({
 			path: "channels"
 		})
+		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const addFavorite = async (ctx, next) => {
+	try {
+		const body = ctx.request.body
+		const currentUser = await getCurrentUser(ctx)
+		let data = await User.findOneAndUpdate(
+			{
+				account: currentUser.account
+			},
+			{
+				$push: {
+					favorites: body
+				}
+			}
+		)
 		ctx.body = response(true, data)
 	} catch (err) {
 		ctx.body = response(false, null, err.message)

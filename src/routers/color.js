@@ -25,7 +25,7 @@ router.post("/add", Color.add)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/getList", Color.getList)
+router.get("/getList", Color.getList)
 
 /**
  * @api {post} /color/update 更新

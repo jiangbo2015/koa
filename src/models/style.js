@@ -18,18 +18,30 @@ const styleSchema = new mongoose.Schema(
 			type: String,
 			required: true
 		},
-		sizeId: {
-			type: String,
-			required: true
+		size: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "size"
 		},
-		goodsId: {
-			type: mongoose.Schema.Types.ObjectId
+
+		goods: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "goods"
 		},
 		categoryId: String,
+		channels: [
+			{
+				channelId: String,
+				sizeIds: Array,
+				plainColorIds: Array,
+				flowerColorIds: Array
+			}
+		],
+
 		plainColors: [
 			{
-				colorId: {
-					type: mongoose.Schema.Types.ObjectId
+				color: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: "color"
 				},
 				left: String,
 				front: String,
@@ -38,8 +50,9 @@ const styleSchema = new mongoose.Schema(
 		],
 		flowerColors: [
 			{
-				colorId: {
-					type: mongoose.Schema.Types.ObjectId
+				color: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: "color"
 				},
 				left: String,
 				front: String,
@@ -50,30 +63,38 @@ const styleSchema = new mongoose.Schema(
 	{
 		versionKey: false,
 		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
+		// toJSON: {
+		// 	transform: function(doc, ret) {
+		// 		// console.log("doc:", doc)
+		// 		// console.log("ret:", ret)
+		// 	},
+		// }
+		// toObject: {
+		// 	transform: function(doc, ret) {
+		// 		delete ret._id
+		// 		console.log("doc:", doc)
+		// 		console.log("ret:", ret)
+		// 	}
+		// }
 	}
 )
 
-styleSchema.virtual("goodsInfo", {
-	ref: "goods",
-	localField: "goodsId",
-	foreignField: "_id",
-	justOne: true
-})
-styleSchema.virtual("plainColors.colorInfo", {
-	ref: "color",
-	localField: "plainColors.colorId",
-	foreignField: "_id",
-	justOne: true
-})
-styleSchema.virtual("flowerColors.colorInfo", {
-	ref: "color",
-	localField: "flowerColors.colorId",
-	foreignField: "_id",
-	justOne: true
-})
-
-styleSchema.set("toObject", { virtuals: true })
-styleSchema.set("toJSON", { virtuals: true })
+// styleSchema.virtual("$goods").get(function() {
+// 	console.log(this)
+// 	return (this.goods.myname = this.goods.name)
+// })
+// styleSchema.virtual("plainColors.colorInfo", {
+// 	ref: "color",
+// 	localField: "plainColors.colorId",
+// 	foreignField: "_id",
+// 	justOne: true
+// })
+// styleSchema.virtual("flowerColors.colorInfo", {
+// 	ref: "color",
+// 	localField: "flowerColors.colorId",
+// 	foreignField: "_id",
+// 	justOne: true
+// })
 
 styleSchema.plugin(uniqueValidator)
 
