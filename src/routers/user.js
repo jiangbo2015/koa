@@ -132,4 +132,17 @@ router.post("/addFavorite", User.addFavorite)
  */
 router.post("/updateFavorite", User.updateFavorite)
 
+/**
+ * @api {post} /user/deleteFavorite 删除某个收藏
+ * @apiName delete
+ * @apiGroup User
+ *
+ * @apiParam  {String} _id 该收藏的id
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ *
+ */
+router.post("/deleteFavorite", User.deleteFavorite)
+
 export default router.routes()

@@ -16,7 +16,7 @@ export const add = async (ctx, next) => {
 export const getList = async (ctx, next) => {
 	try {
 		let { query } = ctx.request
-		let data = await Style.find()
+		let data = await Style.find().select("-plainColors._id -flowerColors._id")
 		// .populate("test.color")
 		// .populate("goods")
 		// .populate("plainColors.color")
@@ -118,10 +118,10 @@ export const del = async (ctx, next) => {
  */
 function mergeData(data) {
 	data.map(item => {
-		item.colorId = item.color._id
-		item.value = item.color.value
-		item.code = item.color.code
-		item.type = item.color.type
+		item.value = item.colorId.value
+		item.code = item.colorId.code
+		item.type = item.colorId.type
+		item.colorId = item.colorId._id
 		delete item.color
 	})
 }
@@ -132,19 +132,19 @@ export const detail = async (ctx, next) => {
 
 		let data = await Style.findById(_id)
 			// .populate("goods")
-			.populate({
-				path: "plainColors.color"
-			})
-			.populate({
-				path: "flowerColors.color"
-			})
+			// .populate({
+			// 	path: "plainColors.colorId"
+			// })
+			// .populate({
+			// 	path: "flowerColors.colorId"
+			// })
 			.populate("size")
 			.select("-plainColors._id -flowerColors._id")
 
 		data = data.toJSON()
 
-		mergeData(data.plainColors)
-		mergeData(data.flowerColors)
+		// mergeData(data.plainColors)
+		// mergeData(data.flowerColors)
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		console.log(err)

@@ -19,6 +19,10 @@ const goodsSchema = new mongoose.Schema(
 					required: true
 				},
 				size: String //使用字符串值作为value,不用关联
+				// styles: [{
+				//     type: mongoose.Schema.Types.ObjectId,
+				//     ref: 'style'
+				// }]
 			}
 		],
 		imgUrl: String

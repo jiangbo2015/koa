@@ -1,1 +1,1 @@
-define({  "name": "koa-app",  "version": "1.0.0",  "description": "",  "sampleUrl": false,  "defaultVersion": "0.0.0",  "apidoc": "0.3.0",  "generator": {    "name": "apidoc",    "time": "2019-12-11T13:46:16.182Z",    "url": "http://apidocjs.com",    "version": "0.18.0"  }});
+define({  "name": "koa-app",  "version": "1.0.0",  "description": "",  "sampleUrl": false,  "defaultVersion": "0.0.0",  "apidoc": "0.3.0",  "generator": {    "name": "apidoc",    "time": "2019-12-12T12:00:11.243Z",    "url": "http://apidocjs.com",    "version": "0.18.0"  }});

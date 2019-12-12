@@ -9,7 +9,7 @@ const router = new Router()
  * @apiName add
  * @apiGroup Channel
  *
- * @apiParam  {String} currency 0-素色，1-花色，不传则获取所有
+ * @apiParam  {String} currency 0-人民币，1-美元，2-欧元
  * @apiParam  {String} code 通道编号
  * @apiParam  {String} name 通道名称
  *

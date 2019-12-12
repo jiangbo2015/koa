@@ -34,6 +34,10 @@ export const getCurrentUser = (ctx, next) => {
 		try {
 			const account = verify(ctx.headers.authorization)
 			const data = await User.findOne({ account })
+			// .populate({
+			// 	path: "channels"
+			// })
+			// .populate("channels")
 			ctx.body = response(true, data)
 			resolve(data)
 		} catch (err) {
@@ -67,7 +71,6 @@ export const add = async (ctx, next) => {
 export const update = async (ctx, next) => {
 	try {
 		const { _id, ...others } = ctx.request.body
-		console.log("channels:", channels)
 		let data = await User.update(
 			{ _id },
 			others
@@ -137,6 +140,28 @@ export const updateFavorite = async (ctx, next) => {
 			},
 			{
 				new: true
+			}
+		)
+		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const deleteFavorite = async (ctx, next) => {
+	try {
+		const { _id } = ctx.request.body
+		const currentUser = await getCurrentUser(ctx)
+		let data = await User.findOneAndUpdate(
+			{
+				account: currentUser.account
+			},
+			{
+				$pull: {
+					favorites: {
+						_id
+					}
+				}
 			}
 		)
 		ctx.body = response(true, data)

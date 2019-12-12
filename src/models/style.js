@@ -39,7 +39,7 @@ const styleSchema = new mongoose.Schema(
 
 		plainColors: [
 			{
-				color: {
+				colorId: {
 					type: mongoose.Schema.Types.ObjectId,
 					ref: "color"
 				},
@@ -50,7 +50,7 @@ const styleSchema = new mongoose.Schema(
 		],
 		flowerColors: [
 			{
-				color: {
+				colorId: {
 					type: mongoose.Schema.Types.ObjectId,
 					ref: "color"
 				},

@@ -7,9 +7,7 @@ export const add = async (ctx, next) => {
 	try {
 		const body = ctx.request.body
 		let goods = new Goods(body)
-		// if (userId) {
-		// 	goods.users.push(userId)
-		// }
+
 		let data = await goods.save()
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
