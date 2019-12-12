@@ -23,7 +23,7 @@ const styleSchema = new mongoose.Schema(
 			ref: "size"
 		},
 
-		goods: {
+		goodsId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "goods"
 		},

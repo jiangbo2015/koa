@@ -131,7 +131,7 @@ export const detail = async (ctx, next) => {
 		// const { role } = await getCurrentUser(ctx, next)
 
 		let data = await Style.findById(_id)
-			// .populate("goods")
+			// .populate("goodsId")
 			// .populate({
 			// 	path: "plainColors.colorId"
 			// })

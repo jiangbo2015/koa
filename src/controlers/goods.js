@@ -53,6 +53,13 @@ export const deleteById = async (ctx, next) => {
 	}
 }
 
+/**
+ * 为什么要款式关联商品？
+ * 因为一个款式关联一个商品，若是在商品分类下关联了款式
+ * 当款式修改关联的商品后，原商品分类应该删除该款式，不够灵活
+ * 所以，用款式直接关联商品，若要查看商品分类下有哪些款式，查询款式后过滤
+ * 并将其绑定到对应分类下
+ */
 export const detail = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.query
@@ -61,7 +68,7 @@ export const detail = async (ctx, next) => {
 		let styles = await Style.aggregate([
 			{
 				$match: {
-					goods: mongoose.Types.ObjectId(_id)
+					goodsId: mongoose.Types.ObjectId(_id)
 				}
 			},
 
@@ -73,6 +80,15 @@ export const detail = async (ctx, next) => {
 					_id: "$categoryId",
 					styles: {
 						$push: "$$ROOT"
+					}
+				}
+			},
+			{
+				$project: {
+					styles: {
+						plainColors: {
+							_id: 0
+						}
 					}
 				}
 			}
@@ -129,3 +145,27 @@ export const detail = async (ctx, next) => {
 // 		ctx.body = response(false, null, err.message)
 // 	}
 // }
+
+;[
+	{
+		categoryId: ["001", "002"],
+		name: "A"
+	},
+	{
+		categoryId: ["001"],
+		name: "B"
+	}
+][
+	({
+		categoryId: "001",
+		name: "A"
+	},
+	{
+		categoryId: "001",
+		name: "B"
+	},
+	{
+		categoryId: "002",
+		name: "A"
+	})
+]
