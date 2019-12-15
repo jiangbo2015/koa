@@ -7,6 +7,7 @@ import goodsbase from "./goodsbase"
 import channel from "./channel"
 import color from "./color"
 import style from "./style"
+import system from "./system"
 import test from "./test"
 
 const router = new Router({
@@ -20,6 +21,7 @@ router.use("/goodsbase", goodsbase)
 router.use("/channel", channel)
 router.use("/color", color)
 router.use("/style", style)
+router.use("/system", system)
 router.use("/test", test)
 
 export default router

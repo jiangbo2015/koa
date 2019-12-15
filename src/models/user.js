@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema(
 		contact: String,
 		phone: String,
 		customerType: String,
+		currency: {
+			type: Number,
+			required: true,
+			enum: [0, 1, 2]
+		},
 		role: {
 			type: Number,
 			required: true,
@@ -47,11 +52,11 @@ const userSchema = new mongoose.Schema(
 	},
 	{
 		versionKey: false,
-		toJSON: {
-			transform: function(doc, ret) {
-				delete ret.password
-			}
-		},
+		// toJSON: {
+		// 	transform: function(doc, ret) {
+		// 		delete ret.password
+		// 	}
+		// },
 		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
 	}
 )

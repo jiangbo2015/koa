@@ -92,8 +92,9 @@ export const update = async (ctx, next) => {
  */
 export const getList = async (ctx, next) => {
 	try {
+		const { role } = ctx.request.query
 		let data = await User.find({
-			// channels: "5de9b31193dee4af1da163c8"
+			role
 		}).populate({
 			path: "channels"
 		})

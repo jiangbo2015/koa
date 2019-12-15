@@ -49,11 +49,11 @@ export const update = async (ctx, next) => {
  */
 export const assign = async (ctx, next) => {
 	try {
-		const { styleId, ...channel } = ctx.request.body
+		const { _id, ...channel } = ctx.request.body
 
 		let data = await Style.findOneAndUpdate(
 			{
-				_id: styleId,
+				_id,
 				"channels.channelId": channel.channelId
 			},
 			{
@@ -69,12 +69,15 @@ export const assign = async (ctx, next) => {
 		if (!data) {
 			data = await Style.findOneAndUpdate(
 				{
-					_id: styleId
+					_id
 				},
 				{
 					$push: {
 						channels: channel
 					}
+				},
+				{
+					new: true
 				}
 			)
 		}
@@ -132,19 +135,19 @@ export const detail = async (ctx, next) => {
 
 		let data = await Style.findById(_id)
 			// .populate("goodsId")
-			// .populate({
-			// 	path: "plainColors.colorId"
-			// })
-			// .populate({
-			// 	path: "flowerColors.colorId"
-			// })
+			.populate({
+				path: "plainColors.colorId"
+			})
+			.populate({
+				path: "flowerColors.colorId"
+			})
 			.populate("size")
 			.select("-plainColors._id -flowerColors._id")
 
 		data = data.toJSON()
 
-		// mergeData(data.plainColors)
-		// mergeData(data.flowerColors)
+		mergeData(data.plainColors)
+		mergeData(data.flowerColors)
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		console.log(err)

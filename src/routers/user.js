@@ -99,7 +99,7 @@ router.post("/update", User.update)
 
 /**
  * @api {post} /user/addFavorite 添加收藏
- * @apiName update
+ * @apiName addFavorite
  * @apiGroup User
  *
  * @apiParam  {String} styleAndColor 对象数组
@@ -120,7 +120,7 @@ router.post("/addFavorite", User.addFavorite)
 
 /**
  * @api {post} /user/updateFavorite 修改某个收藏
- * @apiName update
+ * @apiName updateFavorite
  * @apiGroup User
  *
  * @apiParam  {String} _id 该收藏的id
@@ -134,7 +134,7 @@ router.post("/updateFavorite", User.updateFavorite)
 
 /**
  * @api {post} /user/deleteFavorite 删除某个收藏
- * @apiName delete
+ * @apiName deleteFavorite
  * @apiGroup User
  *
  * @apiParam  {String} _id 该收藏的id

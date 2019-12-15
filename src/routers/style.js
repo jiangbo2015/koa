@@ -102,7 +102,7 @@ router.get("/detail", Style.detail)
  * @apiName assign
  * @apiGroup Style
  *
- * @apiParam  {String} styleId 当前款式id
+ * @apiParam  {String} _id 当前款式id
  * @apiParam  {String} sizeIds size的id数组
  * @apiParam  {String} plainColorIds 素色的id数组
  * @apiParam  {String} flowerColorIds 花色的id数组
