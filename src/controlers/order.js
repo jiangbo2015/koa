@@ -1,4 +1,4 @@
-import Order from "../models/Order"
+import Order from "../models/order"
 import { response } from "../utils"
 import { getCurrentUser } from "./user"
 
