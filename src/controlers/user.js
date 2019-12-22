@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 import config from "../config"
 import { response } from "../utils"
 import User from "../models/user"
+import Favorite from "../models/favorite"
 
 /**
  * 获取token中的值
@@ -107,18 +108,23 @@ export const getList = async (ctx, next) => {
 export const addFavorite = async (ctx, next) => {
 	try {
 		const { styleAndColor } = ctx.request.body
-		console.log(styleAndColor)
+		// console.log(styleAndColor)
 		const currentUser = await getCurrentUser(ctx)
-		let data = await User.findOneAndUpdate(
-			{
-				account: currentUser.account
-			},
-			{
-				$push: {
-					favorites: { styleAndColor }
-				}
-			}
-		)
+		// let data = await User.findOneAndUpdate(
+		// 	{
+		// 		account: currentUser.account
+		// 	},
+		// 	{
+		// 		$push: {
+		// 			favorites: { styleAndColor }
+		// 		}
+		// 	}
+		// )
+		const favorite = new Favorite({
+			user: currentUser._id,
+			styleAndColor
+		})
+		let data = await favorite.save()
 		ctx.body = response(true, data)
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
@@ -199,7 +205,7 @@ const formatFavorite = datas => {
 		return item
 	})
 }
-export const getFavoriteList = async (ctx, next) => {
+export const getNewFavoriteList = async (ctx, next) => {
 	try {
 		const currentUser = await getCurrentUser(ctx)
 		let data = await User.findById({
@@ -219,6 +225,28 @@ export const getFavoriteList = async (ctx, next) => {
 		data = data.toJSON()
 
 		ctx.body = response(true, formatFavorite(data.favorites))
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const getFavoriteList = async (ctx, next) => {
+	try {
+		const currentUser = await getCurrentUser(ctx)
+		let data = await Favorite.find({
+			user: currentUser._id
+		})
+			.populate({
+				path: "styleAndColor.styleId",
+				model: "style",
+				populate: {
+					path: "plainColors.colorId flowerColors.colorId size"
+				}
+			})
+			.populate("styleAndColor.colorId")
+			.lean()
+
+		ctx.body = response(true, formatFavorite(data))
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
 	}
