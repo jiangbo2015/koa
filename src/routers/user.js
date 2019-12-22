@@ -61,6 +61,15 @@ router.post("/add", User.add)
 router.get("/getList", User.getList)
 
 /**
+ * @api {get} /user/getOwnList 获取产品经理下用户的列表
+ * @apiName getOwnList
+ * @apiGroup User
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ */
+router.get("/getOwnList", User.getOwnList)
+
+/**
  * @api {post} /user/delete 删除用户
  * @apiName delete
  * @apiGroup User

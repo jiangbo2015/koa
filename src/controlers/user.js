@@ -94,8 +94,28 @@ export const update = async (ctx, next) => {
 export const getList = async (ctx, next) => {
 	try {
 		const { role } = ctx.request.query
+		let q = {}
+		if (typeof role !== "undefined") {
+			q.role = role
+		}
+		let data = await User.find(q).populate({
+			path: "channels"
+		})
+		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const getOwnList = async (ctx, next) => {
+	try {
+		// const { role } = ctx.request.query
+		const currentUser = await getCurrentUser(ctx)
 		let data = await User.find({
-			role
+			role: 3,
+			channels: {
+				$in: currentUser.channels
+			}
 		}).populate({
 			path: "channels"
 		})
@@ -108,18 +128,7 @@ export const getList = async (ctx, next) => {
 export const addFavorite = async (ctx, next) => {
 	try {
 		const { styleAndColor } = ctx.request.body
-		// console.log(styleAndColor)
 		const currentUser = await getCurrentUser(ctx)
-		// let data = await User.findOneAndUpdate(
-		// 	{
-		// 		account: currentUser.account
-		// 	},
-		// 	{
-		// 		$push: {
-		// 			favorites: { styleAndColor }
-		// 		}
-		// 	}
-		// )
 		const favorite = new Favorite({
 			user: currentUser._id,
 			styleAndColor
@@ -134,16 +143,12 @@ export const addFavorite = async (ctx, next) => {
 export const updateFavorite = async (ctx, next) => {
 	try {
 		const { _id, styleAndColor } = ctx.request.body
-		const currentUser = await getCurrentUser(ctx)
-		let data = await User.findOneAndUpdate(
+		let data = await Favorite.findOneAndUpdate(
 			{
-				account: currentUser.account,
-				"favorites._id": _id
+				_id
 			},
 			{
-				$set: {
-					"favorites.$.styleAndColor": styleAndColor
-				}
+				styleAndColor
 			},
 			{
 				new: true
@@ -158,26 +163,16 @@ export const updateFavorite = async (ctx, next) => {
 export const deleteFavorite = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.body
-		const currentUser = await getCurrentUser(ctx)
-		let data = await User.findOneAndUpdate(
-			{
-				account: currentUser.account
-			},
-			{
-				$pull: {
-					favorites: {
-						_id
-					}
-				}
-			}
-		)
+		let data = await Favorite.findByIdAndDelete({
+			_id
+		})
 		ctx.body = response(true, data)
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
 	}
 }
 
-const formatColors = datas => {
+const formatColors = (datas = []) => {
 	datas.map(p => {
 		p.value = p.colorId.value
 		p.code = p.colorId.code
@@ -189,9 +184,8 @@ const formatColors = datas => {
 const formatFavorite = datas => {
 	return datas.map((item, i) => {
 		item.styleAndColor.map((sc, j) => {
-			sc.style = sc.styleId
+			sc.style = sc.styleId || {}
 			sc.color = sc.colorId
-
 			// 处理colorId
 			formatColors(sc.style.plainColors)
 			formatColors(sc.style.flowerColors)

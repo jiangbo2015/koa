@@ -27,12 +27,12 @@ export const getList = async (ctx, next) => {
 	try {
 		let { type, code } = ctx.request.query
 		let q = {}
-		if (code) {
+		if (typeof code !== "undefined") {
 			q.code = {
 				$regex: new RegExp(code, "i")
 			}
 		}
-		if (type) {
+		if (typeof type !== "undefined") {
 			q.type = type
 		}
 		let data = await Color.find(q)

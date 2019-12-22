@@ -1,7 +1,7 @@
 import Router from "koa-router"
 
 import * as GoodsBase from "../controlers/goods-base"
-import * as Size from "../controlers/Size"
+import * as Size from "../controlers/size"
 
 const router = new Router()
 

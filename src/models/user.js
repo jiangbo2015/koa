@@ -35,23 +35,23 @@ const userSchema = new mongoose.Schema(
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "channels"
 			}
-		],
-		favorites: [
-			{
-				styleAndColor: [
-					{
-						styleId: {
-							type: mongoose.Schema.Types.ObjectId,
-							ref: "style"
-						},
-						colorId: {
-							type: mongoose.Schema.Types.ObjectId,
-							ref: "color"
-						}
-					}
-				]
-			}
 		]
+		// favorites: [
+		// 	{
+		// 		styleAndColor: [
+		// 			{
+		// 				styleId: {
+		// 					type: mongoose.Schema.Types.ObjectId,
+		// 					ref: "style"
+		// 				},
+		// 				colorId: {
+		// 					type: mongoose.Schema.Types.ObjectId,
+		// 					ref: "color"
+		// 				}
+		// 			}
+		// 		]
+		// 	}
+		// ]
 	},
 	{
 		versionKey: false,
