@@ -3,6 +3,7 @@ export default {
 	jwtWhiteList: [
 		/^\/public/,
 		/\/user\/login/,
+		/\/user\/add/,
 		/\/user\/register/,
 		/\/user\/getList/,
 		/\/common\/upload/
