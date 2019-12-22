@@ -25,8 +25,17 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
 	try {
-		let { query } = ctx.request
-		let data = await Color.find(query)
+		let { type, code } = ctx.request.query
+		let q = {}
+		if (code) {
+			q.code = {
+				$regex: new RegExp(code, "i")
+			}
+		}
+		if (type) {
+			q.type = type
+		}
+		let data = await Color.find(q)
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		console.log(err)

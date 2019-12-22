@@ -18,7 +18,7 @@ const goodsSchema = new mongoose.Schema(
 					type: String,
 					required: true
 				},
-				size: String //使用字符串值作为value,不用关联
+				sizeId: String //使用字符串值作为value,不用关联
 				// styles: [{
 				//     type: mongoose.Schema.Types.ObjectId,
 				//     ref: 'style'

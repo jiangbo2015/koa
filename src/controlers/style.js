@@ -125,7 +125,6 @@ function mergeData(data) {
 		item.code = item.colorId.code
 		item.type = item.colorId.type
 		item.colorId = item.colorId._id
-		delete item.color
 	})
 }
 export const detail = async (ctx, next) => {

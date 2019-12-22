@@ -24,8 +24,8 @@ export const getList = async (ctx, next) => {
 
 export const update = async (ctx, next) => {
 	try {
-		const { _id, value } = ctx.request.body
-		let data = await Size.findByIdAndUpdate({ _id }, { value }, { new: true })
+		const { _id, values } = ctx.request.body
+		let data = await Size.findByIdAndUpdate({ _id }, { values }, { new: true })
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		console.log(err)

@@ -41,4 +41,16 @@ router.get("/getList", Channel.getList)
  */
 router.post("/delete", Channel.del)
 
+/**
+ * @api {post} /channel/update 更新通道
+ * @apiName update
+ * @apiGroup Channel
+ *
+ * @apiParam  {String} _id 通道id
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ */
+router.post("/update", Channel.update)
+
 export default router.routes()

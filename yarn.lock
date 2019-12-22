@@ -1316,17 +1316,10 @@ fill-range@^4.0.0:
     repeat-string "^1.6.1"
     to-regex-range "^2.1.0"
 
-for-in@^1.0.1, for-in@^1.0.2:
+for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
   integrity sha1-gQaNKVqBQuwKxybG4iAMMPttXoA=
-
-for-own@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npm.taobao.org/for-own/download/for-own-1.0.0.tgz#c63332f415cedc4b04dbfe70cf836494c53cb44b"
-  integrity sha1-xjMy9BXO3EsE2/5wz4NklMU8tEs=
-  dependencies:
-    for-in "^1.0.1"
 
 formidable@^1.1.1:
   version "1.2.1"
@@ -1398,13 +1391,6 @@ get-value@^2.0.3, get-value@^2.0.6:
   resolved "https://registry.npmjs.org/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
   integrity sha1-3BXKHGcjh8p2vTesCjlbogQqLCg=
 
-get-value@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npm.taobao.org/get-value/download/get-value-3.0.1.tgz#5efd2a157f1d6a516d7524e124ac52d0a39ef5a8"
-  integrity sha1-Xv0qFX8dalFtdSThJKxS0KOe9ag=
-  dependencies:
-    isobject "^3.0.1"
-
 glob-parent@^3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/glob-parent/-/glob-parent-3.1.0.tgz#9e6af6299d8d3bd2bd40430832bd113df906c5ae"
@@ -1458,18 +1444,6 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0:
   version "4.2.2"
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.2.tgz#6f0952605d0140c1cfdb138ed005775b92d67b02"
   integrity sha512-IItsdsea19BoLC7ELy13q1iJFNmd7ofZH5+X/pJr90/nRoPEX0DJo1dHDbgtYWOhJhcCgMDTOw84RZ72q6lB+Q==
-
-group-array@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npm.taobao.org/group-array/download/group-array-1.0.0.tgz?cache=0&sync_timestamp=1563843174680&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fgroup-array%2Fdownload%2Fgroup-array-1.0.0.tgz#e2e8d8890e5b46f72eb49b71e8af675173a9d0f7"
-  integrity sha1-4ujYiQ5bRvcutJtx6K9nUXOp0Pc=
-  dependencies:
-    arr-flatten "^1.1.0"
-    for-own "^1.0.0"
-    get-value "^3.0.1"
-    kind-of "^6.0.2"
-    split-string "^6.1.0"
-    union-value "^2.0.1"
 
 has-ansi@^2.0.0:
   version "2.0.0"
@@ -2074,13 +2048,6 @@ latest-version@^3.0.0:
   dependencies:
     package-json "^4.0.0"
 
-lodash-unwind@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.npm.taobao.org/lodash-unwind/download/lodash-unwind-1.2.3.tgz#0c6964a208e6ad4e46dddd32bc2de1eedf6275d9"
-  integrity sha1-DGlkogjmrU5G3d0yvC3h7t9iddk=
-  dependencies:
-    lodash "^4.17.11"
-
 lodash.foreach@^4.1.0:
   version "4.5.0"
   resolved "https://registry.npmjs.org/lodash.foreach/-/lodash.foreach-4.5.0.tgz#1a6a35eace401280c7f06dddec35165ab27e3e53"
@@ -2262,11 +2229,6 @@ moment@^2.24.0:
   version "2.24.0"
   resolved "https://registry.npmjs.org/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
-
-mongo-unwind@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.npm.taobao.org/mongo-unwind/download/mongo-unwind-2.1.1.tgz#42e17324175c34950d36d19411a1ddedc13421b6"
-  integrity sha1-QuFzJBdcNJUNNtGUEaHd7cE0IbY=
 
 mongodb@3.3.2:
   version "3.3.2"
@@ -2900,13 +2862,6 @@ set-value@^2.0.0, set-value@^2.0.1:
     is-plain-object "^2.0.3"
     split-string "^3.0.1"
 
-set-value@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.npm.taobao.org/set-value/download/set-value-3.0.1.tgz#52c82af7653ba69eb1db92e81f5cdb32739b9e95"
-  integrity sha1-Usgq92U7pp6x25LoH1zbMnObnpU=
-  dependencies:
-    is-plain-object "^2.0.4"
-
 setprototypeof@1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.1.0.tgz#d0bd85536887b6fe7c0d818cb962d9d91c54e656"
@@ -3013,11 +2968,6 @@ split-string@^3.0.1, split-string@^3.0.2:
   integrity sha512-NzNVhJDYpwceVVii8/Hu6DKfD2G+NrQHlS/V/qgv763EYudVwEcMQNxd2lh+0VrUByXN/oJkl5grOhYWvQUYiw==
   dependencies:
     extend-shallow "^3.0.0"
-
-split-string@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.npm.taobao.org/split-string/download/split-string-6.1.0.tgz#e9cedcf94cdab077d9b5528927894dec4b0f42ab"
-  integrity sha1-6c7c+UzasHfZtVKJJ4lN7EsPQqs=
 
 static-extend@^0.1.1:
   version "0.1.2"
@@ -3202,14 +3152,6 @@ union-value@^1.0.0:
     get-value "^2.0.6"
     is-extendable "^0.1.1"
     set-value "^2.0.1"
-
-union-value@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.npm.taobao.org/union-value/download/union-value-2.0.1.tgz#4e1ab0f99ab52c52a53e14d8039b5130fef682b8"
-  integrity sha1-Thqw+Zq1LFKlPhTYA5tRMP72grg=
-  dependencies:
-    get-value "^3.0.1"
-    set-value "^3.0.0"
 
 unique-string@^1.0.0:
   version "1.0.0"

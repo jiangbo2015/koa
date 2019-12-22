@@ -44,7 +44,7 @@ export const del = async (ctx, next) => {
 export const update = async (ctx, next) => {
 	try {
 		const { _id, ...others } = ctx.request.body
-		let data = await Channel.updateOne({ _id }, ...others)
+		let data = await Channel.findByIdAndUpdate({ _id }, others)
 		ctx.body = response(true, data)
 	} catch (err) {
 		console.log(err)

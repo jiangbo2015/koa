@@ -14,6 +14,17 @@ const router = new Router()
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
+router.post("/size/update", Size.update)
+
+/**
+ * @api {post} /size/update 更新尺寸
+ * @apiName update
+ * @apiGroup Goodsbase
+ * @apiParam  {String} _id 尺码名称
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ */
 router.post("/size/add", Size.add)
 
 /**
@@ -24,7 +35,7 @@ router.post("/size/add", Size.add)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/size/getList", Size.getList)
+router.get("/size/getList", Size.getList)
 
 /**
  * @api {post} /size/delete 删除尺寸

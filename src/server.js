@@ -22,13 +22,18 @@ app.use(logger())
 app.use(
 	cors({
 		origin: function(ctx) {
-			return "*"
-			// return ctx.request.header.origin
+			// return "*"
+			return ctx.request.header.origin
 		},
 		maxAge: 5,
 		credentials: false,
 		allowMethods: ["GET", "POST"],
-		allowHeaders: ["Content-Type", "Authorization", "Accept"]
+		allowHeaders: [
+			"Content-Type",
+			"Authorization",
+			"Accept",
+			"X-Requested-With"
+		]
 	})
 )
 

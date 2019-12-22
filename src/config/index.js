@@ -4,6 +4,8 @@ export default {
 		/^\/public/,
 		/\/user\/login/,
 		/\/user\/register/,
-		/\/user\/getList/
-	]
+		/\/user\/getList/,
+		/\/common\/upload/
+	],
+	rate: "https://api.exchangeratesapi.io/latest?base=USD"
 }

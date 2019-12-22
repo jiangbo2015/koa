@@ -171,6 +171,59 @@ export const deleteFavorite = async (ctx, next) => {
 	}
 }
 
+const formatColors = datas => {
+	datas.map(p => {
+		p.value = p.colorId.value
+		p.code = p.colorId.code
+		p.type = p.colorId.type
+		p.colorId = p.colorId._id
+		delete p._id
+	})
+}
+const formatFavorite = datas => {
+	return datas.map((item, i) => {
+		item.styleAndColor.map((sc, j) => {
+			sc.style = sc.styleId
+			sc.color = sc.colorId
+
+			// 处理colorId
+			formatColors(sc.style.plainColors)
+			formatColors(sc.style.flowerColors)
+
+			// 删除多余对象
+			delete sc.styleId
+			delete sc.colorId
+
+			return sc
+		})
+		return item
+	})
+}
+export const getFavoriteList = async (ctx, next) => {
+	try {
+		const currentUser = await getCurrentUser(ctx)
+		let data = await User.findById({
+			// account: currentUser.account
+			_id: currentUser._id
+		})
+			.populate({
+				path: "favorites.styleAndColor.styleId",
+				model: "style",
+				populate: {
+					path: "plainColors.colorId flowerColors.colorId size"
+				}
+			})
+			.populate("favorites.styleAndColor.colorId")
+			.select("favorites -_id")
+		// .lean()
+		data = data.toJSON()
+
+		ctx.body = response(true, formatFavorite(data.favorites))
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
 export const deleteById = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.body

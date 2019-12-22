@@ -3,7 +3,7 @@ import { response } from "../utils"
 
 export const update = async (ctx, next) => {
 	try {
-		const { email, _id } = ctx.request.body
+		const { email } = ctx.request.body
 		let data = await System.findOneAndUpdate(
 			{
 				// _id

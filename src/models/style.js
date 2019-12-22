@@ -10,6 +10,9 @@ const styleSchema = new mongoose.Schema(
 			type: String,
 			required: true
 		},
+		styleName: {
+			type: String
+		},
 		price: {
 			type: Number,
 			required: true
@@ -22,7 +25,7 @@ const styleSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "size"
 		},
-
+		currency: Number,
 		goodsId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "goods"
@@ -65,7 +68,7 @@ const styleSchema = new mongoose.Schema(
 		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
 		// toJSON: {
 		// 	transform: function(doc, ret) {
-		// 		console.log("ret:", doc)
+		// 		console.log("ret:", ret)
 		// 	}
 		// }
 		// toObject: {

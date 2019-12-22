@@ -145,4 +145,16 @@ router.post("/updateFavorite", User.updateFavorite)
  */
 router.post("/deleteFavorite", User.deleteFavorite)
 
+/**
+ * @api {post} /user/getFavoriteList 获取收藏列表
+ * @apiName deleteFavgetFavoriteListorite
+ * @apiGroup User
+ *
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ *
+ */
+router.get("/getFavoriteList", User.getFavoriteList)
+
 export default router.routes()

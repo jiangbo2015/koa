@@ -44,7 +44,10 @@ const userSchema = new mongoose.Schema(
 							type: mongoose.Schema.Types.ObjectId,
 							ref: "style"
 						},
-						colorId: String
+						colorId: {
+							type: mongoose.Schema.Types.ObjectId,
+							ref: "color"
+						}
 					}
 				]
 			}
@@ -52,11 +55,6 @@ const userSchema = new mongoose.Schema(
 	},
 	{
 		versionKey: false,
-		// toJSON: {
-		// 	transform: function(doc, ret) {
-		// 		delete ret.password
-		// 	}
-		// },
 		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
 	}
 )
