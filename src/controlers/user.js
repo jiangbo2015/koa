@@ -181,15 +181,29 @@ const formatColors = (datas = []) => {
 		delete p._id
 	})
 }
+
+const getFrontImg = sc => {
+	if (sc.color.type === 0) {
+		sc.color.front = sc.style.plainColors.find(
+			x => x.colorId.toString() == sc.color._id.toString()
+		).front
+	} else {
+		sc.color.front = sc.style.flowerColors.find(
+			x => x.colorId.toString() == sc.color._id.toString()
+		).front
+	}
+}
 const formatFavorite = datas => {
 	return datas.map((item, i) => {
 		item.styleAndColor.map((sc, j) => {
 			sc.style = sc.styleId || {}
 			sc.color = sc.colorId
+
 			// 处理colorId
 			formatColors(sc.style.plainColors)
 			formatColors(sc.style.flowerColors)
 
+			getFrontImg(sc)
 			// 删除多余对象
 			delete sc.styleId
 			delete sc.colorId
@@ -239,6 +253,7 @@ export const getFavoriteList = async (ctx, next) => {
 			})
 			.populate("styleAndColor.colorId")
 			.lean()
+		// data = data.toJSON()
 
 		ctx.body = response(true, formatFavorite(data))
 	} catch (err) {
