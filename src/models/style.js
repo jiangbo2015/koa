@@ -1,6 +1,26 @@
 import mongoose from "mongoose"
 const uniqueValidator = require("mongoose-unique-validator")
 
+function transform(doc, ret) {
+	console.log(ret)
+	ret.plainColors.map(item => {
+		if (typeof item.colorId === "object") {
+			item.code = item.colorId.code
+			item.value = item.colorId.value
+			item.type = item.colorId.type
+			item.colorId = item.colorId._id
+		}
+	})
+	ret.flowerColors.map(item => {
+		if (typeof item.colorId === "object") {
+			item.code = item.colorId.code
+			item.value = item.colorId.value
+			item.type = item.colorId.type
+			item.colorId = item.colorId._id
+		}
+	})
+}
+
 /**
  * 样式管理
  */
@@ -65,19 +85,15 @@ const styleSchema = new mongoose.Schema(
 	},
 	{
 		versionKey: false,
-		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
-		// toJSON: {
-		// 	transform: function(doc, ret) {
-		// 		console.log("ret:", ret)
-		// 	}
-		// }
-		// toObject: {
-		// 	transform: function(doc, ret) {
-		// 		delete ret._id
-		// 		console.log("doc:", doc)
-		// 		console.log("ret:", ret)
-		// 	}
-		// }
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
+		toJSON: {
+			virtuals: true,
+			transform
+		},
+		toObject: {
+			virtuals: true,
+			transform
+		}
 	}
 )
 
@@ -85,7 +101,7 @@ const styleSchema = new mongoose.Schema(
 // 	console.log(this)
 // 	return (this.goods.myname = this.goods.name)
 // })
-// styleSchema.virtual("plainColors.colorInfo", {
+// styleSchema.virtual("plainColors.color", {
 // 	ref: "color",
 // 	localField: "plainColors.colorId",
 // 	foreignField: "_id",

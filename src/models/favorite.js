@@ -16,15 +16,41 @@ const favoriteSchema = new mongoose.Schema(
 				colorId: {
 					type: mongoose.Schema.Types.ObjectId,
 					ref: "color"
-				}
+				},
+				front: String
 			}
 		]
 	},
 	{
 		versionKey: false,
-		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
+		toJSON: {
+			virtuals: true
+			// transform: function(doc, ret) {
+			// 	console.log(ret, "ret")
+			// }
+		},
+		toObject: {
+			virtuals: true
+			// transform: function(doc, ret) {
+			// 	console.log(ret, "ret")
+			// }
+		}
 	}
 )
+
+favoriteSchema.virtual("styleAndColor.style", {
+	ref: "style",
+	localField: "styleAndColor.styleId",
+	foreignField: "_id",
+	justOne: true
+})
+favoriteSchema.virtual("styleAndColor.color", {
+	ref: "color",
+	localField: "styleAndColor.colorId",
+	foreignField: "_id",
+	justOne: true
+})
 
 favoriteSchema.plugin(uniqueValidator)
 

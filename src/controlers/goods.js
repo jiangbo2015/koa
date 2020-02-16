@@ -82,15 +82,6 @@ export const detail = async (ctx, next) => {
 						$push: "$$ROOT"
 					}
 				}
-			},
-			{
-				$project: {
-					styles: {
-						plainColors: {
-							_id: 0
-						}
-					}
-				}
 			}
 		])
 
@@ -145,7 +136,6 @@ export const detail = async (ctx, next) => {
 // 		ctx.body = response(false, null, err.message)
 // 	}
 // }
-
 ;[
 	{
 		categoryId: ["001", "002"],

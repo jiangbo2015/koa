@@ -54,9 +54,19 @@ const userSchema = new mongoose.Schema(
 	},
 	{
 		versionKey: false,
-		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
+		toObject: {
+			virtuals: true
+		},
+		toJSON: {
+			virtuals: true
+		}
 	}
 )
+
+// userSchema.virtual("newRole").get(function() {
+// 	return this.role
+// })
 
 userSchema.plugin(uniqueValidator)
 // userSchema.plugin(hide)

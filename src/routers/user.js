@@ -165,6 +165,6 @@ router.post("/deleteFavorite", User.deleteFavorite)
  *
  */
 router.get("/getFavoriteList", User.getFavoriteList)
-router.get("/getNewFavoriteList", User.getNewFavoriteList)
+// router.get("/getNewFavoriteList", User.getNewFavoriteList)
 
 export default router.routes()

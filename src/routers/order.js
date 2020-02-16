@@ -9,8 +9,8 @@ const router = new Router()
  * @apiName add
  * @apiGroup Order
  *
- * @apiParam  {String} code 通道编号
- * @apiParam  {String} name 通道名称
+ * @apiParam  {Object} orderData 订单数据
+ * @apiParam  {Number} packageCount 包数量
  *
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
@@ -33,10 +33,25 @@ router.get("/getList", Order.getList)
  * @apiName getMyList
  * @apiGroup Order
  *
+ * @apiParam  {String} isSend 是否已发送 0-未发送，1-已发送
+ *
  *
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
 router.get("/getMyList", Order.getMyList)
+
+/**
+ * @api {post} /order/send 发送订单
+ * @apiName send
+ * @apiGroup Order
+ *
+ * @apiParam  {Object} list 订单id 数组
+ *
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ */
+router.post("/send", Order.send)
 
 export default router.routes()

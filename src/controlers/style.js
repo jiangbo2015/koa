@@ -116,23 +116,12 @@ export const del = async (ctx, next) => {
 	}
 }
 
-/**
- * 处理颜色对象，将color对象里的key放到最外层
- */
-function mergeData(data) {
-	data.map(item => {
-		item.value = item.colorId.value
-		item.code = item.colorId.code
-		item.type = item.colorId.type
-		item.colorId = item.colorId._id
-	})
-}
 export const detail = async (ctx, next) => {
 	try {
 		const { _id, channelId } = ctx.request.query
 		// const { role } = await getCurrentUser(ctx, next)
 
-		let data = await Style.findById(_id)
+		let data = await await Style.findById(_id)
 			// .populate("goodsId")
 			.populate({
 				path: "plainColors.colorId"
@@ -142,12 +131,11 @@ export const detail = async (ctx, next) => {
 			})
 			.populate("size")
 			.select("-plainColors._id -flowerColors._id")
+			.exec()
 
-		data = data.toJSON()
-
-		mergeData(data.plainColors)
-		mergeData(data.flowerColors)
 		ctx.body = response(true, data, "成功")
+
+		// data = JSON.parse(JSON.stringify(data))
 	} catch (err) {
 		console.log(err)
 		ctx.body = response(false, null, err.message)
