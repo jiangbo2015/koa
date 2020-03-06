@@ -53,4 +53,8 @@ router.post("/delete", Channel.del)
  */
 router.post("/update", Channel.update)
 
+router.post("/assign", Channel.assign)
+router.post("/unassign", Channel.unassign)
+router.get("/getAssign", Channel.getAssign)
+
 export default router.routes()

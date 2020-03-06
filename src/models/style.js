@@ -41,6 +41,22 @@ const styleSchema = new mongoose.Schema(
 			type: String,
 			required: true
 		},
+		svgUrl: {
+			type: String,
+			required: true
+		},
+		shadowUrl: {
+			type: String,
+			required: true
+		},
+		svgUrlBack: {
+			type: String,
+			required: true
+		},
+		shadowUrlBack: {
+			type: String,
+			required: true
+		},
 		size: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "size"
@@ -51,71 +67,37 @@ const styleSchema = new mongoose.Schema(
 			ref: "goods"
 		},
 		categoryId: String,
+		attrs: [
+			{
+				colorId: String,
+				x: Number,
+				y: Number,
+				scale: Number
+			}
+		],
 		channels: [
 			{
 				channelId: String,
-				sizeIds: Array,
-				plainColorIds: Array,
-				flowerColorIds: Array
-			}
-		],
-
-		plainColors: [
-			{
-				colorId: {
-					type: mongoose.Schema.Types.ObjectId,
-					ref: "color"
-				},
-				left: String,
-				front: String,
-				backend: String
-			}
-		],
-		flowerColors: [
-			{
-				colorId: {
-					type: mongoose.Schema.Types.ObjectId,
-					ref: "color"
-				},
-				left: String,
-				front: String,
-				backend: String
+				sizeIds: Array
 			}
 		]
 	},
 	{
 		versionKey: false,
-		timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
-		toJSON: {
-			virtuals: true,
-			transform
-		},
-		toObject: {
-			virtuals: true,
-			transform
-		}
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
+		// toJSON: {
+		// 	virtuals: true,
+		// 	transform
+		// },
+		// toObject: {
+		// 	virtuals: true,
+		// 	transform
+		// }
 	}
 )
 
-// styleSchema.virtual("$goods").get(function() {
-// 	console.log(this)
-// 	return (this.goods.myname = this.goods.name)
-// })
-// styleSchema.virtual("plainColors.color", {
-// 	ref: "color",
-// 	localField: "plainColors.colorId",
-// 	foreignField: "_id",
-// 	justOne: true
-// })
-// styleSchema.virtual("flowerColors.colorInfo", {
-// 	ref: "color",
-// 	localField: "flowerColors.colorId",
-// 	foreignField: "_id",
-// 	justOne: true
-// })
-
 styleSchema.plugin(uniqueValidator)
-
+// styleSchema.plugin(paginate)
 const StyleModel = mongoose.model("style", styleSchema)
 
 export default StyleModel

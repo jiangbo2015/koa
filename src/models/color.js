@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
-const uniqueValidator = require("mongoose-unique-validator")
+import paginate from "mongoose-paginate"
+import uniqueValidator from "mongoose-unique-validator"
 
 /**
  * type: 0-素色，1-花色
@@ -12,8 +13,15 @@ const colorSchema = new mongoose.Schema(
 			required: true,
 			enum: [0, 1]
 		},
-		code: String,
-		value: String
+		code: {
+			type: String,
+			required: true,
+			unique: true
+		},
+		value: String,
+		width: Number,
+		height: Number,
+		size: Number
 	},
 	{
 		versionKey: false,
@@ -22,6 +30,7 @@ const colorSchema = new mongoose.Schema(
 )
 
 colorSchema.plugin(uniqueValidator)
+colorSchema.plugin(paginate)
 
 const colorModel = mongoose.model("color", colorSchema)
 

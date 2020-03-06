@@ -1,4 +1,5 @@
 import Order from "../models/order"
+import System from "../models/system"
 import { response } from "../utils"
 import { getCurrentUser } from "./user"
 import mongoose from "mongoose"
@@ -53,6 +54,9 @@ export const getList = async (ctx, next) => {
 export const send = async (ctx, next) => {
 	try {
 		const { list } = ctx.request.body
+		const { email } = await System.find()[0]
+		console.log(email, "email")
+
 		console.log("list", list)
 		const data = await Order.updateMany(
 			{
@@ -62,7 +66,7 @@ export const send = async (ctx, next) => {
 			},
 			{
 				$set: {
-					isSend: true
+					isSend: 1
 				}
 			}
 		)

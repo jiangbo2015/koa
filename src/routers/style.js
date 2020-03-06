@@ -16,18 +16,7 @@ const router = new Router()
 	"sizeId": "5dea211c86b0d20740b8f6ec",
 	"goodsId": "5dea31af3579b40840224490",
 	"category": "上衣",
-	"plainColors": [{
-		"colorId": "5dea2b53644fab07a224bd46",
-		"left": "left",
-		"front": "front",
-		"backend": "backend"
-	}],
-	"flowerColors": [{
-		"colorId": "5dea2c83644fab07a224bd47",
-		"left": "left",
-		"front": "front",
-		"backend": "backend"
-	}]
+	
 }
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
@@ -123,5 +112,7 @@ router.get("/detail", Style.detail)
 router.post("/assign", Style.assign)
 
 router.post("/updateMany", Style.updateMany)
+
+router.post("/updateAttr", Style.updateAttr)
 
 export default router.routes()

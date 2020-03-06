@@ -9,12 +9,13 @@ const codePrefix = {
 
 export const add = async (ctx, next) => {
 	try {
-		const { type, value } = ctx.request.body
-		const code = codePrefix[type] + moment().format("YYMMDDHHMMss")
+		const { type, code, value, ...others } = ctx.request.body
+		// const code = codePrefix[type] + moment().format("YYMMDDHHMMss")
 		let color = new Color({
 			type,
 			value,
-			code
+			code,
+			...others
 		})
 		let data = await color.save()
 		ctx.body = response(true, data, "成功")
@@ -25,7 +26,8 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
 	try {
-		let { type, code } = ctx.request.query
+		let { type, code, page = 1, limit = 20 } = ctx.request.query
+		console.log(ctx.request.query, "query ")
 		let q = {}
 		if (typeof code !== "undefined") {
 			q.code = {
@@ -35,7 +37,15 @@ export const getList = async (ctx, next) => {
 		if (typeof type !== "undefined") {
 			q.type = type
 		}
-		let data = await Color.find(q)
+		let data = await Color.paginate(q, {
+			page,
+			// 如果没有limit字段，不分页
+			// limit: limit ? limit : 10000,
+			limit: parseInt(limit),
+			sort: {
+				createTime: -1
+			}
+		})
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		console.log(err)

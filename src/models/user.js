@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
+import paginate from "mongoose-paginate"
 import uniqueValidator from "mongoose-unique-validator"
-// const hide = require("mongoose-hidden")()
 
 /**
  * role: 0-超级管理员，1-产品经理，2-视觉设计，3-用户
@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema(
 // })
 
 userSchema.plugin(uniqueValidator)
-// userSchema.plugin(hide)
+userSchema.plugin(paginate)
 
 const UserModel = mongoose.model("users", userSchema)
 
