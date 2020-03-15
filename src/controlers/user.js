@@ -178,11 +178,35 @@ export const addSelectFavorite = async (ctx, next) => {
 		const { _id } = ctx.request.body
 		const currentUser = await getCurrentUser(ctx)
 		const favorite = await Favorite.findById({ _id })
+		await User.findByIdAndUpdate(
+			{
+				_id: currentUser._id
+			},
+			{
+				selectFavorites: (currentUser.selectFavorites || []).concat(_id)
+			}
+		)
 		const newFav = new Favorite({
 			user: currentUser._id,
-			styleAndColor: favorite.styleAndColor
+			styleAndColor: favorite.styleAndColor,
+			extend: _id
 		})
 		let data = await newFav.save()
+		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const getMySelectFavorite = async (ctx, next) => {
+	try {
+		const currentUser = await getCurrentUser(ctx)
+
+		const data = await Favorite.find({
+			_id: {
+				$in: currentUser.selectFavorites
+			}
+		}).select("_id")
 		ctx.body = response(true, data)
 	} catch (err) {
 		ctx.body = response(false, null, err.message)

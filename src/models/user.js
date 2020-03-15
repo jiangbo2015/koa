@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema(
 			required: true,
 			enum: [0, 1, 2, 3]
 		},
+		selectFavorites: Array,
 		channels: [
 			{
 				type: mongoose.Schema.Types.ObjectId,

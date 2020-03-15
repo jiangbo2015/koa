@@ -166,6 +166,7 @@ router.post("/deleteFavorite", User.deleteFavorite)
  */
 router.get("/getFavoriteList", User.getFavoriteList)
 router.get("/selectFavoriteList", User.selectFavoriteList)
+router.get("/getMySelectFavorite", User.getMySelectFavorite)
 router.post("/addSelectFavorite", User.addSelectFavorite)
 router.post("/updateMany", User.updateMany)
 router.get("/getUserChannels", User.getUserChannels)

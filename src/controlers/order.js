@@ -49,6 +49,7 @@ export const getMyList = async (ctx, next) => {
 				path: "orderData.favorite",
 				populate: "styleAndColor.styleId styleAndColor.colorIds"
 			})
+			.populate("user")
 			.lean()
 
 		ctx.body = response(true, data, "成功")

@@ -25,7 +25,8 @@ const favoriteSchema = new mongoose.Schema(
 		isDel: {
 			type: Number,
 			default: 0
-		}
+		},
+		extend: String
 	},
 	{
 		versionKey: false,
