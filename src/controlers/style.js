@@ -36,10 +36,12 @@ export const getList = async (ctx, next) => {
 				_id: {
 					$in: styleIds
 				},
+				isDel: 0,
 				...q
 			})
 		} else {
 			data = await Style.find({
+				isDel: 0,
 				...q
 			})
 		}
@@ -144,7 +146,7 @@ export const updateMany = async (ctx, next) => {
 export const del = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.body
-		let data = await Style.findByIdAndRemove({ _id })
+		let data = await Style.findByIdAndUpdate({ _id }, { isDel: 1 })
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		console.log(err)

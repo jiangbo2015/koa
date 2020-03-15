@@ -81,7 +81,11 @@ const styleSchema = new mongoose.Schema(
 				sizeIds: Array
 			}
 		],
-		tags: Array
+		tags: Array,
+		isDel: {
+			type: Number,
+			default: 0
+		}
 	},
 	{
 		versionKey: false,
