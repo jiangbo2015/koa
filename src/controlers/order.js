@@ -24,6 +24,18 @@ export const add = async (ctx, next) => {
 	}
 }
 
+export const update = async (ctx, next) => {
+	try {
+		const { _id, ...others } = ctx.request.body
+
+		const data = await Order.findByIdAndUpdate({ _id }, others)
+
+		ctx.body = response(true, data, "成功")
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
 export const clear = async (ctx, next) => {
 	try {
 		let data = await Order.deleteMany()
@@ -81,6 +93,22 @@ export const getList = async (ctx, next) => {
 		} else {
 			data = await Order.find()
 		}
+		ctx.body = response(true, data, "成功")
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const detail = async (ctx, next) => {
+	try {
+		const { _id } = ctx.request.query
+		const data = await Order.findById({ _id })
+			.populate({
+				path: "orderData.favorite",
+				populate: "styleAndColor.styleId styleAndColor.colorIds"
+			})
+			.populate("user")
+			.lean()
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
