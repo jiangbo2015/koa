@@ -2,6 +2,8 @@ import Goods from "../models/goods"
 import Style from "../models/style"
 import { response } from "../utils"
 import mongoose from "mongoose"
+import { getCurrentUserDetail } from "./user"
+import Channel from "../models/channel"
 
 export const add = async (ctx, next) => {
 	try {
@@ -63,6 +65,7 @@ export const deleteById = async (ctx, next) => {
 export const detail = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.query
+		const { channels } = await getCurrentUserDetail(ctx)
 
 		let data = await Goods.findById({ _id }).lean()
 		let styles = await Style.aggregate([
@@ -84,6 +87,10 @@ export const detail = async (ctx, next) => {
 				}
 			}
 		])
+
+		data.category = data.category.filter(c =>
+			channels[0].categories.includes(c._id)
+		)
 
 		// 将分组好的款式添加到对应的分类上
 		data.category.map(item => {

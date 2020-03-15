@@ -49,6 +49,23 @@ export const getCurrentUser = (ctx, next) => {
 	})
 }
 
+export const getCurrentUserDetail = (ctx, next) => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const account = verify(ctx.headers.authorization)
+			const data = await User.findOne({ account }).populate({
+				path: "channels",
+				select: "-styles"
+			})
+
+			resolve(data)
+		} catch (err) {
+			ctx.body = response(false, null, err.message)
+			reject(err)
+		}
+	})
+}
+
 export const getUserChannels = (ctx, next) => {
 	return new Promise(async (resolve, reject) => {
 		try {

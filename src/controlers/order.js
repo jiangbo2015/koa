@@ -73,9 +73,9 @@ export const getMyList = async (ctx, next) => {
 export const getList = async (ctx, next) => {
 	try {
 		const currentUser = await getCurrentUser(ctx)
-		let data
+
 		// 1是产品经理
-		if (currentUser.role === 1) {
+		if (currentUser.role !== 3) {
 			const users = await User.find({
 				channels: {
 					$in: currentUser.channels
@@ -89,10 +89,38 @@ export const getList = async (ctx, next) => {
 				user: {
 					$in: uids
 				}
-			})
+			}).populate("user")
 		} else {
 			data = await Order.find()
 		}
+		ctx.body = response(true, data, "成功")
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+// 管理系统获取订单列表
+export const getAllList = async (ctx, next) => {
+	try {
+		const { orderNo, userName } = ctx.request.query
+		let q = {
+			isSend: 1
+		}
+		let data = {}
+
+		if (orderNo) {
+			q._id = orderNo
+			await Order.find(q).populate("user")
+		} else {
+			if (userName) {
+				const res = await User.findOne({
+					name: userName
+				})
+				q.user = res ? res._id : null
+			}
+			data = await Order.find(q).populate("user")
+		}
+
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		ctx.body = response(false, null, err.message)

@@ -56,6 +56,7 @@ router.post("/send", Order.send)
 
 router.get("/download", Order.download)
 router.get("/detail", Order.detail)
+router.get("/getAllList", Order.getAllList)
 
 router.post("/delete", Order.del)
 router.post("/clear", Order.clear)
