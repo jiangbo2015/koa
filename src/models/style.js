@@ -67,6 +67,7 @@ const styleSchema = new mongoose.Schema(
 			ref: "goods"
 		},
 		categoryId: String,
+		categoryName: String,
 		attrs: [
 			{
 				colorId: String,

@@ -65,7 +65,7 @@ export const deleteById = async (ctx, next) => {
 export const detail = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.query
-		const { channels } = await getCurrentUserDetail(ctx)
+		const { channels, role } = await getCurrentUserDetail(ctx)
 
 		let data = await Goods.findById({ _id }).lean()
 		let styles = await Style.aggregate([
@@ -88,9 +88,11 @@ export const detail = async (ctx, next) => {
 			}
 		])
 
-		data.category = data.category.filter(c =>
-			channels[0].categories.includes(c._id)
-		)
+		if (role === 3) {
+			data.category = data.category.filter(c =>
+				channels[0].categories.includes(c._id)
+			)
+		}
 
 		// 将分组好的款式添加到对应的分类上
 		data.category.map(item => {
