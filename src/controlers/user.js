@@ -36,9 +36,44 @@ export const getCurrentUser = (ctx, next) => {
 			const account = verify(ctx.headers.authorization)
 			const data = await User.findOne({ account })
 			// .populate({
-			// 	path: "channels"
+			// 	path: "channels",
+			// 	select: "-styles"
 			// })
-			// .populate("channels")
+
+			ctx.body = response(true, data)
+			resolve(data)
+		} catch (err) {
+			ctx.body = response(false, null, err.message)
+			reject(err)
+		}
+	})
+}
+
+export const getUserChannels = (ctx, next) => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const { account, channels, _id } = await getCurrentUser(ctx)
+			const data = await User.findOne({ account })
+				.populate({
+					path: "channels",
+					select: "-styles"
+				})
+				.lean()
+
+			const users = await User.find({
+				channels: {
+					$in: channels
+				},
+				role: 3,
+				_id: {
+					$ne: _id
+				}
+			}).populate({
+				path: "channels",
+				select: "-styles"
+			})
+			data.users = users
+
 			ctx.body = response(true, data)
 			resolve(data)
 		} catch (err) {
@@ -72,7 +107,7 @@ export const add = async (ctx, next) => {
 export const update = async (ctx, next) => {
 	try {
 		const { _id, ...others } = ctx.request.body
-		let data = await User.update(
+		let data = await User.findByIdAndUpdate(
 			{ _id },
 			others
 			// {
@@ -82,7 +117,7 @@ export const update = async (ctx, next) => {
 			// }
 		)
 
-		ctx.body = response(true, data)
+		ctx.body = response(true, {})
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
 	}
@@ -138,6 +173,22 @@ export const addFavorite = async (ctx, next) => {
 	}
 }
 
+export const addSelectFavorite = async (ctx, next) => {
+	try {
+		const { _id } = ctx.request.body
+		const currentUser = await getCurrentUser(ctx)
+		const favorite = await Favorite.findById({ _id })
+		const newFav = new Favorite({
+			user: currentUser._id,
+			styleAndColor: favorite.styleAndColor
+		})
+		let data = await newFav.save()
+		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
 export const updateFavorite = async (ctx, next) => {
 	try {
 		const { _id, styleAndColor } = ctx.request.body
@@ -162,66 +213,28 @@ export const updateFavorite = async (ctx, next) => {
 export const deleteFavorite = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.body
-		let data = await Favorite.findByIdAndDelete({
-			_id
-		})
+		let data = await Favorite.findByIdAndUpdate(
+			{
+				_id
+			},
+			{
+				$set: {
+					isDel: 1
+				}
+			}
+		)
 		ctx.body = response(true, data)
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
 	}
 }
 
-// const formatColors = (datas = []) => {
-// 	datas.map(p => {
-// 		p.value = p.colorId.value
-// 		p.code = p.colorId.code
-// 		p.type = p.colorId.type
-// 		p.colorId = p.colorId._id
-// 		delete p._id
-// 	})
-// }
-
-// const formatFavorite = datas => {
-// 	return datas.map((item, i) => {
-// 		item.styleAndColor.map((sc, j) => {
-// 			// formatColors(sc.style.plainColors)
-// 			formatColors(sc.style.flowerColors)
-
-// 			return sc
-// 		})
-// 		return item
-// 	})
-// }
-// export const getNewFavoriteList = async (ctx, next) => {
-// 	try {
-// 		const currentUser = await getCurrentUser(ctx)
-// 		let data = await User.findById({
-// 			// account: currentUser.account
-// 			_id: currentUser._id
-// 		})
-// 			.populate({
-// 				path: "favorites.styleAndColor.styleId",
-// 				model: "style",
-// 				populate: {
-// 					path: "plainColors.colorId flowerColors.colorId size"
-// 				}
-// 			})
-// 			.populate("favorites.styleAndColor.colorId")
-// 			.select("favorites -_id")
-// 		// .lean()
-// 		data = data.toJSON()
-
-// 		ctx.body = response(true, formatFavorite(data.favorites))
-// 	} catch (err) {
-// 		ctx.body = response(false, null, err.message)
-// 	}
-// }
-
 export const getFavoriteList = async (ctx, next) => {
 	try {
 		const currentUser = await getCurrentUser(ctx)
 		let data = await Favorite.find({
-			user: currentUser._id
+			user: currentUser._id,
+			isDel: 0
 		})
 			.populate({
 				path: "styleAndColor.style",
@@ -230,12 +243,68 @@ export const getFavoriteList = async (ctx, next) => {
 					path: "plainColors.colorId flowerColors.colorId size"
 				}
 			})
-			.populate("styleAndColor.color")
+			.populate("styleAndColor.colorIds")
 			// .lean()
 			.exec()
 		// data = data.toJSON()
 		data = JSON.parse(JSON.stringify(data))
 
+		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const selectFavoriteList = async (ctx, next) => {
+	try {
+		const currentUser = await getCurrentUser(ctx)
+		const users = await User.find({
+			channels: {
+				$in: currentUser.channels
+			},
+			_id: {
+				$ne: currentUser._id
+			}
+		})
+		let uids = []
+		users.map(x => uids.push(x._id))
+		// let channels = []
+		// console.log(currentUser.channels, "currentUser channels")
+		// users.map(x => channels.push(x.channels))
+		// console.log("uids--", uids, channels)
+		let data = await Favorite.find({
+			user: {
+				$in: uids
+			},
+			isDel: 0
+		})
+			.populate({
+				path: "styleAndColor.style",
+				model: "style",
+				populate: {
+					path: "plainColors.colorId flowerColors.colorId size"
+				}
+			})
+			.populate("styleAndColor.colorIds")
+			// .lean()
+			.exec()
+		// data = data.toJSON()
+		data = JSON.parse(JSON.stringify(data))
+
+		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const updateMany = async (ctx, next) => {
+	try {
+		let data = await Favorite.updateMany(
+			{},
+			{
+				isDel: 0
+			}
+		)
 		ctx.body = response(true, data)
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
@@ -251,97 +320,3 @@ export const deleteById = async (ctx, next) => {
 		ctx.body = response(false, null, err.message)
 	}
 }
-
-// export const getList2 = async (ctx, next) => {
-// 	try {
-// 		// 查询所有用户，并选择phone字段，不包括_id字段
-// 		// let data = await User.find(null, "phone -_id")
-// 		let data = await User.find()
-// 			.populate({
-// 				path: "products",
-// 				match: {
-// 					price: { $gt: 50 }
-// 				},
-// 				select: "name price -_id" //products表选择的field
-// 			})
-// 			.select("phone -_id") //users表选择的field
-
-// 		ctx.body = response(true, data)
-// 	} catch (err) {
-// 		ctx.body = response(false, null, err.message)
-// 	}
-// }
-
-// export const getUserByRef = async (ctx, next) => {
-// 	try {
-// 		let data = await User.find()
-// 		ctx.body = response(true, data)
-// 	} catch (err) {
-// 		ctx.body = response(false, null, err.message)
-// 	}
-// }
-
-// export const deleteMany = async (ctx, next) => {
-// 	try {
-// 		let data = await User.deleteMany()
-// 		ctx.body = response(true, data)
-// 	} catch (err) {
-// 		ctx.body = response(false, null, err.message)
-// 	}
-// }
-
-// export const getUserById = async (ctx, next) => {
-// 	try {
-// 		const { id } = ctx.request.query
-// 		let data = await User.findById({ _id: id })
-// 		ctx.body = response(true, data)
-// 	} catch (err) {
-// 		ctx.body = response(false, null, err.message)
-// 	}
-// }
-
-// export const aggregate = async (ctx, next) => {
-// 	try {
-// 		const { uid, phone } = ctx.request.query
-// 		let data = await User.aggregate([
-// 			// {
-// 			// 	$match: {
-// 			// 		// _id: mongoose.Types.ObjectId(uid)
-// 			// 		phone: {
-// 			// 			$regex: /''/
-// 			// 		}
-// 			// 	}
-// 			// },
-// 			{
-// 				$lookup: {
-// 					from: "products",
-// 					localField: "_id",
-// 					foreignField: "uid",
-// 					as: "products"
-// 				}
-// 			},
-// 			{
-// 				$project: {
-// 					products: {
-// 						name: 1
-// 					},
-// 					product: {
-// 						// name: 1,
-// 						// $slice: ["$products", 2]
-// 						$slice: [[{ name: "good" }, { name: "bad" }, { name: "middle" }], 2]
-// 					},
-// 					phone: 1,
-// 					num: {
-// 						$size: "$products"
-// 					},
-// 					total: {
-// 						$sum: "$products.price"
-// 					}
-// 				}
-// 			}
-// 		])
-// 		ctx.body = response(true, data)
-// 	} catch (err) {
-// 		ctx.body = response(false, null, err.message)
-// 	}
-// }

@@ -56,5 +56,8 @@ router.post("/update", Channel.update)
 router.post("/assign", Channel.assign)
 router.post("/unassign", Channel.unassign)
 router.get("/getAssign", Channel.getAssign)
+router.post("/assignCategory", Channel.assignCategory)
+router.post("/unassignCategory", Channel.unassignCategory)
+router.get("/getAssignCategory", Channel.getAssignCategory)
 
 export default router.routes()

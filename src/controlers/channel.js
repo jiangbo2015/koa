@@ -151,3 +151,51 @@ export const getAssign = async (ctx, next) => {
 		ctx.body = response(false, null, err.message)
 	}
 }
+
+export const assignCategory = async (ctx, next) => {
+	try {
+		const { channelId, categoryId } = ctx.request.body
+		let res = await Channel.findById({ _id: channelId })
+		let index = res.categories.findIndex(x => x === categoryId)
+		if (index > -1) {
+			return
+		} else {
+			res.categories.push(categoryId)
+		}
+		let data = await res.save()
+		ctx.body = response(true, {})
+	} catch (err) {
+		console.log(err)
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const getAssignCategory = async (ctx, next) => {
+	try {
+		const { channelId } = ctx.request.query
+		let res = await Channel.findById({ _id: channelId })
+
+		ctx.body = response(true, {
+			categories: res.categories
+		})
+	} catch (err) {
+		console.log(err)
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const unassignCategory = async (ctx, next) => {
+	try {
+		const { channelId, categoryId } = ctx.request.body
+		let res = await Channel.findById({ _id: channelId })
+		let index = res.categories.findIndex(x => x === categoryId)
+		if (index > -1) {
+			res.categories.splice(index, 1)
+		}
+		let data = res.save()
+		ctx.body = response(true, {})
+	} catch (err) {
+		console.log(err)
+		ctx.body = response(false, null, err.message)
+	}
+}

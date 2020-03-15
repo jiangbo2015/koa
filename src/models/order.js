@@ -5,7 +5,7 @@ const orderSchema = new mongoose.Schema(
 	{
 		user: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "user"
+			ref: "users"
 		},
 		packageCount: Number,
 		isSend: {
@@ -31,13 +31,13 @@ const orderSchema = new mongoose.Schema(
 	},
 	{
 		versionKey: false,
-		timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
-		toJSON: {
-			virtuals: true
-		},
-		toObject: {
-			virtuals: true
-		}
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
+		// toJSON: {
+		// 	virtuals: true
+		// },
+		// toObject: {
+		// 	virtuals: true
+		// }
 	}
 )
 

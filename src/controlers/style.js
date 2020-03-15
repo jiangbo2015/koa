@@ -16,21 +16,32 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
 	try {
-		let { query } = ctx.request
+		let { tag } = ctx.request.query
 		const currentUser = await getCurrentUser(ctx)
 		let styleIds = []
 		let data = []
-		if (currentUser.role === 2) {
+		let q = {}
+		if (tag) {
+			q = {
+				tags: {
+					$in: [tag]
+				}
+			}
+		}
+		console.log(tag, "qqq")
+		if (currentUser.role === 3) {
 			let channel = await Channel.findById({ _id: currentUser.channels[0] })
 			channel.styles.map(x => styleIds.push(x.styleId))
-			console.log(styleIds, "styles")
 			data = await Style.find({
 				_id: {
 					$in: styleIds
-				}
+				},
+				...q
 			})
 		} else {
-			data = await Style.find()
+			data = await Style.find({
+				...q
+			})
 		}
 
 		// .populate("test.color")
@@ -66,20 +77,21 @@ export const update = async (ctx, next) => {
  * @param {object} target 要替换或添加的对象
  */
 const updateInnerArray = (res, field, key, target) => {
-	let index = res[key].findIndex(x => x[field] === target[field])
+	let index = res[field].findIndex(x => x[key] === target[key])
 	if (index > -1) {
-		res[key].splice(index, 1, target)
+		res[field].splice(index, 1, target)
 	} else {
-		res[key].push(target)
+		res[field].push(target)
 	}
 }
 
 export const updateAttr = async (ctx, next) => {
 	try {
 		const { _id, ...attr } = ctx.request.body
-		let res = await Style.findByIdAndUpdate({
+		let res = await Style.findById({
 			_id
 		})
+		console.log(res, "res---")
 		updateInnerArray(res, "attrs", "colorId", attr)
 		let data = await res.save()
 		ctx.body = response(true, data, "成功")

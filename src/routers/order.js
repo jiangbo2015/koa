@@ -54,4 +54,9 @@ router.get("/getMyList", Order.getMyList)
  */
 router.post("/send", Order.send)
 
+router.get("/download", Order.download)
+
+router.post("/delete", Order.del)
+router.post("/clear", Order.clear)
+
 export default router.routes()

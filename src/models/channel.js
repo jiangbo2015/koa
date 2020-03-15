@@ -24,7 +24,8 @@ const channelSchema = new mongoose.Schema(
 				plainColors: Array,
 				flowerColors: Array
 			}
-		]
+		],
+		categories: Array
 	},
 	{
 		versionKey: false,

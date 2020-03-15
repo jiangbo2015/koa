@@ -80,7 +80,8 @@ const styleSchema = new mongoose.Schema(
 				channelId: String,
 				sizeIds: Array
 			}
-		]
+		],
+		tags: Array
 	},
 	{
 		versionKey: false,
