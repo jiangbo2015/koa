@@ -52,6 +52,7 @@ router.post("/delete", Channel.del)
  *    {"success": true, "data": {}}
  */
 router.post("/update", Channel.update)
+router.get("/detail", Channel.findById)
 
 router.post("/assign", Channel.assign)
 router.post("/unassign", Channel.unassign)
