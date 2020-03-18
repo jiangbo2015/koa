@@ -7,7 +7,9 @@ const systemSchema = new mongoose.Schema(
 			type: String,
 			unique: true,
 			required: true
-		}
+		},
+		meiyuan: Number,
+		ouyuan: Number
 	},
 	{
 		versionKey: false,

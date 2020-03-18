@@ -3,13 +3,15 @@ import { response } from "../utils"
 
 export const update = async (ctx, next) => {
 	try {
-		const { email } = ctx.request.body
+		const { email, meiyuan, ouyuan } = ctx.request.body
 		let data = await System.findOneAndUpdate(
 			{
 				// _id
 			},
 			{
-				email
+				email,
+				meiyuan,
+				ouyuan
 			},
 			{
 				new: true,
