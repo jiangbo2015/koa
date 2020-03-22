@@ -19,7 +19,12 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
 	try {
-		let data = await Goods.find()
+		const { name } = ctx.request.query
+		let q = {}
+		if (name) {
+			q.name = name
+		}
+		let data = await Goods.find(q)
 
 		ctx.body = response(true, data)
 	} catch (err) {
@@ -55,6 +60,10 @@ export const deleteById = async (ctx, next) => {
 	}
 }
 
+const filter = arr => {
+	return arr.filter(x => x).length > 0
+}
+
 /**
  * 为什么要款式关联商品？
  * 因为一个款式关联一个商品，若是在商品分类下关联了款式
@@ -64,15 +73,36 @@ export const deleteById = async (ctx, next) => {
  */
 export const detail = async (ctx, next) => {
 	try {
-		const { _id } = ctx.request.query
+		const { _id, tag, styleNo } = ctx.request.query
 		const { channels, role } = await getCurrentUserDetail(ctx)
+		console.log(channels, "channels")
+		let match = {
+			goodsId: mongoose.Types.ObjectId(_id)
+		}
+		// if (role === 3) {
+		// 	match = {
+		// 		...match,
+		// 		"channels.channelId": {
+		// 			$in: [channels[0]._id]
+		// 		}
+		// 	}
+		// }
+		if (tag) {
+			match.tags = {
+				$in: [tag]
+			}
+		}
+		if (styleNo) {
+			let reg = new RegExp(styleNo, "i")
+			match.styleNo = {
+				$regex: reg
+			}
+		}
 
 		let data = await Goods.findById({ _id }).lean()
 		let styles = await Style.aggregate([
 			{
-				$match: {
-					goodsId: mongoose.Types.ObjectId(_id)
-				}
+				$match: match
 			},
 
 			{
@@ -89,20 +119,32 @@ export const detail = async (ctx, next) => {
 		])
 
 		if (role === 3) {
-			data.category = data.category.filter(c =>
-				channels[0].categories.includes(c._id)
+			data.category = data.category.filter(
+				c => channels[0].categories && channels[0].categories.includes(c._id)
 			)
 		}
 
 		// 将分组好的款式添加到对应的分类上
 		data.category.map(item => {
-			let index = styles.findIndex(s => s._id == item._id)
+			let index = styles.findIndex(
+				s =>
+					s._id == item._id &&
+					(role === 3
+						? channels[0].styles.some(x => {
+								return (
+									x.styleId == s.styles[0]._id &&
+									(filter(x.flowerColors) || filter(x.plainColors))
+								)
+						  })
+						: true)
+			)
 			if (index > -1) {
 				item.styles = styles[index]["styles"]
 			} else {
 				item.styles = []
 			}
 		})
+
 		ctx.body = response(true, data)
 	} catch (err) {
 		ctx.body = response(false, null, err.message)

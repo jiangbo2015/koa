@@ -16,7 +16,7 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
 	try {
-		let { tag } = ctx.request.query
+		let { tag, styleNo } = ctx.request.query
 		const currentUser = await getCurrentUser(ctx)
 		let styleIds = []
 		let data = []
@@ -27,6 +27,9 @@ export const getList = async (ctx, next) => {
 					$in: [tag]
 				}
 			}
+		}
+		if (styleNo) {
+			q.styleNo = styleNo
 		}
 		console.log(tag, "qqq")
 		if (currentUser.role === 3) {

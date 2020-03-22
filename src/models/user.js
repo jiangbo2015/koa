@@ -22,7 +22,8 @@ const userSchema = new mongoose.Schema(
 		customerType: String,
 		currency: {
 			type: Number,
-			enum: [0, 1, 2]
+			enum: [0, 1, 2],
+			default: 0
 		},
 		role: {
 			type: Number,

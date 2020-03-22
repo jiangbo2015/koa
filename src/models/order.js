@@ -7,12 +7,17 @@ const orderSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "users"
 		},
+		orderNo: String,
 		packageCount: Number,
+		date: String,
 		isSend: {
 			type: Number,
 			default: 0
 		},
-
+		isDel: {
+			type: Number,
+			default: 0
+		},
 		orderData: [
 			{
 				favoriteId: {

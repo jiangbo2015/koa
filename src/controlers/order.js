@@ -8,12 +8,21 @@ import json2xls from "json2xls"
 import fs from "fs"
 import path from "path"
 import Mail from "../utils/mail"
+import moment from "moment"
 
 export const add = async (ctx, next) => {
 	try {
 		const currentUser = await getCurrentUser(ctx)
 		const body = ctx.request.body
+		let date = moment().format("YYYYMMDD")
+		let total = (await Order.find({ date })).length + 1
+		let length = (total + "").length
+
+		let zero = new Array(4 - length).fill(0).join("")
+		let orderNo = `MM${date}${zero}${total}`
 		console.log("order", body)
+		body.orderNo = orderNo
+		body.date = date
 		body.user = currentUser._id
 		let order = new Order(body)
 		const data = await order.save()
@@ -146,7 +155,12 @@ export const detail = async (ctx, next) => {
 export const del = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.body
-		const data = await Order.findByIdAndDelete({ _id })
+		const data = await Order.findById({ _id })
+		if (data.isSend === 1) {
+			await Order.findByIdAndUpdate({ _id }, { isDel: 1 })
+		} else {
+			await Order.findByIdAndDelete({ _id })
+		}
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		ctx.body = response(false, null, err.message)

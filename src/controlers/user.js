@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose"
+import Channel from "../models/channel"
 import config from "../config"
 import { response } from "../utils"
 import User from "../models/user"
@@ -39,6 +40,10 @@ export const getCurrentUser = (ctx, next) => {
 			// 	path: "channels",
 			// 	select: "-styles"
 			// })
+			if (data.role === 3) {
+				let res = await Channel.findById({ _id: data.channels[0] })
+				data.currency = res.currency
+			}
 
 			ctx.body = response(true, data)
 			resolve(data)
@@ -54,8 +59,8 @@ export const getCurrentUserDetail = (ctx, next) => {
 		try {
 			const account = verify(ctx.headers.authorization)
 			const data = await User.findOne({ account }).populate({
-				path: "channels",
-				select: "-styles"
+				path: "channels"
+				// select: "-styles"
 			})
 
 			resolve(data)
@@ -102,13 +107,21 @@ export const getUserChannels = (ctx, next) => {
 
 export const add = async (ctx, next) => {
 	try {
-		const { account, password, role, name, channels, size } = ctx.request.body
+		const {
+			account,
+			password,
+			role,
+			name,
+			channels,
+			...others
+		} = ctx.request.body
 		let user = new User({
 			account,
 			password,
 			role,
 			name,
-			channels
+			channels,
+			...others
 			// channels: {
 			// 	cid: channels.split(","),
 			// 	size: 10
