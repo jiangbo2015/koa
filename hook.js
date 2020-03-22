@@ -8,7 +8,8 @@ const webhooks = new WebhooksApi({
 
 webhooks.on("*", ({ id, name, payload }) => {
 	let koaTest = "git pull && yarn && pm2 restart koa-test"
-	let crm = "cd ../mm-crm && git pull && yarn && pm2 restart crm"
+	let crm =
+		"cd ../mm-crm && git pull && yarn && yarn build-test && pm2 restart crm"
 	let miss = "cd ../mm-next && git pull && yarn && pm2 restart miss"
 	let koaProd = "git pull && yarn && pm2 restart koa-prod"
 	console.log(payload.ref, "ref")
