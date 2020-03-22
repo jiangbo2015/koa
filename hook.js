@@ -10,6 +10,7 @@ webhooks.on("*", ({ id, name, payload }) => {
 	let pullrestart = "git pull && yarn && pm2 restart koa-test"
 	let pullrestartProd = "git pull && yarn && pm2 restart koa-prod"
 	console.log(payload.ref, "ref")
+	console.log(id, name)
 	// master 分支
 	try {
 		if (payload.ref.includes("master")) {
