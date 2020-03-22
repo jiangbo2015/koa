@@ -7,12 +7,13 @@ const webhooks = new WebhooksApi({
 })
 
 webhooks.on("*", ({ id, name, payload }) => {
-	let pullrestart = "git pull && yarn && pm2 restart hook"
+	let pullrestart = "git pull && yarn && pm2 restart koa-dev"
+	let pullrestartProd = "git pull && yarn && pm2 restart koa-prod"
 	console.log(payload.ref, "ref")
 	// master 分支
 	try {
 		if (payload.ref.includes("master")) {
-			exec(`cd ../koa-prod && ${pullrestart}`)
+			exec(`cd ../koa-prod && ${pullrestartProd}`)
 		} else {
 			exec(pullrestart)
 		}
