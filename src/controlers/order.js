@@ -20,7 +20,6 @@ export const add = async (ctx, next) => {
 
 		let zero = new Array(4 - length).fill(0).join("")
 		let orderNo = `MM${date}${zero}${total}`
-		console.log("order", body)
 		body.orderNo = orderNo
 		body.date = date
 		body.user = currentUser._id
