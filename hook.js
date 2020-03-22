@@ -7,7 +7,7 @@ const webhooks = new WebhooksApi({
 })
 
 webhooks.on("*", ({ id, name, payload }) => {
-	let pullrestart = "git pull && yarn && pm2 restart koa-dev"
+	let pullrestart = "git pull && yarn && pm2 restart koa-test"
 	let pullrestartProd = "git pull && yarn && pm2 restart koa-prod"
 	console.log(payload.ref, "ref")
 	// master 分支
