@@ -14,14 +14,7 @@ export const add = async (ctx, next) => {
 	try {
 		const currentUser = await getCurrentUser(ctx)
 		const body = ctx.request.body
-		let date = moment().format("YYYYMMDD")
-		let total = (await Order.find({ date })).length + 1
-		let length = (total + "").length
 
-		let zero = new Array(4 - length).fill(0).join("")
-		let orderNo = `MM${date}${zero}${total}`
-		body.orderNo = orderNo
-		body.date = date
 		body.user = currentUser._id
 		let order = new Order(body)
 		const data = await order.save()
@@ -170,18 +163,37 @@ export const send = async (ctx, next) => {
 	try {
 		const { list } = ctx.request.body
 		// const { email } = await System.find()[0]
-		const data = await Order.updateMany(
-			{
-				_id: {
-					$in: list
+		let date = moment().format("YYYYMMDD")
+
+		// body.orderNo = orderNo
+		// body.date = date
+		for (let i = 0; i < list.length; i++) {
+			let total = (await Order.find({ date })).length + 1
+			let length = (total + "").length
+
+			let zero = new Array(4 - length).fill(0).join("")
+			let orderNo = `MM${date}${zero}${total}`
+			await Order.findByIdAndUpdate(
+				{ _id: list[i] },
+				{
+					isSend: 1,
+					date,
+					orderNo
 				}
-			},
-			{
-				$set: {
-					isSend: 1
-				}
-			}
-		)
+			)
+		}
+		// const data = await Order.updateMany(
+		// 	{
+		// 		_id: {
+		// 			$in: list
+		// 		}
+		// 	},
+		// 	{
+		// 		$set: {
+		// 			isSend: 1
+		// 		}
+		// 	}
+		// )
 		// const html = `<div><h1>新订单<h1/><a href="https://www.baidu.com">订单链接</a></div>`
 		// Mail(html, "bo.jiang@miaocode.com")
 
