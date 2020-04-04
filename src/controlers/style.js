@@ -31,7 +31,7 @@ export const getList = async (ctx, next) => {
 		if (styleNo) {
 			q.styleNo = styleNo
 		}
-		console.log(tag, "qqq")
+
 		if (currentUser.role === 3) {
 			let channel = await Channel.findById({ _id: currentUser.channels[0] })
 			channel.styles.map(x => styleIds.push(x.styleId))
@@ -96,7 +96,7 @@ export const updateAttr = async (ctx, next) => {
 		let res = await Style.findById({
 			_id
 		})
-		console.log(res, "res---")
+
 		updateInnerArray(res, "attrs", "colorId", attr)
 		let data = await res.save()
 		ctx.body = response(true, data, "成功")

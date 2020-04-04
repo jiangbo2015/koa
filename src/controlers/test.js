@@ -53,7 +53,6 @@ export const adds = async (ctx, next) => {
 	try {
 		const { _id, channelId, flag } = ctx.request.body
 
-		console.log(flag)
 		// let channel = new Channel({ channelId })
 		// let data = await channel.save()
 		// let data = await Channel.findOne({

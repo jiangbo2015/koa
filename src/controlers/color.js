@@ -27,7 +27,7 @@ export const add = async (ctx, next) => {
 export const getList = async (ctx, next) => {
 	try {
 		let { type, code, page = 1, limit = 20 } = ctx.request.query
-		console.log(ctx.request.query, "query ")
+
 		let q = {}
 		if (typeof code !== "undefined") {
 			q.code = {

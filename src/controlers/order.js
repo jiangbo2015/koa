@@ -85,7 +85,7 @@ export const getList = async (ctx, next) => {
 			})
 			let uids = []
 			users.find(x => uids.push(x._id))
-			console.log(uids, "uids", currentUser.channels)
+
 			data = await Order.find({
 				user: {
 					$in: uids
@@ -162,7 +162,7 @@ export const del = async (ctx, next) => {
 export const send = async (ctx, next) => {
 	try {
 		const { list } = ctx.request.body
-		// const { email } = await System.find()[0]
+
 		let date = moment().format("YYYYMMDD")
 
 		// body.orderNo = orderNo
@@ -194,8 +194,18 @@ export const send = async (ctx, next) => {
 		// 		}
 		// 	}
 		// )
-		// const html = `<div><h1>新订单<h1/><a href="https://www.baidu.com">订单链接</a></div>`
-		// Mail(html, "bo.jiang@miaocode.com")
+		const { email } = await System.find()[0]
+		if (!email) {
+			ctx.body = response(false, {}, "邮箱不存在")
+			return
+		}
+		let hrefs = ""
+		list.map(
+			x =>
+				(hrefs += `<h3><a href="http://8.209.64.159:4000/download?id=${x}">订单链接</a></h3>`)
+		)
+		const html = `<div><h1>您有新的订单<h1/>${hrefs}</div>`
+		Mail(html, email)
 
 		ctx.body = response(true, {}, "成功")
 	} catch (err) {

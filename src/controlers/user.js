@@ -20,7 +20,7 @@ export const login = async (ctx, next) => {
 			ctx.body = response(false, null, "用户名或密码错误")
 		} else {
 			let token = jwt.sign(account, config.secret)
-			console.log(token)
+
 			ctx.body = response(true, { ...data, token })
 		}
 	} catch (err) {
