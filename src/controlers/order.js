@@ -194,7 +194,8 @@ export const send = async (ctx, next) => {
 		// 		}
 		// 	}
 		// )
-		const { email } = await System.find()[0]
+		const res = await System.find()
+		const { email } = res[0]
 		if (!email) {
 			ctx.body = response(false, {}, "邮箱不存在")
 			return

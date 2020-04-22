@@ -10,7 +10,8 @@ const sizeSchema = new mongoose.Schema(
 					required: true
 				}
 			}
-		]
+		],
+		category: String
 	},
 	{
 		versionKey: false,

@@ -21,7 +21,9 @@ const colorSchema = new mongoose.Schema(
 		value: String,
 		width: Number,
 		height: Number,
-		size: Number
+		size: Number,
+		namecn: String,
+		nameen: String
 	},
 	{
 		versionKey: false,

@@ -5,6 +5,11 @@ import config from "../config"
 import { response } from "../utils"
 import User from "../models/user"
 import Favorite from "../models/favorite"
+import System from "../models/system"
+import Mail from "../utils/mail"
+import path from "path"
+import fs from "fs"
+import json2xls from "json2xls"
 
 /**
  * 获取token中的值
@@ -228,6 +233,17 @@ export const addSelectFavorite = async (ctx, next) => {
 	}
 }
 
+export const deleteSelectFavorite = async (ctx, next) => {
+	try {
+		const { _id } = ctx.request.body
+
+		let data = await Favorite.findByIdAndDelete({ _id })
+		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
 export const getMySelectFavorite = async (ctx, next) => {
 	try {
 		const currentUser = await getCurrentUser(ctx)
@@ -246,18 +262,24 @@ export const getMySelectFavorite = async (ctx, next) => {
 export const updateFavorite = async (ctx, next) => {
 	try {
 		const { _id, styleAndColor } = ctx.request.body
-
-		let data = await Favorite.findOneAndUpdate(
+		const currentUser = await getCurrentUser(ctx)
+		await Favorite.findByIdAndUpdate(
 			{
 				_id
 			},
 			{
-				styleAndColor
-			},
-			{
-				new: true
+				$set: {
+					isDel: 1
+				}
 			}
 		)
+
+		const favorite = new Favorite({
+			user: currentUser._id,
+			styleAndColor
+		})
+		let data = await favorite.save()
+
 		ctx.body = response(true, data)
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
@@ -370,6 +392,62 @@ export const deleteById = async (ctx, next) => {
 		const { _id } = ctx.request.body
 		let data = await User.remove({ _id })
 		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const feedback = async (ctx, next) => {
+	try {
+		const { body } = ctx.request
+		const res = await System.find()
+		const { email } = res[0]
+		if (!email) {
+			ctx.body = response(false, {}, "邮箱不存在")
+			return
+		}
+		let html = ""
+		const keys = Object.keys(body)
+		keys.map(x => (html += `<div>${body[x]}</div>`))
+
+		Mail(html, email)
+		ctx.body = response(true, {})
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+const writeFile = json => {
+	var xls = json2xls(json)
+	let relativePath = "xlsx/data.xlsx"
+	let absPath = path.join(__dirname, "../public/" + relativePath)
+	fs.writeFileSync(absPath, xls, "binary")
+	return relativePath
+}
+export const download = async (ctx, next) => {
+	try {
+		const data = await User.find({ role: 3 })
+		const channels = await Channel.find()
+		const json = data.map(x => ({
+			account: x.account,
+			name: x.name,
+			password: x.password,
+			email: x.email,
+			address: x.address,
+			remark: x.remark,
+			contact: x.contact,
+			phone: x.phone,
+			channel: (
+				channels.find(c => String(c._id) == String(x.channels[0])) || {}
+			).name
+			// channel: x.channels[0]
+			// contact: x.contact,
+		}))
+		const relativePath = writeFile(json)
+		ctx.body = response(true, {
+			url: relativePath,
+			channels
+		})
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
 	}
