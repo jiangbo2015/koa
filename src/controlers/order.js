@@ -59,9 +59,10 @@ export const getMyList = async (ctx, next) => {
 		}
 		const data = await Order.find(q)
 			.populate({
-				path: "orderData.favorite",
+				path: "orderData.items.favorite",
 				populate: "styleAndColor.styleId styleAndColor.colorIds"
 			})
+			.populate("orderData.size")
 			.populate("user")
 			.lean()
 
@@ -133,10 +134,11 @@ export const detail = async (ctx, next) => {
 		const { _id } = ctx.request.query
 		const data = await Order.findById({ _id })
 			.populate({
-				path: "orderData.favorite",
+				path: "orderData.items.favorite",
 				populate: "styleAndColor.styleId styleAndColor.colorIds"
 			})
 			.populate("user")
+			.populate("orderData.size")
 			.lean()
 		ctx.body = response(true, data, "成功")
 	} catch (err) {

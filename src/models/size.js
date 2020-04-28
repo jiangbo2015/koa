@@ -11,7 +11,7 @@ const sizeSchema = new mongoose.Schema(
 				}
 			}
 		],
-		category: String
+		goods: String
 	},
 	{
 		versionKey: false,

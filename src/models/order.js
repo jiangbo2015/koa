@@ -20,18 +20,24 @@ const orderSchema = new mongoose.Schema(
 		},
 		orderData: [
 			{
-				favoriteId: {
+				sizeId: {
 					type: mongoose.Schema.Types.ObjectId,
-					ref: "favorite"
+					ref: "size"
 				},
-				sizeInfo: [
+				styleNos: String,
+				packageCount: Number,
+				cnts: Number,
+				items: [
 					{
-						name: String,
-						num: Number
+						favoriteId: {
+							type: mongoose.Schema.Types.ObjectId,
+							ref: "favorite"
+						},
+						sizeInfo: Array,
+						total: Number,
+						totalPrice: Number
 					}
-				],
-				totalPrice: Number,
-				total: Number
+				]
 			}
 		]
 	},
@@ -47,9 +53,15 @@ const orderSchema = new mongoose.Schema(
 	}
 )
 
-orderSchema.virtual("orderData.favorite", {
+orderSchema.virtual("orderData.items.favorite", {
 	ref: "favorite",
-	localField: "orderData.favoriteId",
+	localField: "orderData.items.favoriteId",
+	foreignField: "_id",
+	justOne: true
+})
+orderSchema.virtual("orderData.size", {
+	ref: "size",
+	localField: "orderData.sizeId",
 	foreignField: "_id",
 	justOne: true
 })
