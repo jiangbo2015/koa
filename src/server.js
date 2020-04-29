@@ -40,7 +40,7 @@ app.use(
 // 静态资源文件
 app.use(
 	koaStatic(path.join(__dirname, "public"), {
-		maxage: 3600 * 24 * 7
+		maxage: 3600 * 24 * 7 * 1000
 	})
 )
 
