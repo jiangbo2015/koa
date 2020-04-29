@@ -38,7 +38,11 @@ app.use(
 )
 
 // 静态资源文件
-app.use(koaStatic(path.join(__dirname, "public")))
+app.use(
+	koaStatic(path.join(__dirname, "public"), {
+		maxAge: 3600 * 24 * 7
+	})
+)
 
 // koa-body处理post请求和文件上传
 app.use(
