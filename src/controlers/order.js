@@ -52,7 +52,8 @@ export const getMyList = async (ctx, next) => {
 		const currentUser = await getCurrentUser(ctx)
 		const { isSend } = ctx.request.query
 		const q = {
-			user: mongoose.Types.ObjectId(currentUser._id)
+			user: mongoose.Types.ObjectId(currentUser._id),
+			isDel: 0
 		}
 		if (typeof isSend !== "undefined") {
 			q.isSend = isSend
@@ -74,27 +75,23 @@ export const getMyList = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
 	try {
+		const { userId } = ctx.request.query
+		let q = {
+			isDel: 0
+		}
+		if (userId) {
+			q.user = userId
+		}
 		const currentUser = await getCurrentUser(ctx)
 
 		// 1是产品经理
-		if (currentUser.role !== 3) {
-			const users = await User.find({
-				channels: {
-					$in: currentUser.channels
-				},
-				role: 3
+		let data = await Order.find(q)
+			.populate({
+				path: "orderData.items.favorite",
+				populate: "styleAndColor.styleId styleAndColor.colorIds"
 			})
-			let uids = []
-			users.find(x => uids.push(x._id))
-
-			data = await Order.find({
-				user: {
-					$in: uids
-				}
-			}).populate("user")
-		} else {
-			data = await Order.find()
-		}
+			.populate("orderData.size")
+			.populate("user")
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
@@ -106,7 +103,8 @@ export const getAllList = async (ctx, next) => {
 	try {
 		const { orderNo, userName } = ctx.request.query
 		let q = {
-			isSend: 1
+			isSend: 1,
+			isDel: 0
 		}
 		let data = {}
 
@@ -175,14 +173,12 @@ export const send = async (ctx, next) => {
 
 			let zero = new Array(4 - length).fill(0).join("")
 			let orderNo = `MM${date}${zero}${total}`
-			await Order.findByIdAndUpdate(
-				{ _id: list[i] },
-				{
-					isSend: 1,
-					date,
-					orderNo
-				}
-			)
+			let now = await Order.findById({ _id: list[i] })
+
+			now.isSend = 1
+			now.date = date
+			now.orderNo = now.orderGoodNo + orderNo
+			await now.save()
 		}
 		// const data = await Order.updateMany(
 		// 	{

@@ -9,7 +9,8 @@ const systemSchema = new mongoose.Schema(
 			required: true
 		},
 		meiyuan: Number,
-		ouyuan: Number
+		ouyuan: Number,
+		img: String
 	},
 	{
 		versionKey: false,

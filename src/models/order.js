@@ -8,6 +8,11 @@ const orderSchema = new mongoose.Schema(
 			ref: "users"
 		},
 		orderNo: String,
+		goodsId: String,
+		orderGoodNo: {
+			type: Number,
+			default: 0
+		},
 		packageCount: Number,
 		date: String,
 		isSend: {

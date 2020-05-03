@@ -307,6 +307,7 @@ export const deleteFavorite = async (ctx, next) => {
 
 export const getFavoriteList = async (ctx, next) => {
 	try {
+		const { goodsId } = ctx.request.query
 		const currentUser = await getCurrentUser(ctx)
 		let data = await Favorite.find({
 			user: currentUser._id,
@@ -324,6 +325,13 @@ export const getFavoriteList = async (ctx, next) => {
 			.exec()
 		// data = data.toJSON()
 		data = JSON.parse(JSON.stringify(data))
+
+		if (goodsId) {
+			console.log("goodsId", goodsId)
+			data = data.filter(x =>
+				x.styleAndColor.some(y => y.style.goodsId == goodsId)
+			)
+		}
 
 		ctx.body = response(true, data)
 	} catch (err) {

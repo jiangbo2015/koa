@@ -1,18 +1,15 @@
 import System from "../models/system"
 import { response } from "../utils"
+import { handleUpload } from "../routers/common"
 
 export const update = async (ctx, next) => {
 	try {
-		const { email, meiyuan, ouyuan } = ctx.request.body
+		const { ...others } = ctx.request.body
 		let data = await System.findOneAndUpdate(
 			{
 				// _id
 			},
-			{
-				email,
-				meiyuan,
-				ouyuan
-			},
+			others,
 			{
 				new: true,
 				upsert: true
