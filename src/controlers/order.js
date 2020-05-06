@@ -124,7 +124,9 @@ export const getAllList = async (ctx, next) => {
 				})
 				q.user = res ? res._id : null
 			}
-			data = await Order.find(q).populate("user")
+			data = await Order.find(q)
+				.sort({ createTime: -1 })
+				.populate("user")
 		}
 
 		ctx.body = response(true, data, "成功")
