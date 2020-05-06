@@ -76,7 +76,8 @@ export const detail = async (ctx, next) => {
 		const { _id, tag, styleNo } = ctx.request.query
 		const { channels, role } = await getCurrentUserDetail(ctx)
 		let match = {
-			goodsId: mongoose.Types.ObjectId(_id)
+			goodsId: mongoose.Types.ObjectId(_id),
+			isDel: 0
 		}
 		// if (role === 3) {
 		// 	match = {

@@ -59,12 +59,14 @@ export const getMyList = async (ctx, next) => {
 			q.isSend = isSend
 		}
 		const data = await Order.find(q)
+			.sort({ createTime: -1 })
 			.populate({
 				path: "orderData.items.favorite",
 				populate: "styleAndColor.styleId styleAndColor.colorIds"
 			})
 			.populate("orderData.size")
 			.populate("user")
+
 			.lean()
 
 		ctx.body = response(true, data, "成功")
@@ -86,12 +88,14 @@ export const getList = async (ctx, next) => {
 
 		// 1是产品经理
 		let data = await Order.find(q)
+			.sort({ createTime: -1 })
 			.populate({
 				path: "orderData.items.favorite",
 				populate: "styleAndColor.styleId styleAndColor.colorIds"
 			})
 			.populate("orderData.size")
 			.populate("user")
+
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
@@ -110,7 +114,9 @@ export const getAllList = async (ctx, next) => {
 
 		if (orderNo) {
 			q._id = orderNo
-			await Order.find(q).populate("user")
+			await Order.find(q)
+				.sort({ createTime: -1 })
+				.populate("user")
 		} else {
 			if (userName) {
 				const res = await User.findOne({
