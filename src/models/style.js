@@ -41,6 +41,7 @@ const styleSchema = new mongoose.Schema(
 			type: String,
 			required: true
 		},
+		scale: Number,
 		svgUrl: {
 			type: String,
 			required: true
