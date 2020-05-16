@@ -141,9 +141,12 @@ export const detail = async (ctx, next) => {
 			)
 			if (index > -1) {
 				// console.log(styles[index]["styles"], "styles index", index)
-				item.styles = styles[index]["styles"].filter(x =>
-					channels[0].styles.some(sx => sx.styleId == x._id)
-				)
+				item.styles = styles[index]["styles"]
+				if (role === 3) {
+					item.styles = styles[index]["styles"].filter(x =>
+						channels[0].styles.some(sx => sx.styleId == x._id)
+					)
+				}
 			} else {
 				item.styles = []
 			}
