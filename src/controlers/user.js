@@ -18,9 +18,9 @@ import json2xls from "json2xls"
 const verify = token => jwt.verify(token.split(" ")[1], config.secret)
 
 export const login = async (ctx, next) => {
-	const { account } = ctx.request.body
+	const { account, password } = ctx.request.body
 	try {
-		const data = await User.findOne({ account }).lean()
+		const data = await User.findOne({ account, password }).lean()
 		if (!data) {
 			ctx.body = response(false, null, "用户名或密码错误")
 		} else {
