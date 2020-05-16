@@ -2,7 +2,6 @@ export default {
 	secret: "koa-app",
 	jwtWhiteList: [
 		/^\/public/,
-		/\/user\/login/,
 		/\/user\/add/,
 		/\/user\/register/,
 		/\/order\/detail/,
