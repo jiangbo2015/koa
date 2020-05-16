@@ -75,6 +75,7 @@ export const detail = async (ctx, next) => {
 	try {
 		const { _id, tag, styleNo } = ctx.request.query
 		const { channels, role } = await getCurrentUserDetail(ctx)
+		console.log(channels, "channels")
 		let match = {
 			goodsId: mongoose.Types.ObjectId(_id),
 			isDel: 0
@@ -118,28 +119,31 @@ export const detail = async (ctx, next) => {
 			}
 		])
 
-		if (role === 3) {
-			data.category = data.category.filter(
-				c => channels[0].categories && channels[0].categories.includes(c._id)
-			)
-		}
+		// if (role === 3) {
+		// 	data.category = data.category.filter(
+		// 		c => channels[0].categories && channels[0].categories.includes(c._id)
+		// 	)
+		// }
 
 		// 将分组好的款式添加到对应的分类上
 		data.category.map(item => {
 			let index = styles.findIndex(
-				s =>
-					s._id == item._id &&
-					(role === 3
-						? channels[0].styles.some(x => {
-								return (
-									x.styleId == s.styles[0]._id &&
-									(filter(x.flowerColors) || filter(x.plainColors))
-								)
-						  })
-						: true)
+				s => s._id == item._id
+				//  &&
+				// (role === 3
+				// 	? channels[0].styles.some(x => {
+				// 			return (
+				// 				x.styleId == s.styles[0]._id &&
+				// 				(filter(x.flowerColors) || filter(x.plainColors))
+				// 			)
+				// 	  })
+				// 	: true)
 			)
 			if (index > -1) {
-				item.styles = styles[index]["styles"]
+				// console.log(styles[index]["styles"], "styles index", index)
+				item.styles = styles[index]["styles"].filter(x =>
+					channels[0].styles.some(sx => sx.styleId == x._id)
+				)
 			} else {
 				item.styles = []
 			}
