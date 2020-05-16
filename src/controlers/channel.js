@@ -23,7 +23,7 @@ export const add = async (ctx, next) => {
 export const getList = async (ctx, next) => {
 	const { page = 1, limit = 20 } = ctx.request.query
 	try {
-		let data = await Channel.paginate({}, { page, limit })
+		let data = await Channel.paginate({}, { page, limit: parseInt(limit) })
 		ctx.body = response(true, data)
 	} catch (err) {
 		console.log(err)

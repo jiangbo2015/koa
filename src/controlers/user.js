@@ -168,7 +168,11 @@ export const getList = async (ctx, next) => {
 		if (typeof role !== "undefined") {
 			q.role = role
 		}
-		let data = await User.paginate(q, { page, limit, populate: "channels" })
+		let data = await User.paginate(q, {
+			page,
+			limit: parseInt(limit),
+			populate: "channels"
+		})
 		ctx.body = response(true, data)
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
