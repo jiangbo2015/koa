@@ -144,7 +144,11 @@ export const detail = async (ctx, next) => {
 				item.styles = styles[index]["styles"]
 				if (role === 3) {
 					item.styles = styles[index]["styles"].filter(x =>
-						channels[0].styles.some(sx => sx.styleId == x._id)
+						channels[0].styles.some(
+							sx =>
+								sx.styleId == x._id &&
+								(filter(sx.flowerColors) || filter(sx.plainColors))
+						)
 					)
 				}
 			} else {
