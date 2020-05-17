@@ -15,6 +15,7 @@ export const add = async (ctx, next) => {
 export const getList = async (ctx, next) => {
 	try {
 		let { query } = ctx.request
+		query.isDel = 0
 		let data = await Size.find(query)
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
@@ -40,7 +41,7 @@ export const update = async (ctx, next) => {
 export const del = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.body
-		let data = await Size.findByIdAndRemove({ _id })
+		let data = await Size.findByIdAndUpdate({ _id }, { isDel: 1 })
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		console.log(err)
