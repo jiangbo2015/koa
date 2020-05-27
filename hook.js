@@ -8,32 +8,36 @@ const webhooks = new WebhooksApi({
 
 webhooks.on("*", ({ id, name, payload }) => {
 	let koaTest = "git pull && yarn && pm2 restart koa-test"
+    let koaProd = "cd ../koa-prod && git pull && yarn && pm2 restart koa-prod"
 	let crm =
-		"cd ../mm-crm && git pull && yarn && yarn build-test && pm2 restart crm"
+        "cd ../mm-crm && git pull && yarn && yarn build-test && pm2 restart crm"
+    let crmProd =
+        "cd ../crm-prod && git pull && yarn && yarn build-prod && pm2 restart crm-prod"
 	let miss =
-		"cd ../mm-next && git pull && yarn && yarn build && pm2 restart miss"
-	let koaProd = "git pull && yarn && pm2 restart koa-prod"
+        "cd ../mm-next && git pull && yarn && yarn build && pm2 restart miss"
+    let missProd =
+        "cd ../mm-next-prod && git pull && yarn && yarn build && pm2 restart miss-prod"
 	console.log(payload.ref, "ref")
 	console.log(id, name)
 	// master 分支
 	try {
 		if (payload.repository.name === "koa") {
 			if (payload.ref.includes("master")) {
-				exec(`cd ../koa-prod && ${koaProd}`)
+				exec(koaProd)
 			} else {
 				exec(koaTest)
 			}
 		}
 		if (payload.repository.name === "mm-crm") {
 			if (payload.ref.includes("master")) {
-				exec(crm)
+				exec(crmProd)
 			} else {
 				exec(crm)
 			}
 		}
 		if (payload.repository.name === "mm-next") {
 			if (payload.ref.includes("master")) {
-				exec(miss)
+				exec(missProd)
 			} else {
 				exec(miss)
 			}
