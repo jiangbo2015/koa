@@ -3,7 +3,7 @@ const uniqueValidator = require("mongoose-unique-validator")
 
 function transform(doc, ret) {
 	console.log(ret)
-	ret.plainColors.map(item => {
+	ret.plainColors.map((item) => {
 		if (typeof item.colorId === "object") {
 			item.code = item.colorId.code
 			item.value = item.colorId.value
@@ -11,7 +11,7 @@ function transform(doc, ret) {
 			item.colorId = item.colorId._id
 		}
 	})
-	ret.flowerColors.map(item => {
+	ret.flowerColors.map((item) => {
 		if (typeof item.colorId === "object") {
 			item.code = item.colorId.code
 			item.value = item.colorId.value
@@ -28,44 +28,48 @@ const styleSchema = new mongoose.Schema(
 	{
 		styleNo: {
 			type: String,
-			required: true
+			required: true,
+		},
+		styleSize: {
+			type: Number,
+			required: true,
 		},
 		styleName: {
-			type: String
+			type: String,
 		},
 		price: {
 			type: Number,
-			required: true
+			required: true,
 		},
 		imgUrl: {
 			type: String,
-			required: true
+			required: true,
 		},
 		scale: Number,
 		svgUrl: {
 			type: String,
-			required: true
+			required: true,
 		},
 		shadowUrl: {
 			type: String,
-			required: true
+			required: true,
 		},
 		svgUrlBack: {
 			type: String,
-			required: true
+			required: true,
 		},
 		shadowUrlBack: {
 			type: String,
-			required: true
+			required: true,
 		},
 		size: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "size"
+			ref: "size",
 		},
 		currency: Number,
 		goodsId: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "goods"
+			ref: "goods",
 		},
 		categoryId: String,
 		categoryName: String,
@@ -74,24 +78,24 @@ const styleSchema = new mongoose.Schema(
 				colorId: String,
 				x: Number,
 				y: Number,
-				scale: Number
-			}
+				scale: Number,
+			},
 		],
 		channels: [
 			{
 				channelId: String,
-				sizeIds: Array
-			}
+				sizeIds: Array,
+			},
 		],
 		tags: Array,
 		isDel: {
 			type: Number,
-			default: 0
-		}
+			default: 0,
+		},
 	},
 	{
 		versionKey: false,
-		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
 		// toJSON: {
 		// 	virtuals: true,
 		// 	transform

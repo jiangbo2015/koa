@@ -4,7 +4,7 @@ import moment from "moment"
 
 const codePrefix = {
 	0: "S-",
-	1: "H-"
+	1: "H-",
 }
 
 export const add = async (ctx, next) => {
@@ -15,7 +15,7 @@ export const add = async (ctx, next) => {
 			type,
 			value,
 			code,
-			...others
+			...others,
 		})
 		let data = await color.save()
 		ctx.body = response(true, data, "成功")
@@ -31,7 +31,7 @@ export const getList = async (ctx, next) => {
 		let q = {}
 		if (typeof code !== "undefined") {
 			q.code = {
-				$regex: new RegExp(code, "i")
+				$regex: new RegExp(code, "i"),
 			}
 		}
 		if (typeof type !== "undefined") {
@@ -43,8 +43,8 @@ export const getList = async (ctx, next) => {
 			// limit: limit ? limit : 10000,
 			limit: parseInt(limit),
 			sort: {
-				createTime: -1
-			}
+				createTime: -1,
+			},
 		})
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
@@ -55,8 +55,12 @@ export const getList = async (ctx, next) => {
 
 export const update = async (ctx, next) => {
 	try {
-		const { _id, value } = ctx.request.body
-		let data = await Color.findByIdAndUpdate({ _id }, { value }, { new: true })
+		const { _id, ...others } = ctx.request.body
+		let data = await Color.findByIdAndUpdate(
+			{ _id },
+			{ ...others },
+			{ new: true }
+		)
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
 		console.log(err)
