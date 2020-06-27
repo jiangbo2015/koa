@@ -7,19 +7,19 @@ const sizeSchema = new mongoose.Schema(
 			{
 				name: {
 					type: String,
-					required: true
-				}
-			}
+					required: true,
+				},
+			},
 		],
-		goods: String,
+		goods: String || [String],
 		isDel: {
 			type: Number,
-			default: 0
-		}
+			default: 0,
+		},
 	},
 	{
 		versionKey: false,
-		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
 	}
 )
 
