@@ -1,6 +1,7 @@
 import Router from "koa-router"
 
 import * as Style from "../controlers/style"
+import * as StyleTag from "../controlers/style-tag"
 
 const router = new Router()
 
@@ -114,5 +115,9 @@ router.post("/assign", Style.assign)
 router.post("/updateMany", Style.updateMany)
 
 router.post("/updateAttr", Style.updateAttr)
+
+router.post("/addStyleTag", StyleTag.add)
+
+router.get("/getStyleTagList", StyleTag.getList)
 
 export default router.routes()

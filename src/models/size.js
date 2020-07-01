@@ -11,7 +11,7 @@ const sizeSchema = new mongoose.Schema(
 				},
 			},
 		],
-		goods: String || [String],
+		goods: [String],
 		isDel: {
 			type: Number,
 			default: 0,

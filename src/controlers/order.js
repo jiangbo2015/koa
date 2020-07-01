@@ -53,7 +53,7 @@ export const getMyList = async (ctx, next) => {
 		const { isSend } = ctx.request.query
 		const q = {
 			user: mongoose.Types.ObjectId(currentUser._id),
-			isDel: 0
+			isDel: 0,
 		}
 		if (typeof isSend !== "undefined") {
 			q.isSend = isSend
@@ -62,7 +62,7 @@ export const getMyList = async (ctx, next) => {
 			.sort({ createTime: -1 })
 			.populate({
 				path: "orderData.items.favorite",
-				populate: "styleAndColor.styleId styleAndColor.colorIds"
+				populate: "styleAndColor.styleId styleAndColor.colorIds",
 			})
 			.populate("orderData.size")
 			.populate("user")
@@ -79,7 +79,7 @@ export const getList = async (ctx, next) => {
 	try {
 		const { userId } = ctx.request.query
 		let q = {
-			isDel: 0
+			isDel: 0,
 		}
 		if (userId) {
 			q.user = userId
@@ -91,7 +91,7 @@ export const getList = async (ctx, next) => {
 			.sort({ createTime: -1 })
 			.populate({
 				path: "orderData.items.favorite",
-				populate: "styleAndColor.styleId styleAndColor.colorIds"
+				populate: "styleAndColor.styleId styleAndColor.colorIds",
 			})
 			.populate("orderData.size")
 			.populate("user")
@@ -108,25 +108,21 @@ export const getAllList = async (ctx, next) => {
 		const { orderNo, userName } = ctx.request.query
 		let q = {
 			isSend: 1,
-			isDel: 0
+			isDel: 0,
 		}
 		let data = {}
 
 		if (orderNo) {
 			q._id = orderNo
-			await Order.find(q)
-				.sort({ createTime: -1 })
-				.populate("user")
+			await Order.find(q).sort({ createTime: -1 }).populate("user")
 		} else {
 			if (userName) {
 				const res = await User.findOne({
-					name: userName
+					name: userName,
 				})
 				q.user = res ? res._id : null
 			}
-			data = await Order.find(q)
-				.sort({ createTime: -1 })
-				.populate("user")
+			data = await Order.find(q).sort({ createTime: -1 }).populate("user")
 		}
 
 		ctx.body = response(true, data, "成功")
@@ -141,7 +137,7 @@ export const detail = async (ctx, next) => {
 		const data = await Order.findById({ _id })
 			.populate({
 				path: "orderData.items.favorite",
-				populate: "styleAndColor.styleId styleAndColor.colorIds"
+				populate: "styleAndColor.styleId styleAndColor.colorIds",
 			})
 			.populate("user")
 			.populate("orderData.size")
@@ -175,19 +171,21 @@ export const send = async (ctx, next) => {
 
 		// body.orderNo = orderNo
 		// body.date = date
-		for (let i = 0; i < list.length; i++) {
-			let total = (await Order.find({ date })).length + 1
-			let length = (total + "").length
-
-			let zero = new Array(4 - length).fill(0).join("")
-			let orderNo = `MM${date}${zero}${total}`
-			let now = await Order.findById({ _id: list[i] })
-
-			now.isSend = 1
-			now.date = date
-			now.orderNo = now.orderGoodNo + orderNo
-			await now.save()
+		if (list.length < 1) return
+		let now = await Order.findById({ _id: list[0] })
+		let total = (await Order.find({ date })).length + 1
+		let length = (total + "").length
+		let zero = new Array(4 - length).fill(0).join("")
+		let orderNo = `MM${date}${zero}${total}`
+		now.isSend = 1
+		now.date = date
+		now.orderNo = now.orderGoodNo + orderNo
+		for (let i = 1; i < list.length; i++) {
+			let other = await Order.findById({ _id: list[i] })
+			now.orderData.push(...other.orderData)
+			await Order.findByIdAndDelete({ _id: list[i] })
 		}
+		await now.save()
 		// const data = await Order.updateMany(
 		// 	{
 		// 		_id: {
@@ -201,6 +199,7 @@ export const send = async (ctx, next) => {
 		// 	}
 		// )
 		const res = await System.find()
+		console.log(res[0])
 		const { email } = res[0]
 		if (!email) {
 			ctx.body = response(false, {}, "邮箱不存在")
@@ -208,7 +207,7 @@ export const send = async (ctx, next) => {
 		}
 		let hrefs = ""
 		list.map(
-			x =>
+			(x) =>
 				(hrefs += `<h3><a href="http://8.209.64.159:4000/download?id=${x}">订单链接</a></h3>`)
 		)
 		const html = `<div><h1>您有新的订单<h1/>${hrefs}</div>`
@@ -220,7 +219,7 @@ export const send = async (ctx, next) => {
 	}
 }
 
-const writeFile = json => {
+const writeFile = (json) => {
 	var xls = json2xls(json)
 	let relativePath = "xlsx/data.xlsx"
 	let absPath = path.join(__dirname, "../public/" + relativePath)
@@ -234,15 +233,15 @@ export const download = async (ctx, next) => {
 			foo: "bar",
 			qux: "moo",
 			poo: 123,
-			stux: new Date()
+			stux: new Date(),
 		}
 		const { _id } = ctx.request.query
 		const data = await Order.findById({ _id })
 			.populate({
-				path: "user"
+				path: "user",
 			})
 			.populate({
-				path: "orderData.favoriteId"
+				path: "orderData.favoriteId",
 			})
 			.lean()
 		// const relativePath = writeFile(json)
