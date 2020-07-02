@@ -21,7 +21,7 @@ app.use(logger())
 // 允许跨域处理
 app.use(
 	cors({
-		origin: function(ctx) {
+		origin: function (ctx) {
 			// return "*"
 			return ctx.request.header.origin
 		},
@@ -32,15 +32,15 @@ app.use(
 			"Content-Type",
 			"Authorization",
 			"Accept",
-			"X-Requested-With"
-		]
+			"X-Requested-With",
+		],
 	})
 )
 
 // 静态资源文件
 app.use(
 	koaStatic(path.join(__dirname, "public"), {
-		maxage: 3600 * 24 * 7 * 1000
+		maxage: 3600 * 24 * 7 * 1000,
 	})
 )
 
@@ -49,8 +49,8 @@ app.use(
 	koaBody({
 		multipart: true,
 		formidable: {
-			maxFileSize: 200 * 1024 * 1024
-		}
+			maxFileSize: 200 * 1024 * 1024,
+		},
 	})
 )
 
@@ -71,11 +71,11 @@ app.use(async (ctx, next) => {
 // 使用jwt验证，其后面的路由访问将受限
 app.use(
 	jwt({ secret: config.secret }).unless({
-		path: config.jwtWhiteList
+		path: config.jwtWhiteList,
 	})
 )
 
 // 使用restful api
 app.use(router.routes()).use(router.allowedMethods())
 
-app.listen(process.env.PORT || 3000)
+app.listen(process.env.PORT || 3006)

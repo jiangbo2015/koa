@@ -233,15 +233,16 @@ const writeFile = (json) => {
 
 export const download = async (ctx, next) => {
 	console.log("download")
+	console.log(ctx.request.origin)
 	try {
 		const { _id, rateSign, rateVal } = ctx.request.query
 		const order = await Order.findById({ _id })
 			.populate({
-				path: "user",
+				path: "orderData.items.favorite",
+				populate: "styleAndColor.styleId styleAndColor.colorIds",
 			})
-			.populate({
-				path: "orderData.favoriteId",
-			})
+			.populate("user")
+			.populate("orderData.size")
 			.lean()
 		let maxSize = 1
 		order.orderData.map((o) => {
@@ -256,17 +257,45 @@ export const download = async (ctx, next) => {
 		// Add Worksheets to the workbook
 		let ws = wb.addWorksheet("Sheet 1")
 
+		const headerStyle = wb.createStyle({
+			fill: {
+				type: "pattern",
+				bgColor: "#fff0e5",
+				fgColor: "#fff0e5",
+				patternType: "solid",
+			},
+		})
+		const deepStyle = wb.createStyle({
+			fill: {
+				type: "pattern",
+				bgColor: "#cccccc",
+				patternType: "solid",
+				fgColor: "#cccccc",
+			},
+		})
 		// Head
-		ws.cell(1, 1).string("")
-		ws.cell(1, 2).string("样衣编号")
-		ws.cell(1, 3).string("颜色")
-		ws.cell(1, 4).string("款式图")
-		ws.cell(1, 5, 1, 5 + maxSize, true).string("尺码/配比")
-		ws.cell(1, 6 + maxSize).string("中包数")
-		ws.cell(1, 7 + maxSize).string("箱数")
-		ws.cell(1, 8 + maxSize).string("件数")
-		ws.cell(1, 9 + maxSize).string(`单价/${rateSign}`)
-		ws.cell(1, 10 + maxSize).string(`总价/${rateSign}`)
+		ws.cell(1, 1).string("").style(headerStyle)
+		ws.cell(1, 2).string("样衣编号").style(headerStyle)
+		ws.cell(1, 3).string("颜色").style(headerStyle)
+		ws.cell(1, 4).string("款式图").style(headerStyle)
+		ws.cell(1, 5, 1, 4 + maxSize, true)
+			.string("尺码/配比")
+			.style(headerStyle)
+		ws.cell(1, 5 + maxSize)
+			.string("中包数")
+			.style(headerStyle)
+		ws.cell(1, 6 + maxSize)
+			.string("箱数")
+			.style(headerStyle)
+		ws.cell(1, 7 + maxSize)
+			.string("件数")
+			.style(headerStyle)
+		ws.cell(1, 8 + maxSize)
+			.string(`单价/${rateSign}`)
+			.style(headerStyle)
+		ws.cell(1, 9 + maxSize)
+			.string(`总价/${rateSign}`)
+			.style(headerStyle)
 
 		let row = 1
 		order.orderData.map((groupData) => {
@@ -274,9 +303,10 @@ export const download = async (ctx, next) => {
 			row++
 			groupData.size.values.map((v, vIndex) => {
 				ws.cell(row, 5 + vIndex).string(v.name)
+				ws.cell(row, 1, row, 9 + maxSize).style(deepStyle)
 			})
-			row++
 			groupData.items.map((item, itemIndex) => {
+				row++
 				let styleNos = item.favorite.styleAndColor
 					.map((x) => x.styleId.styleNo)
 					.toString()
@@ -284,36 +314,50 @@ export const download = async (ctx, next) => {
 				let colorCodes = item.favorite.styleAndColor
 					.map((x) => x.colorIds.map((c) => c.code).toString())
 					.toString()
+				console.log("colorCodes", colorCodes)
 				ws.cell(row, 1).number(itemIndex + 1)
 				ws.cell(row, 2).string(styleNos)
 				ws.cell(row, 3).string(colorCodes)
-				ws.cell(row, 4)
-					.string("款式图")
-					.link(
-						`https://we-idesign.com/demo?id=${item.favorite._id}&rid=${order._id}`
-					)
+				ws.cell(row, 4).link(
+					`${ctx.request.origin}/demo?id=${item.favorite._id}&rid=${order._id}`,
+					"款式图"
+				)
 				let allSizeSum = 0
+
 				item.sizeInfo.map((v, index) => {
 					ws.cell(row, 5 + index).number(v)
 					allSizeSum += v
 				})
-				ws.cell(row, 5 + maxSize).number(item.packageCount)
-				ws.cell(row, 6 + maxSize).number(item.cnts)
-				ws.cell(row, 7 + maxSize).number(
-					allSizeSum * item.cnts * item.packageCount
+				let allSum = allSizeSum * groupData.cnts * groupData.packageCount
+				ws.cell(row, 5 + maxSize).number(groupData.packageCount)
+				ws.cell(row, 6 + maxSize).number(groupData.cnts)
+				ws.cell(row, 7 + maxSize).number(allSum)
+				let prices = item.favorite.styleAndColor.map((x) =>
+					(x.styleId.price * rateVal).toFixed(2)
 				)
-				let prices = item.favorite.styleAndColor
-					.map((x) => x.styleId.price * rateVal)
-					.toString()
-				ws.cell(row, 6 + maxSize).number(prices)
+				let piecePrice = _.sum(prices)
+				ws.cell(row, 8 + maxSize).string(prices.toString)
+				ws.cell(row, 9 + maxSize).string((piecePrice * allSizeSum).toFixed(2))
 			})
 		})
+		ws.cell(row + 2, 1, row + 2, 9 + maxSize, true).string(
+			`下单人：${order.user.name}(账号：${order.user.account})`
+		)
+		let date = new Date()
 		// const relativePath = writeFile(json)
+		let buffer = await wb.writeToBuffer()
+		let downloadPath = path.join(
+			__dirname,
+			"../public/" + `xlsx/${order.orderNo}-${date.getTime()}.xlsx`
+		)
+		fs.writeFileSync(downloadPath, buffer, "binary")
+		// koaSend(ctx, `xlsx/${order.orderNo}.xlsx`)
 
-		// const data = await Order.find()
-
-		ctx.body = response(true, {}, "成功")
+		ctx.body = response(false, {
+			url: `xlsx/${order.orderNo}-${date.getTime()}.xlsx`,
+		})
 	} catch (err) {
+		console.error(err)
 		ctx.body = response(false, null, err.message)
 	}
 }
