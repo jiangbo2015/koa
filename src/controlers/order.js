@@ -54,13 +54,14 @@ export const clear = async (ctx, next) => {
 export const getMyList = async (ctx, next) => {
 	try {
 		const currentUser = await getCurrentUser(ctx)
-		const { isSend } = ctx.request.query
+		const { isSend, goodsId } = ctx.request.query
 		const q = {
 			user: mongoose.Types.ObjectId(currentUser._id),
 			isDel: 0,
 		}
 		if (typeof isSend !== "undefined") {
 			q.isSend = isSend
+			q.goodsId = goodsId
 		}
 		const data = await Order.find(q)
 			.sort({ createTime: -1 })
@@ -233,7 +234,7 @@ const writeFile = (json) => {
 
 export const download = async (ctx, next) => {
 	console.log("download")
-	console.log(ctx.request.origin)
+	const baseUrl = ctx.request.header.origin
 	try {
 		const { _id, rateSign, rateVal } = ctx.request.query
 		const order = await Order.findById({ _id })
@@ -305,6 +306,7 @@ export const download = async (ctx, next) => {
 				ws.cell(row, 5 + vIndex).string(v.name)
 				ws.cell(row, 1, row, 9 + maxSize).style(deepStyle)
 			})
+			const itemsLength = groupData.items.length
 			groupData.items.map((item, itemIndex) => {
 				row++
 				let styleNos = item.favorite.styleAndColor
@@ -319,7 +321,7 @@ export const download = async (ctx, next) => {
 				ws.cell(row, 2).string(styleNos)
 				ws.cell(row, 3).string(colorCodes)
 				ws.cell(row, 4).link(
-					`${ctx.request.origin}/demo?id=${item.favorite._id}&rid=${order._id}`,
+					`${baseUrl}/demo?id=${item.favorite._id}&rid=${order._id}`,
 					"款式图"
 				)
 				let allSizeSum = 0
@@ -329,21 +331,36 @@ export const download = async (ctx, next) => {
 					allSizeSum += v
 				})
 				let allSum = allSizeSum * groupData.cnts * groupData.packageCount
-				ws.cell(row, 5 + maxSize).number(groupData.packageCount)
-				ws.cell(row, 6 + maxSize).number(groupData.cnts)
+				if (itemIndex < 1) {
+					ws.cell(
+						row,
+						5 + maxSize,
+						row + itemsLength - 1,
+						5 + maxSize,
+						true
+					).number(groupData.packageCount)
+					ws.cell(
+						row,
+						6 + maxSize,
+						row + itemsLength - 1,
+						6 + maxSize,
+						true
+					).number(groupData.cnts)
+				}
+
 				ws.cell(row, 7 + maxSize).number(allSum)
 
 				let piecePrice = 0
-				let prices = item.favorite.styleAndColor
-					.map((x) => {
-						let signal = (x.styleId.price * rateVal).toFixed(2)
-						piecePrice += signal
-						return signal
-					})
-					.toString()
+				let prices = item.favorite.styleAndColor.map((x) => {
+					let signal = (x.styleId.price * rateVal).toFixed(2)
+					piecePrice += x.styleId.price
+					return signal
+				})
 
-				ws.cell(row, 8 + maxSize).string(prices)
-				ws.cell(row, 9 + maxSize).string((piecePrice * allSizeSum).toFixed(2))
+				let pricesStr = prices.toString()
+				let pricesAllOrice = (piecePrice * allSum * rateVal).toFixed(2)
+				ws.cell(row, 8 + maxSize).string(pricesStr)
+				ws.cell(row, 9 + maxSize).string(pricesAllOrice)
 			})
 		})
 		ws.cell(row + 2, 1, row + 2, 9 + maxSize, true).string(
