@@ -332,11 +332,17 @@ export const download = async (ctx, next) => {
 				ws.cell(row, 5 + maxSize).number(groupData.packageCount)
 				ws.cell(row, 6 + maxSize).number(groupData.cnts)
 				ws.cell(row, 7 + maxSize).number(allSum)
-				let prices = item.favorite.styleAndColor.map((x) =>
-					(x.styleId.price * rateVal).toFixed(2)
-				)
-				let piecePrice = _.sum(prices)
-				ws.cell(row, 8 + maxSize).string(prices.toString)
+
+				let piecePrice = 0
+				let prices = item.favorite.styleAndColor
+					.map((x) => {
+						let signal = (x.styleId.price * rateVal).toFixed(2)
+						piecePrice += signal
+						return signal
+					})
+					.toString()
+
+				ws.cell(row, 8 + maxSize).string(prices)
 				ws.cell(row, 9 + maxSize).string((piecePrice * allSizeSum).toFixed(2))
 			})
 		})
