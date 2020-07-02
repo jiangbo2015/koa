@@ -236,7 +236,7 @@ export const download = async (ctx, next) => {
 	console.log("download")
 	const baseUrl = ctx.request.header.origin
 	try {
-		const { _id, rateSign, rateVal } = ctx.request.query
+		const { _id, rateSign = "¥", rateVal = 1 } = ctx.request.query
 		const order = await Order.findById({ _id })
 			.populate({
 				path: "orderData.items.favorite",
