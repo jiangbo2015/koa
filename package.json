@@ -10,7 +10,7 @@
 	},
 	"license": "MIT",
 	"scripts": {
-		"start": "PORT=3006 nodemon src/entry.js",
+		"start": "nodemon src/entry.js",
 		"production": "pm2 start pm2.json --env production",
 		"test": "pm2 start pm2.json --env test",
 		"hook": "pm2 start pm2.json --only hook",
@@ -19,6 +19,7 @@
 	"dependencies": {
 		"@koa/cors": "^3.0.0",
 		"babel-register": "^6.26.0",
+		"excel4node": "^1.7.2",
 		"fs-extra": "^8.1.0",
 		"json2xls": "^0.1.2",
 		"koa": "^2.8.1",

@@ -1,5 +1,6 @@
 import Channel from "../models/channel"
 import Color from "../models/color"
+import User from "../models/user"
 import { response } from "../utils"
 
 /**导出excel */
@@ -24,7 +25,26 @@ export const getList = async (ctx, next) => {
 	const { page = 1, limit = 20 } = ctx.request.query
 	try {
 		let data = await Channel.paginate({}, { page, limit: parseInt(limit) })
-		ctx.body = response(true, data)
+		let temp = { ...data }
+		let result = {
+			docs: [],
+			map: {},
+			limit: data.limit,
+			page: data.page,
+			pages: data.pages,
+			total: data.total,
+		}
+		for (let i = 0; i < temp.docs.length; i++) {
+			let channel = temp.docs[i]
+			let cObj = await User.findOne({
+				role: 1,
+				channels: { $in: [channel._id] },
+			})
+			result.docs[i] = channel
+			result.map[channel._id] = cObj.name
+			// console.log("productorName", channel)
+		}
+		ctx.body = response(true, result)
 	} catch (err) {
 		console.log(err)
 		ctx.body = response(false, null, err.message)
@@ -78,7 +98,7 @@ export const assign = async (ctx, next) => {
 	try {
 		const { channelId, styleId, plainColor, flowerColor } = ctx.request.body
 		let res = await Channel.findById({ _id: channelId })
-		let index = res.styles.findIndex(x => x.styleId === styleId)
+		let index = res.styles.findIndex((x) => x.styleId === styleId)
 		if (index > -1) {
 			let current = res.styles[index]
 			if (!current.plainColors.includes(plainColor)) {
@@ -91,7 +111,7 @@ export const assign = async (ctx, next) => {
 			res.styles.push({
 				styleId,
 				plainColors: [plainColor],
-				flowerColors: [flowerColor]
+				flowerColors: [flowerColor],
 			})
 		}
 		let data = await res.save()
@@ -106,11 +126,11 @@ export const unassign = async (ctx, next) => {
 	try {
 		const { channelId, styleId, plainColor, flowerColor } = ctx.request.body
 		let res = await Channel.findById({ _id: channelId })
-		let index = res.styles.findIndex(x => x.styleId === styleId)
+		let index = res.styles.findIndex((x) => x.styleId === styleId)
 		if (index > -1) {
 			let current = res.styles[index]
-			let ip = current.plainColors.findIndex(p => p === plainColor)
-			const ic = current.flowerColors.findIndex(f => f === flowerColor)
+			let ip = current.plainColors.findIndex((p) => p === plainColor)
+			const ic = current.flowerColors.findIndex((f) => f === flowerColor)
 			if (ip > -1) {
 				current.plainColors.splice(ip, 1)
 			}
@@ -130,18 +150,18 @@ export const getAssign = async (ctx, next) => {
 	try {
 		const { channelId, styleId } = ctx.request.query
 		let res = await Channel.findById({ _id: channelId }).populate()
-		let data = res.styles.find(x => x.styleId === styleId)
+		let data = res.styles.find((x) => x.styleId === styleId)
 		console.log(res.styles, data)
 		let plainColors = await Color.find({
 			_id: {
-				$in: data.plainColors
-			}
+				$in: data.plainColors,
+			},
 		})
 
 		let flowerColors = await Color.find({
 			_id: {
-				$in: data.flowerColors
-			}
+				$in: data.flowerColors,
+			},
 		})
 		console.log(plainColors, flowerColors, "colors")
 		data.plainColors = plainColors
@@ -157,7 +177,7 @@ export const assignCategory = async (ctx, next) => {
 	try {
 		const { channelId, categoryId } = ctx.request.body
 		let res = await Channel.findById({ _id: channelId })
-		let index = res.categories.findIndex(x => x === categoryId)
+		let index = res.categories.findIndex((x) => x === categoryId)
 		if (index > -1) {
 			return
 		} else {
@@ -177,7 +197,7 @@ export const getAssignCategory = async (ctx, next) => {
 		let res = await Channel.findById({ _id: channelId })
 
 		ctx.body = response(true, {
-			categories: res.categories
+			categories: res.categories,
 		})
 	} catch (err) {
 		console.log(err)
@@ -189,7 +209,7 @@ export const unassignCategory = async (ctx, next) => {
 	try {
 		const { channelId, categoryId } = ctx.request.body
 		let res = await Channel.findById({ _id: channelId })
-		let index = res.categories.findIndex(x => x === categoryId)
+		let index = res.categories.findIndex((x) => x === categoryId)
 		if (index > -1) {
 			res.categories.splice(index, 1)
 		}

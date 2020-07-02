@@ -1,9 +1,18 @@
+import jwt from "jsonwebtoken"
+import config from "../config"
+
 import Goods from "../models/goods"
 import Style from "../models/style"
 import { response } from "../utils"
 import mongoose from "mongoose"
 import { getCurrentUserDetail } from "./user"
-import Channel from "../models/channel"
+import User from "../models/user"
+
+/**
+ * 获取token中的值
+ * @param {*} token
+ */
+const verify = (token) => jwt.verify(token.split(" ")[1], config.secret)
 
 export const add = async (ctx, next) => {
 	try {
@@ -32,16 +41,44 @@ export const getList = async (ctx, next) => {
 	}
 }
 
+export const getVisibleList = async (ctx, next) => {
+	try {
+		const { name } = ctx.request.query
+		let q = {}
+		if (name) {
+			q.name = name
+		}
+		let data = await Goods.find(q)
+		const account = verify(ctx.headers.authorization)
+		const user = await User.findOne({ account })
+		let result = []
+		if (user.role === 1) {
+			result = data.filter((d) => user.goods.indexOf(d._id) >= 0)
+		} else {
+			let channelId = user.channels[0]
+			let cObj = await User.findOne({
+				role: 1,
+				channels: { $in: [channelId] },
+			})
+			result = data.filter((d) => cObj.goods.indexOf(d._id) >= 0)
+		}
+
+		ctx.body = response(true, result)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
 export const update = async (ctx, next) => {
 	try {
 		const { _id, ...others } = ctx.request.body
 		let data = await Goods.findByIdAndUpdate(
 			{ _id },
 			{
-				...others
+				...others,
 			},
 			{
-				new: true
+				new: true,
 			}
 		)
 		ctx.body = response(true, data)
@@ -60,8 +97,8 @@ export const deleteById = async (ctx, next) => {
 	}
 }
 
-const filter = arr => {
-	return arr.filter(x => x).length > 0
+const filter = (arr) => {
+	return arr.filter((x) => x).length > 0
 }
 
 /**
@@ -78,7 +115,7 @@ export const detail = async (ctx, next) => {
 		console.log(channels, "channels")
 		let match = {
 			goodsId: mongoose.Types.ObjectId(_id),
-			isDel: 0
+			isDel: 0,
 		}
 		// if (role === 3) {
 		// 	match = {
@@ -90,33 +127,33 @@ export const detail = async (ctx, next) => {
 		// }
 		if (tag) {
 			match.tags = {
-				$in: [tag]
+				$in: [tag],
 			}
 		}
 		if (styleNo) {
 			let reg = new RegExp(styleNo, "i")
 			match.styleNo = {
-				$regex: reg
+				$regex: reg,
 			}
 		}
 
 		let data = await Goods.findById({ _id }).lean()
 		let styles = await Style.aggregate([
 			{
-				$match: match
+				$match: match,
 			},
 
 			{
-				$unwind: "$categoryId"
+				$unwind: "$categoryId",
 			},
 			{
 				$group: {
 					_id: "$categoryId",
 					styles: {
-						$push: "$$ROOT"
-					}
-				}
-			}
+						$push: "$$ROOT",
+					},
+				},
+			},
 		])
 
 		// if (role === 3) {
@@ -126,9 +163,9 @@ export const detail = async (ctx, next) => {
 		// }
 
 		// 将分组好的款式添加到对应的分类上
-		data.category.map(item => {
+		data.category.map((item) => {
 			let index = styles.findIndex(
-				s => s._id == item._id
+				(s) => s._id == item._id
 				//  &&
 				// (role === 3
 				// 	? channels[0].styles.some(x => {
@@ -143,9 +180,9 @@ export const detail = async (ctx, next) => {
 				// console.log(styles[index]["styles"], "styles index", index)
 				item.styles = styles[index]["styles"]
 				if (role === 3) {
-					item.styles = styles[index]["styles"].filter(x =>
+					item.styles = styles[index]["styles"].filter((x) =>
 						channels[0].styles.some(
-							sx =>
+							(sx) =>
 								sx.styleId == x._id &&
 								(filter(sx.flowerColors) || filter(sx.plainColors))
 						)
@@ -201,23 +238,23 @@ export const detail = async (ctx, next) => {
 ;[
 	{
 		categoryId: ["001", "002"],
-		name: "A"
+		name: "A",
 	},
 	{
 		categoryId: ["001"],
-		name: "B"
-	}
+		name: "B",
+	},
 ][
 	({
 		categoryId: "001",
-		name: "A"
+		name: "A",
 	},
 	{
 		categoryId: "001",
-		name: "B"
+		name: "B",
 	},
 	{
 		categoryId: "002",
-		name: "A"
+		name: "A",
 	})
 ]

@@ -29,6 +29,15 @@ router.post("/add", Goods.add)
 router.get("/getList", Goods.getList)
 
 /**
+ * @api {get} /goods/getList 获取可见列表
+ * @apiName getList
+ * @apiGroup Goods
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ */
+router.get("/getVisibleList", Goods.getVisibleList)
+
+/**
  * @api {post} /goods/delete 删除
  * @apiName delete
  * @apiGroup Goods

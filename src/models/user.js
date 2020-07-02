@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
 		account: {
 			type: String,
 			required: true,
-			unique: true
+			unique: true,
 		},
 		name: { type: String, required: true },
 		password: { type: String, required: true },
@@ -20,23 +20,30 @@ const userSchema = new mongoose.Schema(
 		contact: String,
 		phone: String,
 		customerType: String,
+		countries: String,
+		shippingcountries: String,
+		shippingaddress: String,
+		postcode: String,
+		shippingpostcode: String,
+		dutyparagraph: String,
 		currency: {
 			type: Number,
 			enum: [0, 1, 2],
-			default: 0
+			default: 0,
 		},
 		role: {
 			type: Number,
 			required: true,
-			enum: [0, 1, 2, 3]
+			enum: [0, 1, 2, 3],
 		},
 		selectFavorites: Array,
 		channels: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
-				ref: "channels"
-			}
-		]
+				ref: "channels",
+			},
+		],
+		goods: [{ type: mongoose.Schema.Types.ObjectId, ref: "goods" }],
 		// favorites: [
 		// 	{
 		// 		styleAndColor: [
@@ -58,11 +65,11 @@ const userSchema = new mongoose.Schema(
 		versionKey: false,
 		timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
 		toObject: {
-			virtuals: true
+			virtuals: true,
 		},
 		toJSON: {
-			virtuals: true
-		}
+			virtuals: true,
+		},
 	}
 )
 
