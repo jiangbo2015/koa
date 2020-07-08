@@ -1,6 +1,7 @@
 import Router from "koa-router"
 
 import * as System from "../controlers/system"
+import * as Helpfiles from "../controlers/helpfiles"
 
 const router = new Router()
 
@@ -25,5 +26,9 @@ router.post("/update", System.update)
  */
 router.get("/detail", System.detail)
 router.post("/delete", System.del)
+
+router.post("/addHelpfile", Helpfiles.add)
+router.post("/deleteHelpfile", Helpfiles.del)
+router.get("/getHelpfiles", Helpfiles.getList)
 
 export default router.routes()
