@@ -274,31 +274,32 @@ export const download = async (ctx, next) => {
 				fgColor: "#cccccc",
 			},
 		})
+
 		// Head
-		ws.cell(1, 1).string("").style(headerStyle)
-		ws.cell(1, 2).string("样衣编号").style(headerStyle)
-		ws.cell(1, 3).string("颜色").style(headerStyle)
-		ws.cell(1, 4).string("款式图").style(headerStyle)
-		ws.cell(1, 5, 1, 4 + maxSize, true)
+		ws.cell(2, 1).string("").style(headerStyle)
+		ws.cell(2, 2).string("样衣编号").style(headerStyle)
+		ws.cell(2, 3).string("颜色").style(headerStyle)
+		ws.cell(2, 4).string("款式图").style(headerStyle)
+		ws.cell(2, 5, 1, 4 + maxSize, true)
 			.string("尺码/配比")
 			.style(headerStyle)
-		ws.cell(1, 5 + maxSize)
+		ws.cell(2, 5 + maxSize)
 			.string("中包数")
 			.style(headerStyle)
-		ws.cell(1, 6 + maxSize)
+		ws.cell(2, 6 + maxSize)
 			.string("箱数")
 			.style(headerStyle)
-		ws.cell(1, 7 + maxSize)
+		ws.cell(2, 7 + maxSize)
 			.string("件数")
 			.style(headerStyle)
-		ws.cell(1, 8 + maxSize)
+		ws.cell(2, 8 + maxSize)
 			.string(`单价/${rateSign}`)
 			.style(headerStyle)
-		ws.cell(1, 9 + maxSize)
+		ws.cell(2, 9 + maxSize)
 			.string(`总价/${rateSign}`)
 			.style(headerStyle)
 
-		let row = 1
+		let row = 2
 		order.orderData.map((groupData) => {
 			// Insert Size
 			row++
@@ -363,7 +364,7 @@ export const download = async (ctx, next) => {
 				ws.cell(row, 9 + maxSize).string(pricesAllOrice)
 			})
 		})
-		ws.cell(row + 2, 1, row + 2, 9 + maxSize, true).string(
+		ws.cell(1, 1, 2, 9 + maxSize, true).string(
 			`下单人：${order.user.name}(账号：${order.user.account})`
 		)
 		let date = new Date()
