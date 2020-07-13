@@ -213,7 +213,7 @@ export const send = async (ctx, next) => {
 		let hrefs = ""
 		list.map(
 			(x) =>
-				(hrefs += `<h3><a href="http://8.209.64.159:4000/download?id=${x}">订单链接</a></h3>`)
+				(hrefs += `<h3><a href="https://we-idesign.com/download?id=${x}">订单链接</a></h3>`)
 		)
 		const html = `<div><h1>您有新的订单<h1/>${hrefs}</div>`
 		Mail(html, email)
