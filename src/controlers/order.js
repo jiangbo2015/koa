@@ -275,31 +275,34 @@ export const download = async (ctx, next) => {
 			},
 		})
 
+		let orderUser = `下单人：${order.user.name}(账号：${order.user.account})`
+		ws.cell(1, 1, 1, 9 + maxSize, true).string(orderUser)
 		// Head
-		ws.cell(2, 1).string("").style(headerStyle)
-		ws.cell(2, 2).string("样衣编号").style(headerStyle)
-		ws.cell(2, 3).string("颜色").style(headerStyle)
-		ws.cell(2, 4).string("款式图").style(headerStyle)
-		ws.cell(2, 5, 1, 4 + maxSize, true)
+		let row = 2
+
+		ws.cell(row, 1).string("").style(headerStyle)
+		ws.cell(row, 2).string("样衣编号").style(headerStyle)
+		ws.cell(row, 3).string("颜色").style(headerStyle)
+		ws.cell(row, 4).string("款式图").style(headerStyle)
+		ws.cell(row, 5, row, 4 + maxSize, true)
 			.string("尺码/配比")
 			.style(headerStyle)
-		ws.cell(2, 5 + maxSize)
+		ws.cell(row, 5 + maxSize)
 			.string("中包数")
 			.style(headerStyle)
-		ws.cell(2, 6 + maxSize)
+		ws.cell(row, 6 + maxSize)
 			.string("箱数")
 			.style(headerStyle)
-		ws.cell(2, 7 + maxSize)
+		ws.cell(row, 7 + maxSize)
 			.string("件数")
 			.style(headerStyle)
-		ws.cell(2, 8 + maxSize)
+		ws.cell(row, 8 + maxSize)
 			.string(`单价/${rateSign}`)
 			.style(headerStyle)
-		ws.cell(2, 9 + maxSize)
+		ws.cell(row, 9 + maxSize)
 			.string(`总价/${rateSign}`)
 			.style(headerStyle)
-
-		let row = 2
+		let styleCount = 1
 		order.orderData.map((groupData) => {
 			// Insert Size
 			row++
@@ -308,6 +311,7 @@ export const download = async (ctx, next) => {
 				ws.cell(row, 1, row, 9 + maxSize).style(deepStyle)
 			})
 			const itemsLength = groupData.items.length
+
 			groupData.items.map((item, itemIndex) => {
 				row++
 				let styleNos = item.favorite.styleAndColor
@@ -318,7 +322,7 @@ export const download = async (ctx, next) => {
 					.map((x) => x.colorIds.map((c) => c.code).toString())
 					.toString()
 				console.log("colorCodes", colorCodes)
-				ws.cell(row, 1).number(itemIndex + 1)
+				ws.cell(row, 1).number(styleCount++)
 				ws.cell(row, 2).string(styleNos)
 				ws.cell(row, 3).string(colorCodes)
 				ws.cell(row, 4).link(
@@ -364,9 +368,9 @@ export const download = async (ctx, next) => {
 				ws.cell(row, 9 + maxSize).string(pricesAllOrice)
 			})
 		})
-		ws.cell(1, 1, 2, 9 + maxSize, true).string(
-			`下单人：${order.user.name}(账号：${order.user.account})`
-		)
+		// ws.cell(1, 1, 1, 9 + maxSize, true).string(
+		// 	`下单人：${order.user.name}(账号：${order.user.account})`
+		// )
 		let date = new Date()
 		// const relativePath = writeFile(json)
 		let buffer = await wb.writeToBuffer()

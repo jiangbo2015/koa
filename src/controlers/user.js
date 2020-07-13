@@ -459,7 +459,7 @@ export const download = async (ctx, next) => {
 			// contact: x.contact,
 		}))
 		const relativePath = writeFile(json)
-		console.log(json)
+
 		ctx.body = response(true, {
 			url: relativePath,
 			channels,
