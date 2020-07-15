@@ -41,7 +41,9 @@ export const getList = async (ctx, next) => {
 				channels: { $in: [channel._id] },
 			})
 			result.docs[i] = channel
-			result.map[channel._id] = cObj.name
+			if (cObj && cObj.name) {
+				result.map[channel._id] = cObj.name
+			}
 			// console.log("productorName", channel)
 		}
 		ctx.body = response(true, result)
