@@ -47,7 +47,9 @@ export const getCurrentUser = (ctx, next) => {
 			// })
 			if (data.role === 3) {
 				let res = await Channel.findById({ _id: data.channels[0] })
-				data.currency = res.currency
+				if (res && res.currency) {
+					data.currency = res.currency
+				}
 			}
 
 			ctx.body = response(true, data)
