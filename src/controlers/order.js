@@ -376,8 +376,14 @@ export const download = async (ctx, next) => {
 		let buffer = await wb.writeToBuffer()
 		let downloadPath = path.join(
 			__dirname,
-			"../public/" + `xlsx/${order.orderNo}-${date.getTime()}.xlsx`
+			"../public/xlsx" + `/${order.orderNo}-${date.getTime()}.xlsx`
 		)
+		let orderFilePath = path.join(__dirname, "../public/xlsx")
+		let isExist = fs.existsSync(orderFilePath)
+		if (!isExist) {
+			fs.mkdirSync(orderFilePath)
+		}
+		console.log("xlsx isExist", isExist)
 		fs.writeFileSync(downloadPath, buffer, "binary")
 		// koaSend(ctx, `xlsx/${order.orderNo}.xlsx`)
 
