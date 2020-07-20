@@ -234,7 +234,7 @@ const writeFile = (json) => {
 
 export const download = async (ctx, next) => {
 	console.log("download")
-	const baseUrl = ctx.request.header.origin
+	const baseUrl = "https://we-idesign.com"
 	try {
 		const { _id, rateSign = "¥", rateVal = 1 } = ctx.request.query
 		const order = await Order.findById({ _id })
@@ -372,11 +372,12 @@ export const download = async (ctx, next) => {
 		// 	`下单人：${order.user.name}(账号：${order.user.account})`
 		// )
 		let date = new Date()
+		let timeString = date.getTime()
 		// const relativePath = writeFile(json)
 		let buffer = await wb.writeToBuffer()
 		let downloadPath = path.join(
 			__dirname,
-			"../public/xlsx" + `/${order.orderNo}-${date.getTime()}.xlsx`
+			"../public/xlsx" + `/${order.orderNo}-${timeString}.xlsx`
 		)
 		let orderFilePath = path.join(__dirname, "../public/xlsx")
 		let isExist = fs.existsSync(orderFilePath)
@@ -387,8 +388,8 @@ export const download = async (ctx, next) => {
 		fs.writeFileSync(downloadPath, buffer, "binary")
 		// koaSend(ctx, `xlsx/${order.orderNo}.xlsx`)
 
-		ctx.body = response(false, {
-			url: `xlsx/${order.orderNo}-${date.getTime()}.xlsx`,
+		ctx.body = response(true, {
+			url: `xlsx/${order.orderNo}-${timeString}.xlsx`,
 		})
 	} catch (err) {
 		console.error(err)
