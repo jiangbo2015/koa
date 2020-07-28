@@ -37,9 +37,9 @@ export const getList = async (ctx, next) => {
     if (typeof type !== "undefined") {
       q.type = type;
     }
-    if (typeof type !== "undefined") {
+    if (typeof categoryId !== "undefined") {
       q.categoryId = {
-        $in: [categoryId],
+        $in: categoryId,
       };
     }
     let data = await Color.paginate(q, {
