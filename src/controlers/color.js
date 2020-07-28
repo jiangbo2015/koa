@@ -51,7 +51,11 @@ export const getList = async (ctx, next) => {
         createTime: -1,
       },
     });
-    ctx.body = response(true, { ...data, categoryId, v: "1.2" }, "成功v2");
+    ctx.body = response(
+      true,
+      { ...data, categoryId: categoryId, v: "1.2" },
+      "成功v2"
+    );
   } catch (err) {
     console.log(err);
     ctx.body = response(false, null, err.message);
