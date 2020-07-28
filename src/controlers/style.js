@@ -62,10 +62,7 @@ export const getUserStyleList = async (ctx, next) => {
     let { tag, styleNo, _id } = ctx.request.query;
     let goodData = await Goods.findById({ _id }).lean();
     const currentUser = await getCurrentUser(ctx);
-    console.log("-----cids-----");
     let styleIds = [];
-    let data = [];
-    let q = {};
     if (tag) {
       q.tags = {
         $in: [tag],
@@ -75,12 +72,6 @@ export const getUserStyleList = async (ctx, next) => {
     if (styleNo) {
       q.styleNo = styleNo;
     }
-
-    let cids = [];
-    goodData.category.map((c) => {
-      console.log("c._id", c._id);
-      cids.push(c._id.toString());
-    });
 
     let categoryData = [];
 
@@ -107,7 +98,7 @@ export const getUserStyleList = async (ctx, next) => {
           name: c.name,
           v: "1.4",
           _id: c._id,
-          styles: styles,
+          styles,
         });
       }
     } else {
@@ -121,14 +112,15 @@ export const getUserStyleList = async (ctx, next) => {
         categoryData.push({
           name: c.name,
           _id: c._id,
-          styles: styles,
+          v: "1.4",
+          styles,
         });
       }
     }
 
     ctx.body = response(true, { category: categoryData }, "成功");
   } catch (err) {
-    ctx.body = response(false, null, err.message);
+    ctx.body = response(false, {}, err.message);
   }
 };
 
@@ -143,7 +135,7 @@ export const update = async (ctx, next) => {
     ctx.body = response(true, data, "成功");
   } catch (err) {
     console.log(err);
-    ctx.body = response(false, null, err.message);
+    ctx.body = response(false, { tag, styleNo, _id }, err.message);
   }
 };
 
