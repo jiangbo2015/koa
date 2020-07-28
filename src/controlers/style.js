@@ -92,9 +92,6 @@ export const getUserStyleList = async (ctx, next) => {
         _id: {
           $in: styleIds,
         },
-        categoryId: {
-          $in: cids,
-        },
         isDel: 0,
         ...q,
       };
