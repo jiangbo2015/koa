@@ -153,7 +153,9 @@ export const getAssign = async (ctx, next) => {
 		const { channelId, styleId } = ctx.request.query
 		let res = await Channel.findById({ _id: channelId }).populate()
 		let data = res.styles.find((x) => x.styleId === styleId)
-		console.log(res.styles, data)
+		if (!data) {
+			data = {}
+		}
 		let plainColors = await Color.find({
 			_id: {
 				$in: data.plainColors,

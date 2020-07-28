@@ -34,6 +34,8 @@ router.post("/add", Style.add)
  */
 router.get("/getList", Style.getList)
 
+router.get("/getUserStyleList", Style.getUserStyleList)
+
 /**
  * @api {post} /style/delete 删除款式
  * @apiName delete

@@ -11,23 +11,25 @@ const colorSchema = new mongoose.Schema(
 		type: {
 			type: Number,
 			required: true,
-			enum: [0, 1]
+			enum: [0, 1],
 		},
 		code: {
 			type: String,
 			required: true,
-			unique: true
+			unique: true,
 		},
+		goodsId: Array,
+		categoryId: Array,
 		value: String,
 		width: Number,
 		height: Number,
 		size: Number,
 		namecn: String,
-		nameen: String
+		nameen: String,
 	},
 	{
 		versionKey: false,
-		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
 	}
 )
 

@@ -1,5 +1,6 @@
 import Style from "../models/style"
 import Channel from "../models/channel"
+import Goods from "../models/goods"
 import { response } from "../utils"
 import { getCurrentUser } from "./user"
 
@@ -24,8 +25,8 @@ export const getList = async (ctx, next) => {
 		if (tag) {
 			q = {
 				tags: {
-					$in: [tag]
-				}
+					$in: [tag],
+				},
 			}
 		}
 		if (styleNo) {
@@ -34,26 +35,89 @@ export const getList = async (ctx, next) => {
 
 		if (currentUser.role === 3) {
 			let channel = await Channel.findById({ _id: currentUser.channels[0] })
-			channel.styles.map(x => styleIds.push(x.styleId))
+			channel.styles.map((x) => styleIds.push(x.styleId))
 			data = await Style.find({
 				_id: {
-					$in: styleIds
+					$in: styleIds,
 				},
 				isDel: 0,
-				...q
+				...q,
 			})
 		} else {
 			data = await Style.find({
 				isDel: 0,
-				...q
+				...q,
 			})
 		}
 
-		// .populate("test.color")
-		// .populate("goods")
-		// .populate("plainColors.color")
-
 		ctx.body = response(true, data, "成功")
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const getUserStyleList = async (ctx, next) => {
+	try {
+		console.log("-----cids-----", _id)
+		let { tag, styleNo, _id } = ctx.request.query
+		let goodData = await Goods.findById({ _id }).lean()
+		const currentUser = await getCurrentUser(ctx)
+		console.log("-----cids-----")
+		let styleIds = []
+		let data = []
+		let q = {}
+		if (tag) {
+			q.tags = {
+				$in: [tag],
+			}
+		}
+
+		if (styleNo) {
+			q.styleNo = styleNo
+		}
+
+		// if (currentUser.role === 3) {
+		// 	let channel = await Channel.findById({ _id: currentUser.channels[0] })
+		// 	channel.styles.map((x) => styleIds.push(x.styleId))
+
+		// 	data = await Style.find({
+		// 		_id: {
+		// 			$in: styleIds,
+		// 		},
+		// 		isDel: 0,
+		// 		...q,
+		// 	})
+		// } else {
+		// 	data = await Style.find({
+		// 		isDel: 0,
+		// 		...q,
+		// 		"goods.goodId": { $in: [goodId] },
+		// 	})
+		// }
+		let cids = []
+		goodData.category.map((c) => {
+			console.log("c._id", c._id)
+			cids.push(c._id)
+		})
+
+		console.log("-----cids-----", cids)
+
+		let categoryData = []
+		for (let i = 0; i < goodData.category.length; i++) {
+			let c = goodData.category[i]
+			let styles = await Style.find({
+				isDel: 0,
+				...q,
+				categoryId: { $in: [c._id.toString()] },
+			})
+			categoryData.push({
+				name: c.name,
+				_id: c._id,
+				styles: styles,
+			})
+		}
+
+		ctx.body = response(true, { category: categoryData }, "成功")
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
 	}
@@ -82,7 +146,7 @@ export const update = async (ctx, next) => {
  * @param {object} target 要替换或添加的对象
  */
 const updateInnerArray = (res, field, key, target) => {
-	let index = res[field].findIndex(x => x[key] === target[key])
+	let index = res[field].findIndex((x) => x[key] === target[key])
 	if (index > -1) {
 		res[field].splice(index, 1, target)
 	} else {
@@ -94,7 +158,7 @@ export const updateAttr = async (ctx, next) => {
 	try {
 		const { _id, ...attr } = ctx.request.body
 		let res = await Style.findById({
-			_id
+			_id,
 		})
 
 		updateInnerArray(res, "attrs", "colorId", attr)
@@ -117,7 +181,7 @@ export const assign = async (ctx, next) => {
 
 		let res = await Style.findOneAndUpdate({
 			_id,
-			"channels.channelId": channel.channelId
+			"channels.channelId": channel.channelId,
 		})
 		updateInnerArray(res, "channels", "channelId", channel)
 
@@ -136,7 +200,7 @@ export const updateMany = async (ctx, next) => {
 		let data = await Style.updateMany(
 			{},
 			{
-				...body
+				...body,
 			}
 		)
 		ctx.body = response(true, data, "成功")
@@ -165,10 +229,10 @@ export const detail = async (ctx, next) => {
 		let data = await await Style.findById(_id)
 			// .populate("goodsId")
 			.populate({
-				path: "plainColors.colorId"
+				path: "plainColors.colorId",
 			})
 			.populate({
-				path: "flowerColors.colorId"
+				path: "flowerColors.colorId",
 			})
 			.populate("size")
 			.select("-plainColors._id -flowerColors._id")

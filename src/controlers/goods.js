@@ -112,7 +112,6 @@ export const detail = async (ctx, next) => {
 	try {
 		const { _id, tag, styleNo } = ctx.request.query
 		const { channels, role } = await getCurrentUserDetail(ctx)
-		console.log(channels, "channels")
 		let match = {
 			goodsId: mongoose.Types.ObjectId(_id),
 			isDel: 0,

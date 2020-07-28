@@ -67,11 +67,8 @@ const styleSchema = new mongoose.Schema(
 			ref: "size",
 		},
 		currency: Number,
-		goodsId: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "goods",
-		},
-		categoryId: String,
+		goodsId: Array,
+		categoryId: Array,
 		categoryName: String,
 		attrs: [
 			{

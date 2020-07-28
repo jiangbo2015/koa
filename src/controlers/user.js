@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken"
-import mongoose from "mongoose"
 import Channel from "../models/channel"
 import config from "../config"
 import { response } from "../utils"
@@ -335,7 +334,7 @@ export const getFavoriteList = async (ctx, next) => {
 		if (goodsId) {
 			console.log("goodsId", goodsId)
 			data = data.filter((x) =>
-				x.styleAndColor.some((y) => y.style.goodsId == goodsId)
+				x.styleAndColor.some((y) => y.style.goodsId.indexOf(goodsId) >= 0)
 			)
 		}
 

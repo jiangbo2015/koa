@@ -7,7 +7,7 @@ export default {
 		/\/user\/register/,
 		/\/order\/detail/,
 		/\/common\/upload/,
-		/\/system\/detail/
+		/\/system\/detail/,
 	],
-	rate: "https://api.exchangeratesapi.io/latest?base=USD"
+	rate: "https://api.exchangeratesapi.io/latest?base=USD",
 }
