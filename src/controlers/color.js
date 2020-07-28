@@ -39,7 +39,7 @@ export const getList = async (ctx, next) => {
     }
     if (typeof ctx.request.query["categoryId[]"] !== "undefined") {
       q.categoryId = {
-        $in: categoryId,
+        $in: ctx.request.query["categoryId[]"],
       };
     }
     let data = await Color.paginate(q, {
