@@ -26,7 +26,7 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
   try {
-    let { type, code, page = 1, limit = 20, categoryId } = ctx.request.query;
+    let { type, code, page = 1, limit = 20 } = ctx.request.query;
 
     let q = {};
     if (typeof code !== "undefined") {
@@ -37,7 +37,7 @@ export const getList = async (ctx, next) => {
     if (typeof type !== "undefined") {
       q.type = type;
     }
-    if (typeof categoryId !== "undefined") {
+    if (typeof ctx.request.query["categoryId[]"] !== "undefined") {
       q.categoryId = {
         $in: categoryId,
       };
@@ -53,7 +53,11 @@ export const getList = async (ctx, next) => {
     });
     ctx.body = response(
       true,
-      { ...data, v: "1.2", ...ctx.request.query },
+      {
+        ...data,
+        v: "1.3",
+        categoryId: typeof ctx.request.query["categoryId[]"],
+      },
       "成功v2"
     );
   } catch (err) {
