@@ -53,7 +53,7 @@ export const getList = async (ctx, next) => {
     });
     ctx.body = response(
       true,
-      { ...data, categoryId: categoryId, v: "1.2" },
+      { ...data, v: "1.2", ...ctx.request.query },
       "成功v2"
     );
   } catch (err) {
