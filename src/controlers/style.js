@@ -114,7 +114,8 @@ export const getUserStyleList = async (ctx, next) => {
         },
       ]);
       categoryData.push({
-        styles,
+        name: "1.1",
+        styles: channel.styles,
       });
     } else {
       for (let i = 0; i < goodData.category.length; i++) {
