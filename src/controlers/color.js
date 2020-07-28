@@ -38,9 +38,15 @@ export const getList = async (ctx, next) => {
       q.type = type;
     }
     if (typeof ctx.request.query["categoryId[]"] !== "undefined") {
-      q.categoryId = {
-        $in: ctx.request.query["categoryId[]"],
-      };
+      if (typeof ctx.request.query["categoryId[]"] == "string") {
+        q.categoryId = {
+          $in: [ctx.request.query["categoryId[]"]],
+        };
+      } else {
+        q.categoryId = {
+          $in: ctx.request.query["categoryId[]"],
+        };
+      }
     }
     let data = await Color.paginate(q, {
       page,
@@ -55,8 +61,7 @@ export const getList = async (ctx, next) => {
       true,
       {
         ...data,
-        v: "1.3",
-        categoryId: typeof ctx.request.query["categoryId[]"],
+        v: "1.4",
       },
       "成功v2"
     );
