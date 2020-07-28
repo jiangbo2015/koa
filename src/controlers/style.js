@@ -96,26 +96,31 @@ export const getUserStyleList = async (ctx, next) => {
         ...q,
       };
 
-      let styles = await Style.aggregate([
-        {
-          $match: match,
-        },
+      let styles = await Style.find({
+        isDel: 0,
+        ...match,
+        categoryId: { $in: [c._id.toString()] },
+      });
+      //   let styles = await Style.aggregate([
+      //     {
+      //       $match: match,
+      //     },
 
-        {
-          $unwind: "$categoryId",
-        },
-        {
-          $group: {
-            _id: "$categoryId",
-            styles: {
-              $push: "$$ROOT",
-            },
-          },
-        },
-      ]);
+      //     {
+      //       $unwind: "$categoryId",
+      //     },
+      //     {
+      //       $group: {
+      //         _id: "$categoryId",
+      //         styles: {
+      //           $push: "$$ROOT",
+      //         },
+      //       },
+      //     },
+      //   ]);
       categoryData.push({
-        name: "1.1",
-        styles: channel.styles,
+        name: "1.2",
+        styles,
       });
     } else {
       for (let i = 0; i < goodData.category.length; i++) {
