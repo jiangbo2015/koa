@@ -21,6 +21,7 @@
 		"babel-register": "^6.26.0",
 		"excel4node": "^1.7.2",
 		"fs-extra": "^8.1.0",
+		"imagekit": "^3.0.5",
 		"json2xls": "^0.1.2",
 		"koa": "^2.8.1",
 		"koa-body": "^4.1.1",

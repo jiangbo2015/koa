@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 const uniqueValidator = require("mongoose-unique-validator")
-
+import paginate from "mongoose-paginate"
 function transform(doc, ret) {
 	console.log(ret)
 	ret.plainColors.map((item) => {
@@ -105,7 +105,7 @@ const styleSchema = new mongoose.Schema(
 )
 
 styleSchema.plugin(uniqueValidator)
-// styleSchema.plugin(paginate)
+styleSchema.plugin(paginate)
 const StyleModel = mongoose.model("style", styleSchema)
 
 export default StyleModel

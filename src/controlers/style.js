@@ -17,11 +17,12 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
 	try {
-		let { tag, styleNo } = ctx.request.query
+		// let { tag, styleNo } = ctx.request.query
+		let { tag, styleNo, page = 1, limit = 20 } = ctx.request.query
 		const currentUser = await getCurrentUser(ctx)
 		let styleIds = []
 		let data = []
-		let q = {}
+		let q = { isDel: 0 }
 		if (tag) {
 			q = {
 				tags: {
@@ -40,13 +41,18 @@ export const getList = async (ctx, next) => {
 				_id: {
 					$in: styleIds,
 				},
-				isDel: 0,
+
 				...q,
 			})
 		} else {
-			data = await Style.find({
-				isDel: 0,
-				...q,
+			data = await Style.paginate(q, {
+				page,
+				// 如果没有limit字段，不分页
+				// limit: limit ? limit : 10000,
+				limit: parseInt(limit),
+				sort: {
+					createTime: -1,
+				},
 			})
 		}
 
@@ -76,33 +82,28 @@ export const getUserStyleList = async (ctx, next) => {
 			q.styleNo = styleNo
 		}
 
-		// if (currentUser.role === 3) {
-		// 	let channel = await Channel.findById({ _id: currentUser.channels[0] })
-		// 	channel.styles.map((x) => styleIds.push(x.styleId))
-
-		// 	data = await Style.find({
-		// 		_id: {
-		// 			$in: styleIds,
-		// 		},
-		// 		isDel: 0,
-		// 		...q,
-		// 	})
-		// } else {
-		// 	data = await Style.find({
-		// 		isDel: 0,
-		// 		...q,
-		// 		"goods.goodId": { $in: [goodId] },
-		// 	})
-		// }
 		let cids = []
 		goodData.category.map((c) => {
 			console.log("c._id", c._id)
 			cids.push(c._id)
 		})
 
-		console.log("-----cids-----", cids)
+		// console.log("-----cids-----", cids)
 
 		let categoryData = []
+		if (currentUser.role === 3) {
+			let channel = await Channel.findById({ _id: currentUser.channels[0] })
+			channel.styles.map((x) => styleIds.push(x.styleId))
+
+			data = await Style.find({
+				_id: {
+					$in: styleIds,
+				},
+				isDel: 0,
+				...q,
+			})
+		}
+
 		for (let i = 0; i < goodData.category.length; i++) {
 			let c = goodData.category[i]
 			let styles = await Style.find({
