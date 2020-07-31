@@ -68,9 +68,7 @@ export const getUserStyleList = async (ctx, next) => {
 		let { tag, styleNo, _id } = ctx.request.query
 		let goodData = await Goods.findById({ _id }).lean()
 		const currentUser = await getCurrentUser(ctx)
-		console.log("-----cids-----")
 		let styleIds = []
-		let data = []
 		let q = {}
 		if (tag) {
 			q.tags = {
@@ -82,40 +80,48 @@ export const getUserStyleList = async (ctx, next) => {
 			q.styleNo = styleNo
 		}
 
-		let cids = []
-		goodData.category.map((c) => {
-			console.log("c._id", c._id)
-			cids.push(c._id)
-		})
-
-		// console.log("-----cids-----", cids)
-
 		let categoryData = []
+
 		if (currentUser.role === 3) {
 			let channel = await Channel.findById({ _id: currentUser.channels[0] })
 			channel.styles.map((x) => styleIds.push(x.styleId))
 
-			data = await Style.find({
+			let match = {
 				_id: {
 					$in: styleIds,
 				},
 				isDel: 0,
 				...q,
-			})
-		}
+			}
 
-		for (let i = 0; i < goodData.category.length; i++) {
-			let c = goodData.category[i]
-			let styles = await Style.find({
-				isDel: 0,
-				...q,
-				categoryId: { $in: [c._id.toString()] },
-			})
-			categoryData.push({
-				name: c.name,
-				_id: c._id,
-				styles: styles,
-			})
+			for (let i = 0; i < goodData.category.length; i++) {
+				let c = goodData.category[i]
+				let styles = await Style.find({
+					isDel: 0,
+					...match,
+					categoryId: { $in: [c._id.toString()] },
+				})
+				categoryData.push({
+					name: c.name,
+					v: "1.4",
+					_id: c._id,
+					styles: styles,
+				})
+			}
+		} else {
+			for (let i = 0; i < goodData.category.length; i++) {
+				let c = goodData.category[i]
+				let styles = await Style.find({
+					isDel: 0,
+					...q,
+					categoryId: { $in: [c._id.toString()] },
+				})
+				categoryData.push({
+					name: c.name,
+					_id: c._id,
+					styles: styles,
+				})
+			}
 		}
 
 		ctx.body = response(true, { category: categoryData }, "成功")
