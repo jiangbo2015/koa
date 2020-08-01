@@ -55,7 +55,14 @@ router.post("/upload", async (ctx, next) => {
 router.post("/uploadkit", async (ctx, next) => {
 	try {
 		// 上传单个文件
-		const relativePath = await handleUploadKit(ctx)
+		const file = ctx.request.files.file
+		let relativePath = ""
+		if (file.type === "image/svg+xml") {
+			relativePath = await handleUpload(ctx)
+		} else {
+			relativePath = await handleUploadKit(ctx)
+		}
+
 		ctx.body = response(true, { url: relativePath }, "成功")
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
