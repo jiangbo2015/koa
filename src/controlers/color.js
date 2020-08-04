@@ -61,7 +61,8 @@ export const getList = async (ctx, next) => {
       true,
       {
         ...data,
-        v: "1.4",
+        v: "1.5",
+        goodsId: ctx.request.query["goodsId[]"],
       },
       "成功v2"
     );
