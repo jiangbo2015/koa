@@ -37,14 +37,14 @@ export const getList = async (ctx, next) => {
     if (typeof type !== "undefined") {
       q.type = type;
     }
-    if (typeof ctx.request.query["categoryId[]"] !== "undefined") {
-      if (typeof ctx.request.query["categoryId[]"] == "string") {
+    if (typeof ctx.request.query["goodsId[]"] !== "undefined") {
+      if (typeof ctx.request.query["goodsId[]"] == "string") {
         q.categoryId = {
-          $in: [ctx.request.query["categoryId[]"]],
+          $in: [ctx.request.query["goodsId[]"]],
         };
       } else {
-        q.categoryId = {
-          $in: ctx.request.query["categoryId[]"],
+        q.goodsId = {
+          $in: ctx.request.query["goodsId[]"],
         };
       }
     }
