@@ -26,7 +26,7 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
   try {
-    let { type, code, page = 1, limit = 20 } = ctx.request.query;
+    let { type, code, page = 1, limit = 20, goodsId } = ctx.request.query;
 
     let q = {};
     if (typeof code !== "undefined") {
@@ -48,6 +48,11 @@ export const getList = async (ctx, next) => {
         };
       }
     }
+    if (typeof goodsId == "undefined") {
+      q.goodsId = {
+        $in: [goodsId],
+      };
+    }
     let data = await Color.paginate(q, {
       page,
       // 如果没有limit字段，不分页
@@ -62,7 +67,7 @@ export const getList = async (ctx, next) => {
       {
         ...data,
         v: "1.5",
-        goodsId: ctx.request.query["goodsId[]"],
+        goodsId: goodsId,
       },
       "成功v2"
     );
