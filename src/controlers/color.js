@@ -37,18 +37,8 @@ export const getList = async (ctx, next) => {
     if (typeof type !== "undefined") {
       q.type = type;
     }
-    if (typeof ctx.request.query["goodsId[]"] !== "undefined") {
-      if (typeof ctx.request.query["goodsId[]"] == "string") {
-        q.goodsId = {
-          $in: [ctx.request.query["goodsId[]"]],
-        };
-      } else {
-        q.goodsId = {
-          $in: ctx.request.query["goodsId[]"],
-        };
-      }
-    }
-    if (typeof goodsId == "undefined") {
+
+    if (goodsId) {
       q.goodsId = {
         $in: [goodsId],
       };
@@ -66,8 +56,8 @@ export const getList = async (ctx, next) => {
       true,
       {
         ...data,
-        v: "1.5",
-        goodsId: goodsId,
+        v: "1.6",
+        q,
       },
       "成功v2"
     );
