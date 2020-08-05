@@ -34,6 +34,10 @@ const styleSchema = new mongoose.Schema(
 			type: Number,
 			required: true,
 		},
+		styleBackSize: {
+			type: Number,
+			required: true,
+		},
 		styleName: {
 			type: String,
 		},
