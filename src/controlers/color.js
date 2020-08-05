@@ -26,7 +26,7 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
   try {
-    let { type, code, page = 1, limit = 20 } = ctx.request.query;
+    let { type, code, page = 1, limit = 20, goodsId } = ctx.request.query;
 
     let q = {};
     if (typeof code !== "undefined") {
@@ -37,16 +37,11 @@ export const getList = async (ctx, next) => {
     if (typeof type !== "undefined") {
       q.type = type;
     }
-    if (typeof ctx.request.query["categoryId[]"] !== "undefined") {
-      if (typeof ctx.request.query["categoryId[]"] == "string") {
-        q.categoryId = {
-          $in: [ctx.request.query["categoryId[]"]],
-        };
-      } else {
-        q.categoryId = {
-          $in: ctx.request.query["categoryId[]"],
-        };
-      }
+
+    if (goodsId) {
+      q.goodsId = {
+        $in: [goodsId],
+      };
     }
     let data = await Color.paginate(q, {
       page,
@@ -61,7 +56,8 @@ export const getList = async (ctx, next) => {
       true,
       {
         ...data,
-        v: "1.4",
+        v: "1.6",
+        q,
       },
       "成功v2"
     );
