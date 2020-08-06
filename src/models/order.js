@@ -9,10 +9,7 @@ const orderSchema = new mongoose.Schema(
 		},
 		orderNo: String,
 		goodsId: String,
-		orderGoodNo: {
-			type: Number | String,
-			default: 0,
-		},
+		orderGoodNo: String,
 		packageCount: Number,
 		date: String,
 		isSend: {

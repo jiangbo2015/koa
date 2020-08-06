@@ -184,7 +184,7 @@ export const send = async (ctx, next) => {
 		let orderNo = `MM${date}${zero}${total}`
 		now.isSend = 1
 		now.date = date
-		now.orderNo = now.orderGoodNo + orderNo
+		now.orderNo = `${now.orderGoodNo}-${orderNo}`
 		for (let i = 1; i < list.length; i++) {
 			let other = await Order.findById({ _id: list[i] })
 			now.orderData.push(...other.orderData)
