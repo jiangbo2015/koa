@@ -5,29 +5,29 @@ const orderSchema = new mongoose.Schema(
 	{
 		user: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "users"
+			ref: "users",
 		},
 		orderNo: String,
 		goodsId: String,
 		orderGoodNo: {
-			type: Number,
-			default: 0
+			type: Number | String,
+			default: 0,
 		},
 		packageCount: Number,
 		date: String,
 		isSend: {
 			type: Number,
-			default: 0
+			default: 0,
 		},
 		isDel: {
 			type: Number,
-			default: 0
+			default: 0,
 		},
 		orderData: [
 			{
 				sizeId: {
 					type: mongoose.Schema.Types.ObjectId,
-					ref: "size"
+					ref: "size",
 				},
 				styleNos: String,
 				packageCount: Number,
@@ -36,19 +36,19 @@ const orderSchema = new mongoose.Schema(
 					{
 						favoriteId: {
 							type: mongoose.Schema.Types.ObjectId,
-							ref: "favorite"
+							ref: "favorite",
 						},
 						sizeInfo: Array,
 						total: Number,
-						totalPrice: Number
-					}
-				]
-			}
-		]
+						totalPrice: Number,
+					},
+				],
+			},
+		],
 	},
 	{
 		versionKey: false,
-		timestamps: { createdAt: "createTime", updatedAt: "updateTime" }
+		timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
 		// toJSON: {
 		// 	virtuals: true
 		// },
@@ -62,13 +62,13 @@ orderSchema.virtual("orderData.items.favorite", {
 	ref: "favorite",
 	localField: "orderData.items.favoriteId",
 	foreignField: "_id",
-	justOne: true
+	justOne: true,
 })
 orderSchema.virtual("orderData.size", {
 	ref: "size",
 	localField: "orderData.sizeId",
 	foreignField: "_id",
-	justOne: true
+	justOne: true,
 })
 // orderSchema.set("toObject", { virtuals: true })
 // orderSchema.set("toJSON", { virtuals: true })
