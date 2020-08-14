@@ -11,6 +11,7 @@ const orderSchema = new mongoose.Schema(
 		goodsId: String,
 		orderGoodNo: String,
 		packageCount: Number,
+
 		date: String,
 		isSend: {
 			type: Number,

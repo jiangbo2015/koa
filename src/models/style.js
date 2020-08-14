@@ -66,6 +66,8 @@ const styleSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		vposition: String,
+		// hposition: String,
 		size: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "size",
