@@ -1,105 +1,127 @@
-import jwt from "jsonwebtoken"
-import config from "../config"
+import jwt from "jsonwebtoken";
+import config from "../config";
 
-import Goods from "../models/goods"
-import Style from "../models/style"
-import { response } from "../utils"
-import mongoose from "mongoose"
-import { getCurrentUserDetail } from "./user"
-import User from "../models/user"
+import Goods from "../models/goods";
+import Style from "../models/style";
+import { response } from "../utils";
+import mongoose from "mongoose";
+import { getCurrentUserDetail } from "./user";
+import User from "../models/user";
 
 /**
  * 获取token中的值
  * @param {*} token
  */
-const verify = (token) => jwt.verify(token.split(" ")[1], config.secret)
+const verify = (token) => jwt.verify(token.split(" ")[1], config.secret);
 
 export const add = async (ctx, next) => {
-	try {
-		const body = ctx.request.body
-		let goods = new Goods(body)
-
-		let data = await goods.save()
-		ctx.body = response(true, data, "成功")
-	} catch (err) {
-		ctx.body = response(false, null, err.message)
-	}
-}
+  try {
+    const body = ctx.request.body;
+    const count = await Goods.find().count();
+    let goods = new Goods({ ...body, sort: count });
+    let data = await goods.save();
+    ctx.body = response(true, data, "成功");
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
 
 export const getList = async (ctx, next) => {
-	try {
-		const { name } = ctx.request.query
-		let q = {}
-		if (name) {
-			q.name = name
-		}
-		let data = await Goods.find(q)
+  try {
+    const { name } = ctx.request.query;
+    let q = {};
+    if (name) {
+      q.name = name;
+    }
+    let data = await Goods.find(q).sort({ sort: 1 });
 
-		ctx.body = response(true, data)
-	} catch (err) {
-		ctx.body = response(false, null, err.message)
-	}
-}
+    ctx.body = response(true, data);
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
 
 export const getVisibleList = async (ctx, next) => {
-	try {
-		const { name } = ctx.request.query
-		let q = {}
-		if (name) {
-			q.name = name
-		}
-		let data = await Goods.find(q)
-		const account = verify(ctx.headers.authorization)
-		const user = await User.findOne({ account })
-		let result = []
-		if (user.role === 1) {
-			result = data.filter((d) => user.goods.indexOf(d._id) >= 0)
-		} else {
-			let channelId = user.channels[0]
-			let cObj = await User.findOne({
-				role: 1,
-				channels: { $in: [channelId] },
-			})
-			result = data.filter((d) => cObj.goods.indexOf(d._id) >= 0)
-		}
+  try {
+    const { name } = ctx.request.query;
+    let q = {};
+    if (name) {
+      q.name = name;
+    }
+    let data = await Goods.find(q).sort({ sort: 1 });
+    const account = verify(ctx.headers.authorization);
+    const user = await User.findOne({ account });
+    let result = [];
+    if (user.role === 1) {
+      result = data.filter((d) => user.goods.indexOf(d._id) >= 0);
+    } else {
+      let channelId = user.channels[0];
+      let cObj = await User.findOne({
+        role: 1,
+        channels: { $in: [channelId] },
+      });
+      result = data.filter((d) => cObj.goods.indexOf(d._id) >= 0);
+    }
 
-		ctx.body = response(true, result)
-	} catch (err) {
-		ctx.body = response(false, null, err.message)
-	}
-}
+    ctx.body = response(true, result);
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
 
 export const update = async (ctx, next) => {
-	try {
-		const { _id, ...others } = ctx.request.body
-		let data = await Goods.findByIdAndUpdate(
-			{ _id },
-			{
-				...others,
-			},
-			{
-				new: true,
-			}
-		)
-		ctx.body = response(true, data)
-	} catch (err) {
-		ctx.body = response(false, null, err.message)
-	}
-}
+  try {
+    const { _id, ...others } = ctx.request.body;
+    let data = await Goods.findByIdAndUpdate(
+      { _id },
+      {
+        ...others,
+      },
+      {
+        new: true,
+      }
+    );
+    ctx.body = response(true, data);
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+
+export const sort = async (ctx, next) => {
+  try {
+    const { newSort = [] } = ctx.request.body;
+    for (var i = 0; i < newSort.length; i++) {
+      const { _id, sort } = newSort[i];
+      await Goods.findByIdAndUpdate(
+        { _id },
+        {
+          sort,
+        },
+        {
+          new: true,
+        }
+      );
+    }
+
+    ctx.body = response(true);
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
 
 export const deleteById = async (ctx, next) => {
-	try {
-		const { _id } = ctx.request.body
-		let data = await Goods.remove({ _id })
-		ctx.body = response(true, data)
-	} catch (err) {
-		ctx.body = response(false, null, err.message)
-	}
-}
+  try {
+    const { _id } = ctx.request.body;
+    let data = await Goods.remove({ _id });
+    ctx.body = response(true, data);
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
 
 const filter = (arr) => {
-	return arr.filter((x) => x).length > 0
-}
+  return arr.filter((x) => x).length > 0;
+};
 
 /**
  * 为什么要款式关联商品？
@@ -109,94 +131,94 @@ const filter = (arr) => {
  * 并将其绑定到对应分类下
  */
 export const detail = async (ctx, next) => {
-	try {
-		const { _id, tag, styleNo } = ctx.request.query
-		const { channels, role } = await getCurrentUserDetail(ctx)
-		let match = {
-			goodsId: mongoose.Types.ObjectId(_id),
-			isDel: 0,
-		}
-		// if (role === 3) {
-		// 	match = {
-		// 		...match,
-		// 		"channels.channelId": {
-		// 			$in: [channels[0]._id]
-		// 		}
-		// 	}
-		// }
-		if (tag) {
-			match.tags = {
-				$in: [tag],
-			}
-		}
-		if (styleNo) {
-			let reg = new RegExp(styleNo, "i")
-			match.styleNo = {
-				$regex: reg,
-			}
-		}
+  try {
+    const { _id, tag, styleNo } = ctx.request.query;
+    const { channels, role } = await getCurrentUserDetail(ctx);
+    let match = {
+      goodsId: mongoose.Types.ObjectId(_id),
+      isDel: 0,
+    };
+    // if (role === 3) {
+    // 	match = {
+    // 		...match,
+    // 		"channels.channelId": {
+    // 			$in: [channels[0]._id]
+    // 		}
+    // 	}
+    // }
+    if (tag) {
+      match.tags = {
+        $in: [tag],
+      };
+    }
+    if (styleNo) {
+      let reg = new RegExp(styleNo, "i");
+      match.styleNo = {
+        $regex: reg,
+      };
+    }
 
-		let data = await Goods.findById({ _id }).lean()
-		let styles = await Style.aggregate([
-			{
-				$match: match,
-			},
+    let data = await Goods.findById({ _id }).lean();
+    let styles = await Style.aggregate([
+      {
+        $match: match,
+      },
 
-			{
-				$unwind: "$categoryId",
-			},
-			{
-				$group: {
-					_id: "$categoryId",
-					styles: {
-						$push: "$$ROOT",
-					},
-				},
-			},
-		])
+      {
+        $unwind: "$categoryId",
+      },
+      {
+        $group: {
+          _id: "$categoryId",
+          styles: {
+            $push: "$$ROOT",
+          },
+        },
+      },
+    ]);
 
-		// if (role === 3) {
-		// 	data.category = data.category.filter(
-		// 		c => channels[0].categories && channels[0].categories.includes(c._id)
-		// 	)
-		// }
+    // if (role === 3) {
+    // 	data.category = data.category.filter(
+    // 		c => channels[0].categories && channels[0].categories.includes(c._id)
+    // 	)
+    // }
 
-		// 将分组好的款式添加到对应的分类上
-		data.category.map((item) => {
-			let index = styles.findIndex(
-				(s) => s._id == item._id
-				//  &&
-				// (role === 3
-				// 	? channels[0].styles.some(x => {
-				// 			return (
-				// 				x.styleId == s.styles[0]._id &&
-				// 				(filter(x.flowerColors) || filter(x.plainColors))
-				// 			)
-				// 	  })
-				// 	: true)
-			)
-			if (index > -1) {
-				// console.log(styles[index]["styles"], "styles index", index)
-				item.styles = styles[index]["styles"]
-				if (role === 3) {
-					item.styles = styles[index]["styles"].filter((x) =>
-						channels[0].styles.some(
-							(sx) =>
-								sx.styleId == x._id &&
-								(filter(sx.flowerColors) || filter(sx.plainColors))
-						)
-					)
-				}
-			} else {
-				item.styles = []
-			}
-		})
+    // 将分组好的款式添加到对应的分类上
+    data.category.map((item) => {
+      let index = styles.findIndex(
+        (s) => s._id == item._id
+        //  &&
+        // (role === 3
+        // 	? channels[0].styles.some(x => {
+        // 			return (
+        // 				x.styleId == s.styles[0]._id &&
+        // 				(filter(x.flowerColors) || filter(x.plainColors))
+        // 			)
+        // 	  })
+        // 	: true)
+      );
+      if (index > -1) {
+        // console.log(styles[index]["styles"], "styles index", index)
+        item.styles = styles[index]["styles"];
+        if (role === 3) {
+          item.styles = styles[index]["styles"].filter((x) =>
+            channels[0].styles.some(
+              (sx) =>
+                sx.styleId == x._id &&
+                (filter(sx.flowerColors) || filter(sx.plainColors))
+            )
+          );
+        }
+      } else {
+        item.styles = [];
+      }
+    });
 
-		ctx.body = response(true, data)
-	} catch (err) {
-		ctx.body = response(false, null, err.message)
-	}
-}
+    ctx.body = response(true, data);
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
 
 // // 清空表
 // export const deleteMany = async (ctx, next) => {
@@ -234,26 +256,26 @@ export const detail = async (ctx, next) => {
 // 		ctx.body = response(false, null, err.message)
 // 	}
 // }
-;[
-	{
-		categoryId: ["001", "002"],
-		name: "A",
-	},
-	{
-		categoryId: ["001"],
-		name: "B",
-	},
+[
+  {
+    categoryId: ["001", "002"],
+    name: "A",
+  },
+  {
+    categoryId: ["001"],
+    name: "B",
+  },
 ][
-	({
-		categoryId: "001",
-		name: "A",
-	},
-	{
-		categoryId: "001",
-		name: "B",
-	},
-	{
-		categoryId: "002",
-		name: "A",
-	})
-]
+  ({
+    categoryId: "001",
+    name: "A",
+  },
+  {
+    categoryId: "001",
+    name: "B",
+  },
+  {
+    categoryId: "002",
+    name: "A",
+  })
+];
