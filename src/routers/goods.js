@@ -57,6 +57,7 @@ router.post("/delete", Goods.deleteById)
  *    {"success": true, "data": {}}
  */
 router.post("/update", Goods.update)
+router.post("/sort", Goods.sort)
 
 /**
  * @api {get} /goods/detail 获取详情

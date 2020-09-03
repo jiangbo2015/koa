@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken"
 import config from "../config"
-
+import _ from "lodash"
 import Goods from "../models/goods"
+import Channel from "../models/channel"
 import Style from "../models/style"
 import { response } from "../utils"
 import mongoose from "mongoose"
@@ -56,11 +57,14 @@ export const getVisibleList = async (ctx, next) => {
 			result = data.filter((d) => user.goods.indexOf(d._id) >= 0)
 		} else {
 			let channelId = user.channels[0]
-			let cObj = await User.findOne({
-				role: 1,
-				channels: { $in: [channelId] },
+			let channelInfo = await Channel.findById({ _id: channelId })
+			const categories = channelInfo.categories
+			console.log("categories", categories)
+			result = data.filter((d) => {
+				const ids = _.map(d.category, "id")
+				const sames = _.intersection(ids, categories)
+				return sames.length > 0
 			})
-			result = data.filter((d) => cObj.goods.indexOf(d._id) >= 0)
 		}
 
 		ctx.body = response(true, result)
@@ -69,6 +73,20 @@ export const getVisibleList = async (ctx, next) => {
 	}
 }
 
+export const sort = async (ctx, next) => {
+	try {
+		const { _id, newIndex } = ctx.request.body
+		let data = await Goods.update(
+			{ _id },
+			{
+				$position: newIndex,
+			}
+		)
+		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
 export const update = async (ctx, next) => {
 	try {
 		const { _id, ...others } = ctx.request.body
