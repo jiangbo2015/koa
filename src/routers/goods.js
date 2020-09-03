@@ -1,9 +1,9 @@
-import Router from "koa-router"
+import Router from "koa-router";
 
-import config from "../config"
-import * as Goods from "../controlers/goods"
+import config from "../config";
+import * as Goods from "../controlers/goods";
 
-const router = new Router()
+const router = new Router();
 
 /**
  * @api {post} /goods/add 添加商品
@@ -17,7 +17,7 @@ const router = new Router()
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/add", Goods.add)
+router.post("/add", Goods.add);
 
 /**
  * @api {get} /goods/getList 获取列表
@@ -26,7 +26,7 @@ router.post("/add", Goods.add)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getList", Goods.getList)
+router.get("/getList", Goods.getList);
 
 /**
  * @api {get} /goods/getList 获取可见列表
@@ -35,7 +35,7 @@ router.get("/getList", Goods.getList)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getVisibleList", Goods.getVisibleList)
+router.get("/getVisibleList", Goods.getVisibleList);
 
 /**
  * @api {post} /goods/delete 删除
@@ -44,7 +44,7 @@ router.get("/getVisibleList", Goods.getVisibleList)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/delete", Goods.deleteById)
+router.post("/delete", Goods.deleteById);
 
 /**
  * @api {post} /goods/update 更新
@@ -56,8 +56,13 @@ router.post("/delete", Goods.deleteById)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
+<<<<<<< HEAD
 router.post("/update", Goods.update)
 router.post("/sort", Goods.sort)
+=======
+router.post("/update", Goods.update);
+router.post("/sort", Goods.sort);
+>>>>>>> de2fb5abf06053f6ddfe823eb4a76275b08505c3
 
 /**
  * @api {get} /goods/detail 获取详情
@@ -69,8 +74,8 @@ router.post("/sort", Goods.sort)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/detail", Goods.detail)
+router.get("/detail", Goods.detail);
 // router.get("/get", Goods.get)
 // router.get("/paginate", Goods.paginate)
 
-export default router.routes()
+export default router.routes();

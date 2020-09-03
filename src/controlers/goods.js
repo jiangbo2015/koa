@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken"
-import config from "../config"
 import _ from "lodash"
+import config from "../config"
+
 import Goods from "../models/goods"
-import Channel from "../models/channel"
 import Style from "../models/style"
 import { response } from "../utils"
 import mongoose from "mongoose"
@@ -18,8 +18,8 @@ const verify = (token) => jwt.verify(token.split(" ")[1], config.secret)
 export const add = async (ctx, next) => {
 	try {
 		const body = ctx.request.body
-		let goods = new Goods(body)
-
+		const count = await Goods.find().count()
+		let goods = new Goods({ ...body, sort: count })
 		let data = await goods.save()
 		ctx.body = response(true, data, "成功")
 	} catch (err) {
@@ -34,7 +34,7 @@ export const getList = async (ctx, next) => {
 		if (name) {
 			q.name = name
 		}
-		let data = await Goods.find(q)
+		let data = await Goods.find(q).sort({ sort: 1 })
 
 		ctx.body = response(true, data)
 	} catch (err) {
@@ -49,7 +49,7 @@ export const getVisibleList = async (ctx, next) => {
 		if (name) {
 			q.name = name
 		}
-		let data = await Goods.find(q)
+		let data = await Goods.find(q).sort({ sort: 1 })
 		const account = verify(ctx.headers.authorization)
 		const user = await User.findOne({ account })
 		let result = []
@@ -59,7 +59,7 @@ export const getVisibleList = async (ctx, next) => {
 			let channelId = user.channels[0]
 			let channelInfo = await Channel.findById({ _id: channelId })
 			const categories = channelInfo.categories
-			console.log("categories", categories)
+			// console.log("categories", categories)
 			result = data.filter((d) => {
 				const ids = _.map(d.category, "id")
 				const sames = _.intersection(ids, categories)
@@ -100,6 +100,28 @@ export const update = async (ctx, next) => {
 			}
 		)
 		ctx.body = response(true, data)
+	} catch (err) {
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const sort = async (ctx, next) => {
+	try {
+		const { newSort = [] } = ctx.request.body
+		for (var i = 0; i < newSort.length; i++) {
+			const { _id, sort } = newSort[i]
+			await Goods.findByIdAndUpdate(
+				{ _id },
+				{
+					sort,
+				},
+				{
+					new: true,
+				}
+			)
+		}
+
+		ctx.body = response(true)
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
 	}
