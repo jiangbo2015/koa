@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken"
 import _ from "lodash"
 import config from "../config"
 
+import Channel from "../models/channel"
 import Goods from "../models/goods"
 import Style from "../models/style"
 import { response } from "../utils"
