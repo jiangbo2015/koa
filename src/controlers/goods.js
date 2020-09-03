@@ -73,20 +73,6 @@ export const getVisibleList = async (ctx, next) => {
 	}
 }
 
-export const sort = async (ctx, next) => {
-	try {
-		const { _id, newIndex } = ctx.request.body
-		let data = await Goods.update(
-			{ _id },
-			{
-				$position: newIndex,
-			}
-		)
-		ctx.body = response(true, data)
-	} catch (err) {
-		ctx.body = response(false, null, err.message)
-	}
-}
 export const update = async (ctx, next) => {
 	try {
 		const { _id, ...others } = ctx.request.body
