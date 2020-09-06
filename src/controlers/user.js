@@ -200,11 +200,12 @@ export const getOwnList = async (ctx, next) => {
 
 export const addFavorite = async (ctx, next) => {
 	try {
-		const { styleAndColor } = ctx.request.body
+		const { styleAndColor, goodId } = ctx.request.body
 		const currentUser = await getCurrentUser(ctx)
 		const favorite = new Favorite({
 			user: currentUser._id,
 			styleAndColor,
+			goodId,
 		})
 		let data = await favorite.save()
 		ctx.body = response(true, data)
@@ -316,6 +317,7 @@ export const getFavoriteList = async (ctx, next) => {
 		const currentUser = await getCurrentUser(ctx)
 		let data = await Favorite.find({
 			user: currentUser._id,
+			goodId: goodsId,
 			isDel: 0,
 		})
 			.populate({
