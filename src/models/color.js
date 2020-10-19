@@ -18,6 +18,7 @@ const colorSchema = new mongoose.Schema(
 			required: true,
 			unique: true,
 		},
+		flowerCode: String,
 		goodsId: Array,
 		categoryId: Array,
 		value: String,
