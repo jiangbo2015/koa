@@ -128,9 +128,12 @@ export const groupAssign = async (ctx, next) => {
 	try {
 		const { options, channelId } = ctx.request.body
 		let res = await Channel.findById({ _id: channelId })
+		let removeIndex = res.styles.findIndex((x) => x.styleId === "0000")
+		res.styles.splice(removeIndex, 1)
 		for (let i = 0; i < options.length; i++) {
 			let { styleId, plainColor, flowerColor } = options[i]
 			let index = res.styles.findIndex((x) => x.styleId === styleId)
+
 			if (index > -1) {
 				let current = res.styles[index]
 				if (!current.plainColors.includes(plainColor) && plainColor) {
