@@ -124,6 +124,66 @@ export const assign = async (ctx, next) => {
 	}
 }
 
+export const groupAssign = async (ctx, next) => {
+	try {
+		const { options, channelId } = ctx.request.body
+		let res = await Channel.findById({ _id: channelId })
+		for (let i = 0; i < options.length; i++) {
+			let { styleId, plainColor, flowerColor } = options[i]
+			let index = res.styles.findIndex((x) => x.styleId === styleId)
+			if (index > -1) {
+				let current = res.styles[index]
+				if (!current.plainColors.includes(plainColor) && plainColor) {
+					current.plainColors.push(plainColor)
+				}
+				if (!current.flowerColors.includes(flowerColor) && flowerColor) {
+					current.flowerColors.push(flowerColor)
+				}
+			} else {
+				res.styles.push({
+					styleId,
+					plainColors: [plainColor],
+					flowerColors: [flowerColor],
+				})
+			}
+		}
+
+		let data = await res.save()
+		ctx.body = response(true, {})
+	} catch (err) {
+		console.log(err)
+		ctx.body = response(false, null, err.message)
+	}
+}
+
+export const groupUnassign = async (ctx, next) => {
+	try {
+		const { channelId, options } = ctx.request.body
+		let res = await Channel.findById({ _id: channelId })
+		for (let i = 0; i < options.length; i++) {
+			let { styleId, plainColor, flowerColor } = options[i]
+			let index = res.styles.findIndex((x) => x.styleId === styleId)
+			if (index > -1) {
+				let current = res.styles[index]
+				let ip = current.plainColors.findIndex((p) => p === plainColor)
+				const ic = current.flowerColors.findIndex((f) => f === flowerColor)
+				if (ip > -1) {
+					current.plainColors.splice(ip, 1)
+				}
+				if (ic > -1) {
+					current.flowerColors.splice(ic, 1)
+				}
+			}
+		}
+
+		let data = res.save()
+		ctx.body = response(true, {})
+	} catch (err) {
+		console.log(err)
+		ctx.body = response(false, null, err.message)
+	}
+}
+
 export const unassign = async (ctx, next) => {
 	try {
 		const { channelId, styleId, plainColor, flowerColor } = ctx.request.body
