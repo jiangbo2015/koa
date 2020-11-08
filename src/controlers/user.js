@@ -44,7 +44,7 @@ export const getCurrentUser = (ctx, next) => {
 			// 	path: "channels",
 			// 	select: "-styles"
 			// })
-			if (data.role === 3) {
+			if (data && data.role === 3) {
 				let res = await Channel.findById({ _id: data.channels[0] })
 				if (res && res.currency) {
 					data.currency = res.currency
