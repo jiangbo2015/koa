@@ -510,7 +510,7 @@ export const postDownload = async (ctx, next) => {
 					.toString()
 
 				let colorCodes = item.favorite.styleAndColor
-					.map((x) => x.colorIds.map((c) => c.code).join(" \n "))
+					.map((x) => x.colorIds.map((c) => c.code).join("\n "))
 					.toString()
 				// console.log("colorCodes", colorCodes)
 				ws.cell(row, 1)
@@ -545,7 +545,10 @@ export const postDownload = async (ctx, next) => {
 					imageContextHeight += parseInt(orderItemImages[fsId].frontHeight, 10)
 				}
 				// px 转磅
-				ws.row(row).setHeight(((imageContextHeight + 20) * 5) / 7)
+				ws.row(row).setHeight(
+					((imageContextHeight + 20 * item.favorite.styleAndColor.length) * 5) /
+						7
+				)
 
 				let allSizeSum = 0
 				item.sizeInfo.map((v, index) => {
