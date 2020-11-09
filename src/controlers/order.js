@@ -510,7 +510,7 @@ export const postDownload = async (ctx, next) => {
 					.toString()
 
 				let colorCodes = item.favorite.styleAndColor
-					.map((x) => x.colorIds.map((c) => c.code).toString())
+					.map((x) => x.colorIds.map((c) => c.code).join(" \n "))
 					.toString()
 				// console.log("colorCodes", colorCodes)
 				ws.cell(row, 1)
