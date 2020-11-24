@@ -49,7 +49,7 @@ export const getList = async (ctx, next) => {
       // limit: limit ? limit : 10000,
       limit: parseInt(limit),
       sort: {
-        createTime: -1,
+        createdAt: -1,
       },
     });
     ctx.body = response(

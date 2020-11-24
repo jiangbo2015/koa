@@ -46,7 +46,7 @@ const orderSchema = new mongoose.Schema(
 	},
 	{
 		versionKey: false,
-		timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
+		timestamps: true,
 		// toJSON: {
 		// 	virtuals: true
 		// },
