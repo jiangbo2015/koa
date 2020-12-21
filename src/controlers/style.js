@@ -1,5 +1,5 @@
 import Style from "../models/style"
-import Channel from "../models/channel"
+// import Channel from "../models/channel"
 import Goods from "../models/goods"
 import { response } from "../utils"
 import { getCurrentUser } from "./user"
@@ -37,8 +37,8 @@ export const getList = async (ctx, next) => {
 		}
 
 		if (currentUser.role === 3) {
-			let channel = await Channel.findById({ _id: currentUser.channels[0] })
-			channel.styles.map((x) => styleIds.push(x.styleId))
+			// let channel = await Channel.findById({ _id: currentUser.channels[0] })
+			// channel.styles.map((x) => styleIds.push(x.styleId))
 			data = await Style.find({
 				_id: {
 					$in: styleIds,
@@ -87,8 +87,8 @@ export const getUserStyleList = async (ctx, next) => {
 		let categoryData = []
 
 		if (currentUser.role === 3) {
-			let channel = await Channel.findById({ _id: currentUser.channels[0] })
-			channel.styles.map((x) => styleIds.push(x.styleId))
+			// let channel = await Channel.findById({ _id: currentUser.channels[0] })
+			// channel.styles.map((x) => styleIds.push(x.styleId))
 
 			let match = {
 				_id: {
@@ -98,22 +98,22 @@ export const getUserStyleList = async (ctx, next) => {
 				...q,
 			}
 
-			for (let i = 0; i < goodData.category.length; i++) {
-				let c = goodData.category[i]
-				if (_.intersection([c._id.toString()], channel.categories).length > 0) {
-					let styles = await Style.find({
-						isDel: 0,
-						...match,
-						categoryId: { $in: [c._id.toString()] },
-					})
-					categoryData.push({
-						name: c.name,
-						v: "1.4",
-						_id: c._id,
-						styles: styles,
-					})
-				}
-			}
+			// for (let i = 0; i < goodData.category.length; i++) {
+			// 	let c = goodData.category[i]
+			// 	if (_.intersection([c._id.toString()], channel.categories).length > 0) {
+			// 		let styles = await Style.find({
+			// 			isDel: 0,
+			// 			...match,
+			// 			categoryId: { $in: [c._id.toString()] },
+			// 		})
+			// 		categoryData.push({
+			// 			name: c.name,
+			// 			v: "1.4",
+			// 			_id: c._id,
+			// 			styles: styles,
+			// 		})
+			// 	}
+			// }
 		} else {
 			for (let i = 0; i < goodData.category.length; i++) {
 				let c = goodData.category[i]

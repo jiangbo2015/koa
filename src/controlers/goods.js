@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 import _ from "lodash"
 import config from "../config"
 
-import Channel from "../models/channel"
+// import Channel from "../models/channel"
 import Goods from "../models/goods"
 import Style from "../models/style"
 import { response } from "../utils"
@@ -57,15 +57,15 @@ export const getVisibleList = async (ctx, next) => {
 		if (user.role === 1) {
 			result = data.filter((d) => user.goods.indexOf(d._id) >= 0)
 		} else {
-			let channelId = user.channels[0]
-			let channelInfo = await Channel.findById({ _id: channelId })
-			const categories = channelInfo.categories
+			// let channelId = user.channels[0]
+			// let channelInfo = await Channel.findById({ _id: channelId })
+			// const categories = channelInfo.categories
 			// console.log("categories", categories)
-			result = data.filter((d) => {
-				const ids = _.map(d.category, "id")
-				const sames = _.intersection(ids, categories)
-				return sames.length > 0
-			})
+			// result = data.filter((d) => {
+			// 	const ids = _.map(d.category, "id")
+			// 	const sames = _.intersection(ids, categories)
+			// 	return sames.length > 0
+			// })
 		}
 
 		ctx.body = response(true, result)
@@ -206,13 +206,13 @@ export const detail = async (ctx, next) => {
 				// console.log(styles[index]["styles"], "styles index", index)
 				item.styles = styles[index]["styles"]
 				if (role === 3) {
-					item.styles = styles[index]["styles"].filter((x) =>
-						channels[0].styles.some(
-							(sx) =>
-								sx.styleId == x._id &&
-								(filter(sx.flowerColors) || filter(sx.plainColors))
-						)
-					)
+					// item.styles = styles[index]["styles"].filter((x) =>
+					// 	channels[0].styles.some(
+					// 		(sx) =>
+					// 			sx.styleId == x._id &&
+					// 			(filter(sx.flowerColors) || filter(sx.plainColors))
+					// 	)
+					// )
 				}
 			} else {
 				item.styles = []

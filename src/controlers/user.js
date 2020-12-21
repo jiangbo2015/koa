@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import Channel from "../models/channel"
+// import Channel from "../models/channel"
 import config from "../config"
 import { response } from "../utils"
 import User from "../models/user"
@@ -45,10 +45,10 @@ export const getCurrentUser = (ctx, next) => {
 			// 	select: "-styles"
 			// })
 			if (data && data.role === 3) {
-				let res = await Channel.findById({ _id: data.channels[0] })
-				if (res && res.currency) {
-					data.currency = res.currency
-				}
+				// let res = await Channel.findById({ _id: data.channels[0] })
+				// if (res && res.currency) {
+				// 	data.currency = res.currency
+				// }
 			}
 
 			ctx.body = response(true, data)
@@ -172,7 +172,6 @@ export const getList = async (ctx, next) => {
 		let data = await User.paginate(q, {
 			page,
 			limit: parseInt(limit),
-			populate: "channels",
 		})
 		ctx.body = response(true, data)
 	} catch (err) {
@@ -442,7 +441,7 @@ const writeFile = (json) => {
 export const download = async (ctx, next) => {
 	try {
 		const data = await User.find({ role: 3 })
-		const channels = await Channel.find()
+		// const channels = await Channel.find()
 		const json = data.map((x) => ({
 			账号: x.account,
 			姓名: x.name,
@@ -451,9 +450,7 @@ export const download = async (ctx, next) => {
 			联系人: x.contact,
 			电话: x.phone,
 			税号: x.dutyparagraph,
-			所属通道: (
-				channels.find((c) => String(c._id) == String(x.channels[0])) || {}
-			).name,
+			所属通道: "",
 			地址: `${x.countries}-${x.address}(${x.postcode})`,
 			托运地址: `${x.shippingcountries}-${x.shippingaddress}(${x.shippingpostcode})`,
 			备注: x.remark,
@@ -465,7 +462,7 @@ export const download = async (ctx, next) => {
 
 		ctx.body = response(true, {
 			url: relativePath,
-			channels,
+			channels: [],
 		})
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
