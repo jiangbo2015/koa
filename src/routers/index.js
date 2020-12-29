@@ -10,6 +10,8 @@ import color from "./color";
 import style from "./style";
 import system from "./system";
 import order from "./order";
+import branch from "./branch";
+import branchKind from "./branch-kind";
 import test from "./test";
 
 const router = new Router({
@@ -20,6 +22,8 @@ router.use("/user", user);
 router.use("/common", common);
 router.use("/goods", goods);
 router.use("/goodsbase", goodsbase);
+router.use("/branch", branch);
+router.use("/branchKind", branchKind);
 router.use("/capsule", capsule);
 router.use("/capsuleStyle", capsuleStyle);
 router.use("/color", color);

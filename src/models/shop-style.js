@@ -13,6 +13,16 @@ const capsuleStyleSchema = new mongoose.Schema(
     },
     code: String,
     price: Number,
+    bagsNum: Number, // 中包数
+    caseNum: Number, // 装箱数
+    branch: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "branch",
+    }, // 品牌
+    branchKind: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "branch-kind",
+    }, // 品牌分类
     colorWithStyleImgs: [
       {
         type: {
