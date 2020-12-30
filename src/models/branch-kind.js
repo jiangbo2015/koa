@@ -4,6 +4,10 @@ const goodsSchema = new mongoose.Schema(
   {
     namecn: String,
     nameen: String,
+    isDel: {
+      type: Number,
+      default: 0,
+    },
     branch: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "branch",

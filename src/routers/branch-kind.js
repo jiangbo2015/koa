@@ -5,7 +5,7 @@ import * as BranchKind from "../controlers/branch-kind";
 const router = new Router();
 
 /**
- * @api {post} /branchKind/add 添加尺寸
+ * @api {post} /add 添加尺寸
  * @apiName add
  * @apiGroup Goodsbase
  * @apiParam  {String} name 尺码名称
@@ -13,10 +13,10 @@ const router = new Router();
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/branchKind/update", BranchKind.update);
+router.post("/update", BranchKind.update);
 
 /**
- * @api {post} /branchKind/update 更新尺寸
+ * @api {post} /update 更新尺寸
  * @apiName update
  * @apiGroup Goodsbase
  * @apiParam  {String} _id 尺码名称
@@ -24,20 +24,20 @@ router.post("/branchKind/update", BranchKind.update);
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/branchKind/add", BranchKind.add);
+router.post("/add", BranchKind.add);
 
 /**
- * @api {get} /branchKind/getList 获取尺寸列表
+ * @api {get} /getList 获取尺寸列表
  * @apiName getList
  * @apiGroup Goodsbase
  *
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/branchKind/getList", BranchKind.getList);
+router.get("/getList", BranchKind.getList);
 
 /**
- * @api {post} /branchKind/delete 删除尺寸
+ * @api {post} /delete 删除尺寸
  * @apiName delete
  * @apiGroup Goodsbase
  * @apiParam  {String} _id 尺码id
@@ -45,7 +45,7 @@ router.get("/branchKind/getList", BranchKind.getList);
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/branchKind/delete", BranchKind.del);
+router.post("/delete", BranchKind.del);
 
 /**
  * @api {get} /rule/getInfo 获取规则信息

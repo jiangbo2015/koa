@@ -5,7 +5,7 @@ import * as Branch from "../controlers/branch";
 const router = new Router();
 
 /**
- * @api {post} /branch/add 添加尺寸
+ * @api {post} /add 添加尺寸
  * @apiName add
  * @apiGroup Goodsbase
  * @apiParam  {String} name 尺码名称
@@ -13,10 +13,10 @@ const router = new Router();
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/branch/update", Branch.update);
+router.post("/update", Branch.update);
 
 /**
- * @api {post} /branch/update 更新尺寸
+ * @api {post} /update 更新尺寸
  * @apiName update
  * @apiGroup Goodsbase
  * @apiParam  {String} _id 尺码名称
@@ -24,20 +24,20 @@ router.post("/branch/update", Branch.update);
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/branch/add", Branch.add);
+router.post("/add", Branch.add);
 
 /**
- * @api {get} /branch/getList 获取尺寸列表
+ * @api {get} /getList 获取尺寸列表
  * @apiName getList
  * @apiGroup Goodsbase
  *
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/branch/getList", Branch.getList);
+router.get("/getList", Branch.getList);
 
 /**
- * @api {post} /branch/delete 删除尺寸
+ * @api {post} /delete 删除尺寸
  * @apiName delete
  * @apiGroup Goodsbase
  * @apiParam  {String} _id 尺码id
@@ -45,7 +45,7 @@ router.get("/branch/getList", Branch.getList);
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/branch/delete", Branch.del);
+router.post("/delete", Branch.del);
 
 /**
  * @api {get} /rule/getInfo 获取规则信息
