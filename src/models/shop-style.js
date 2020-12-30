@@ -5,7 +5,7 @@ import uniqueValidator from "mongoose-unique-validator";
 /**
  * code规则, S-素色，H-花色，版式-B
  */
-const capsuleStyleSchema = new mongoose.Schema(
+const shopStyleSchema = new mongoose.Schema(
   {
     size: {
       type: mongoose.Schema.Types.ObjectId,
@@ -49,9 +49,9 @@ const capsuleStyleSchema = new mongoose.Schema(
   }
 );
 
-capsuleStyleSchema.plugin(uniqueValidator);
-capsuleStyleSchema.plugin(paginate);
+shopStyleSchema.plugin(uniqueValidator);
+shopStyleSchema.plugin(paginate);
 
-const capsuleStyleModel = mongoose.model("capsuleStyle", capsuleStyleSchema);
+const shopStyleModel = mongoose.model("shopStyle", shopStyleSchema);
 
-export default capsuleStyleModel;
+export default shopStyleModel;
