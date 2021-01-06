@@ -11,6 +11,10 @@ const capsuleStyleSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "size",
     },
+    capsule: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "capsule",
+    },
     code: String,
     price: Number,
     colorWithStyleImgs: [

@@ -13,7 +13,6 @@ const goodsSchema = new mongoose.Schema(
       ref: "branch",
     }, // 品牌
   },
-
   {
     versionKey: false,
     timestamps: true,

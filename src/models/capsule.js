@@ -3,7 +3,7 @@ import paginate from "mongoose-paginate";
 import uniqueValidator from "mongoose-unique-validator";
 
 /**
- * code规则, S-素色，H-花色，版式-B
+ * status规则, 0-发布，1-发布
  */
 const capsuleSchema = new mongoose.Schema(
   {

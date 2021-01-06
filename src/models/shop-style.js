@@ -3,13 +3,18 @@ import paginate from "mongoose-paginate";
 import uniqueValidator from "mongoose-unique-validator";
 
 /**
- * code规则, S-素色，H-花色，版式-B
+ * status规则, 0-未发布，1-发布
  */
 const shopStyleSchema = new mongoose.Schema(
   {
     size: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "size",
+    },
+    status: {
+      type: Number,
+      //   required: true,
+      enum: [0, 1],
     },
     code: String,
     price: Number,
