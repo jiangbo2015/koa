@@ -1,8 +1,7 @@
-import Router from "koa-router"
+import Router from "koa-router";
+import * as User from "../controlers/user";
 
-import * as User from "../controlers/user"
-
-const router = new Router()
+const router = new Router();
 
 /**
  * @api {post} /user/login 用户登录
@@ -20,7 +19,7 @@ const router = new Router()
 }
  * 
  */
-router.post("/login", User.login)
+router.post("/login", User.login);
 
 /**
  * @api {post} /user/add 添加用户
@@ -49,7 +48,7 @@ router.post("/login", User.login)
  *
  */
 
-router.post("/add", User.add)
+router.post("/add", User.add);
 
 /**
  * @api {get} /user/getList 获取用户列表
@@ -58,7 +57,7 @@ router.post("/add", User.add)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getList", User.getList)
+router.get("/getList", User.getList);
 
 /**
  * @api {get} /user/getOwnList 获取产品经理下用户的列表
@@ -67,7 +66,7 @@ router.get("/getList", User.getList)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getOwnList", User.getOwnList)
+router.get("/getOwnList", User.getOwnList);
 
 /**
  * @api {post} /user/delete 删除用户
@@ -79,7 +78,7 @@ router.get("/getOwnList", User.getOwnList)
  *    {"success": true, "data": {}}
  */
 
-router.post("/delete", User.deleteById)
+router.post("/delete", User.deleteById);
 
 /**
  * @api {get} /user/getCurrentUser 获取当前用户
@@ -90,7 +89,7 @@ router.post("/delete", User.deleteById)
  *    {"success": true, "data": {}}
  *
  */
-router.get("/getCurrentUser", User.getCurrentUser)
+router.get("/getCurrentUser", User.getCurrentUser);
 
 /**
  * @api {post} /user/update 更新用户信息
@@ -104,7 +103,7 @@ router.get("/getCurrentUser", User.getCurrentUser)
  *    {"success": true, "data": {}}
  *
  */
-router.post("/update", User.update)
+router.post("/update", User.update);
 
 /**
  * @api {post} /user/addFavorite 添加收藏
@@ -125,7 +124,7 @@ router.post("/update", User.update)
  *    {"success": true, "data": {}}
  *
  */
-router.post("/addFavorite", User.addFavorite)
+router.post("/addFavorite", User.addFavorite);
 
 /**
  * @api {post} /user/updateFavorite 修改某个收藏
@@ -139,7 +138,7 @@ router.post("/addFavorite", User.addFavorite)
  *    {"success": true, "data": {}}
  *
  */
-router.post("/updateFavorite", User.updateFavorite)
+router.post("/updateFavorite", User.updateFavorite);
 
 /**
  * @api {post} /user/deleteFavorite 删除某个收藏
@@ -152,7 +151,7 @@ router.post("/updateFavorite", User.updateFavorite)
  *    {"success": true, "data": {}}
  *
  */
-router.post("/deleteFavorite", User.deleteFavorite)
+router.post("/deleteFavorite", User.deleteFavorite);
 
 /**
  * @api {post} /user/getFavoriteList 获取收藏列表
@@ -164,14 +163,15 @@ router.post("/deleteFavorite", User.deleteFavorite)
  *    {"success": true, "data": {}}
  *
  */
-router.get("/getFavoriteList", User.getFavoriteList)
-router.get("/selectFavoriteList", User.selectFavoriteList)
-router.get("/getMySelectFavorite", User.getMySelectFavorite)
-router.post("/addSelectFavorite", User.addSelectFavorite)
-router.post("/deleteSelectFavorite", User.deleteSelectFavorite)
-router.post("/updateMany", User.updateMany)
-router.get("/getUserChannels", User.getUserChannels)
-router.post("/feedback", User.feedback)
-router.get("/download", User.download)
+router.get("/getFavoriteList", User.getFavoriteList);
+router.get("/selectFavoriteList", User.selectFavoriteList);
+router.get("/getMySelectFavorite", User.getMySelectFavorite);
+router.post("/addSelectFavorite", User.addSelectFavorite);
+router.post("/deleteSelectFavorite", User.deleteSelectFavorite);
+router.post("/updateMany", User.updateMany);
+router.get("/getUserChannels", User.getUserChannels);
+router.post("/feedback", User.feedback);
+router.post("/changePwd", User.changePwd);
+router.get("/download", User.download);
 
-export default router.routes()
+export default router.routes();
