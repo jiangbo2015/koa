@@ -8,7 +8,7 @@ const orderSchema = new mongoose.Schema(
       ref: "users",
     },
     orderNo: String,
-    goodsId: String,
+    capsuleId: String,
     orderGoodNo: String,
     packageCount: Number,
 
@@ -23,25 +23,23 @@ const orderSchema = new mongoose.Schema(
     },
     orderData: [
       {
-        sizeId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "size",
-        },
-        styleNos: String,
-        packageCount: Number,
-        cnts: Number,
-
         rowTotal: Number,
         rowTotalPrice: Number,
         rowRemarks: String,
         pickType: Object,
+        size: String,
+        price: Number,
+        styleNos: String,
         items: [
           {
-            favoriteId: {
-              type: mongoose.Schema.Types.ObjectId,
-              ref: "favorite",
+            type: {
+              type: Number,
+              default: 0,
+              enum: [0, 1], // 1 有相关的代表定制的款式
             },
-            sizeInfo: Array,
+            favorite: Object,
+            imgs: [String],
+            colorObj: Object,
             sizeInfoObject: Object,
             total: Number,
             totalPrice: Number,
@@ -63,18 +61,6 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
-orderSchema.virtual("orderData.items.favorite", {
-  ref: "favorite",
-  localField: "orderData.items.favoriteId",
-  foreignField: "_id",
-  justOne: true,
-});
-orderSchema.virtual("orderData.size", {
-  ref: "size",
-  localField: "orderData.sizeId",
-  foreignField: "_id",
-  justOne: true,
-});
 // orderSchema.set("toObject", { virtuals: true })
 // orderSchema.set("toJSON", { virtuals: true })
 // orderSchema.virtual("favor").get(function() {
@@ -83,6 +69,6 @@ orderSchema.virtual("orderData.size", {
 
 orderSchema.plugin(uniqueValidator);
 
-const orderModel = mongoose.model("order", orderSchema);
+const orderModel = mongoose.model("capsule-order", orderSchema);
 
 export default orderModel;

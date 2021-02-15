@@ -17,7 +17,7 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
   try {
-    let { code, name, page = 1, limit = 20 } = ctx.request.query;
+    let { code, name, branch, page = 1, limit = 20 } = ctx.request.query;
 
     let q = {};
     if (typeof name !== "undefined") {
@@ -31,8 +31,15 @@ export const getList = async (ctx, next) => {
     if (typeof code !== "undefined") {
       q.code = code;
     }
+    if (typeof branch !== "undefined") {
+      q.branch = branch;
+    }
 
     let data = await ShopStyle.paginate(q, {
+      populate: {
+        path: "colorWithStyleImgs.colorObj",
+        model: "color",
+      },
       page,
       // 如果没有limit字段，不分页
       // limit: limit ? limit : 10000,

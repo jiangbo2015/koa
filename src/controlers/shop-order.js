@@ -1,4 +1,4 @@
-import Order from "../models/order";
+import Order from "../models/shop-order";
 import User from "../models/user";
 import System from "../models/system";
 import { response } from "../utils";
@@ -20,15 +20,10 @@ export const add = async (ctx, next) => {
     const currentUser = await getCurrentUser(ctx);
     const body = ctx.request.body;
     body.user = currentUser._id;
-    if (body.isSend == 1) {
-      let date = moment().format("YYYYMMDD");
-      let total = (await Order.find({ date })).length + 1;
-      body.orderNo = `${currentUser.name}-${date}-${total}`;
-      body.date = date;
-    }
+    let date = moment().format("YYYYMMDD");
+    body.date = date;
     let order = new Order(body);
     const data = await order.save();
-
     ctx.body = response(true, data, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
@@ -60,24 +55,14 @@ export const clear = async (ctx, next) => {
 export const getMyList = async (ctx, next) => {
   try {
     const currentUser = await getCurrentUser(ctx);
-    const { isSend, goodsId } = ctx.request.query;
     const q = {
       user: mongoose.Types.ObjectId(currentUser._id),
       isDel: 0,
     };
-    if (typeof isSend !== "undefined") {
-      q.isSend = isSend;
-    }
-    if (typeof goodsId !== "undefined") {
-      q.goodsId = goodsId;
-    }
     const data = await Order.find(q)
       .sort({ createdAt: -1 })
-      .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
-      })
       .populate("user")
+      .populate("shopStyle")
       .lean();
 
     ctx.body = response(true, data, "成功");
@@ -95,16 +80,10 @@ export const getList = async (ctx, next) => {
     if (userId) {
       q.user = userId;
     }
-    const currentUser = await getCurrentUser(ctx);
 
-    // 1是产品经理
     let data = await Order.find(q)
       .sort({ createdAt: -1 })
-      .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
-      })
-      .populate("orderData.size")
+      .populate("shopStyle")
       .populate("user");
 
     ctx.body = response(true, data, "成功");
@@ -146,12 +125,8 @@ export const detail = async (ctx, next) => {
   try {
     const { _id } = ctx.request.query;
     const data = await Order.findById({ _id })
-      .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
-      })
       .populate("user")
-      .populate("orderData.size")
+      .populate("shopStyle")
       .lean();
     ctx.body = response(true, data, "成功");
   } catch (err) {
@@ -172,70 +147,6 @@ export const del = async (ctx, next) => {
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
-};
-
-export const send = async (ctx, next) => {
-  try {
-    const { list } = ctx.request.body;
-
-    let date = moment().format("YYYYMMDD");
-
-    // body.orderNo = orderNo
-    // body.date = date
-    if (list.length < 1) return;
-    let now = await Order.findById({ _id: list[0] });
-    let total = (await Order.find({ date })).length + 1;
-    let length = (total + "").length;
-    let zero = new Array(4 - length).fill(0).join("");
-    let orderNo = `MM${date}${zero}${total}`;
-    now.isSend = 1;
-    now.date = date;
-    now.orderNo = `${now.orderGoodNo}-${orderNo}`;
-    for (let i = 1; i < list.length; i++) {
-      let other = await Order.findById({ _id: list[i] });
-      now.orderData.push(...other.orderData);
-      await Order.findByIdAndDelete({ _id: list[i] });
-    }
-    await now.save();
-    // const data = await Order.updateMany(
-    // 	{
-    // 		_id: {
-    // 			$in: list
-    // 		}
-    // 	},
-    // 	{
-    // 		$set: {
-    // 			isSend: 1
-    // 		}
-    // 	}
-    // )
-    const res = await System.find();
-    console.log(res[0]);
-    const { email } = res[0];
-    if (!email) {
-      ctx.body = response(false, {}, "邮箱不存在");
-      return;
-    }
-    let hrefs = "";
-    list.map(
-      (x) =>
-        (hrefs += `<h3><a href="https://we-idesign.com/download?id=${x}">订单链接</a></h3>`)
-    );
-    const html = `<div><h1>您有新的订单<h1/>${hrefs}</div>`;
-    Mail(html, email);
-
-    ctx.body = response(true, {}, "成功");
-  } catch (err) {
-    ctx.body = response(false, null, err.message);
-  }
-};
-
-const writeFile = (json) => {
-  var xls = json2xls(json);
-  let relativePath = "xlsx/data.xlsx";
-  let absPath = path.join(__dirname, "../public/" + relativePath);
-  fs.writeFileSync(absPath, xls, "binary");
-  return relativePath;
 };
 
 export const download = async (ctx, next) => {

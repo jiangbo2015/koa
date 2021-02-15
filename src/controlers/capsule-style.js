@@ -37,6 +37,25 @@ export const getList = async (ctx, next) => {
       // 如果没有limit字段，不分页
       // limit: limit ? limit : 10000,
       limit: parseInt(limit),
+      populate: [
+        {
+          path: "colorWithStyleImgs.colorObj",
+          model: "color",
+        },
+        {
+          path: "colorWithStyleImgs.favorite",
+          // model: "favorite",
+          populate: [
+            {
+              path: "styleAndColor.styleId",
+              // model: "style",
+            },
+            {
+              path: "styleAndColor.colorIds",
+            },
+          ],
+        },
+      ],
       sort: {
         createdAt: -1,
       },

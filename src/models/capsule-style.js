@@ -7,10 +7,7 @@ import uniqueValidator from "mongoose-unique-validator";
  */
 const capsuleStyleSchema = new mongoose.Schema(
   {
-    size: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "size",
-    },
+    size: String,
     capsule: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "capsule",
@@ -21,7 +18,13 @@ const capsuleStyleSchema = new mongoose.Schema(
       {
         type: {
           type: Number,
+          default: 0,
           enum: [0, 1], // 1 有相关的代表定制的款式
+        },
+        favorite: {
+          // 当type=1时 才有值
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "favorite",
         },
         style: {
           // 当type=1时 才有值
@@ -29,7 +32,6 @@ const capsuleStyleSchema = new mongoose.Schema(
           ref: "style",
         },
         color: {
-          // 当type=1时 才有值
           type: mongoose.Schema.Types.ObjectId,
           ref: "color",
         },
@@ -42,6 +44,13 @@ const capsuleStyleSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+capsuleStyleSchema.virtual("colorWithStyleImgs.colorObj", {
+  ref: "color",
+  localField: "colorWithStyleImgs.color",
+  foreignField: "_id",
+  justOne: true,
+});
 
 capsuleStyleSchema.plugin(uniqueValidator);
 capsuleStyleSchema.plugin(paginate);

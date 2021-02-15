@@ -1,9 +1,10 @@
-import Router from "koa-router"
+import Router from "koa-router";
 
-import * as Style from "../controlers/style"
-import * as StyleTag from "../controlers/style-tag"
+import * as Style from "../controlers/style";
+import * as StyleTag from "../controlers/style-tag";
+import * as StyleSize from "../controlers/style-size";
 
-const router = new Router()
+const router = new Router();
 
 /**
  * @api {post} /style/add 添加款式
@@ -22,7 +23,7 @@ const router = new Router()
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/add", Style.add)
+router.post("/add", Style.add);
 
 /**
  * @api {get} /style/getList 获取所有款式
@@ -32,9 +33,9 @@ router.post("/add", Style.add)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getList", Style.getList)
+router.get("/getList", Style.getList);
 
-router.get("/getUserStyleList", Style.getUserStyleList)
+router.get("/getUserStyleList", Style.getUserStyleList);
 
 /**
  * @api {post} /style/delete 删除款式
@@ -46,7 +47,7 @@ router.get("/getUserStyleList", Style.getUserStyleList)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/delete", Style.del)
+router.post("/delete", Style.del);
 
 /**
  * @api {post} /style/update 更新款式
@@ -75,7 +76,7 @@ router.post("/delete", Style.del)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/update", Style.update)
+router.post("/update", Style.update);
 
 /**
  * @api {get} /style/detail 获取款式详情
@@ -87,7 +88,7 @@ router.post("/update", Style.update)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/detail", Style.detail)
+router.get("/detail", Style.detail);
 
 /**
  * @api {post} /style/assign 给通道分配尺寸，素色，花色
@@ -112,14 +113,17 @@ router.get("/detail", Style.detail)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/assign", Style.assign)
+router.post("/assign", Style.assign);
 
-router.post("/updateMany", Style.updateMany)
+router.post("/updateMany", Style.updateMany);
 
-router.post("/updateAttr", Style.updateAttr)
+router.post("/updateAttr", Style.updateAttr);
 
-router.post("/addStyleTag", StyleTag.add)
+router.post("/addStyleTag", StyleTag.add);
 
-router.get("/getStyleTagList", StyleTag.getList)
+router.get("/getStyleTagList", StyleTag.getList);
 
-export default router.routes()
+router.get("/getStyleSizeList", StyleSize.getList);
+router.post("/addStyleSize", StyleSize.add);
+
+export default router.routes();

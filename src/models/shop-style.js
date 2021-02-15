@@ -7,10 +7,7 @@ import uniqueValidator from "mongoose-unique-validator";
  */
 const shopStyleSchema = new mongoose.Schema(
   {
-    size: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "size",
-    },
+    size: String,
     status: {
       type: Number,
       //   required: true,
@@ -20,6 +17,9 @@ const shopStyleSchema = new mongoose.Schema(
     price: Number,
     bagsNum: Number, // 中包数
     caseNum: Number, // 装箱数
+    stock: Number, //库存
+    numInBag: Number, // 中包装数
+    salesNumber: { type: Number, default: 0 }, //已售数量
     branch: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "branch",
@@ -45,6 +45,7 @@ const shopStyleSchema = new mongoose.Schema(
           ref: "color",
         },
         imgs: [String],
+        sizeWithQuantity: { type: Object, default: {} },
       },
     ],
   },
@@ -53,6 +54,13 @@ const shopStyleSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+shopStyleSchema.virtual("colorWithStyleImgs.colorObj", {
+  ref: "color",
+  localField: "colorWithStyleImgs.color",
+  foreignField: "_id",
+  justOne: true,
+});
 
 shopStyleSchema.plugin(uniqueValidator);
 shopStyleSchema.plugin(paginate);

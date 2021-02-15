@@ -1,4 +1,4 @@
-import Order from "../models/order";
+import Order from "../models/capsule-order";
 import User from "../models/user";
 import System from "../models/system";
 import { response } from "../utils";
@@ -60,7 +60,7 @@ export const clear = async (ctx, next) => {
 export const getMyList = async (ctx, next) => {
   try {
     const currentUser = await getCurrentUser(ctx);
-    const { isSend, goodsId } = ctx.request.query;
+    const { isSend, capsuleId } = ctx.request.query;
     const q = {
       user: mongoose.Types.ObjectId(currentUser._id),
       isDel: 0,
@@ -68,14 +68,13 @@ export const getMyList = async (ctx, next) => {
     if (typeof isSend !== "undefined") {
       q.isSend = isSend;
     }
-    if (typeof goodsId !== "undefined") {
-      q.goodsId = goodsId;
+    if (typeof capsuleId !== "undefined") {
+      q.capsuleId = capsuleId;
     }
     const data = await Order.find(q)
       .sort({ createdAt: -1 })
       .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
+        path: "orderData.items.capsuleStyle",
       })
       .populate("user")
       .lean();
@@ -101,10 +100,8 @@ export const getList = async (ctx, next) => {
     let data = await Order.find(q)
       .sort({ createdAt: -1 })
       .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
+        path: "orderData.items.capsuleStyle",
       })
-      .populate("orderData.size")
       .populate("user");
 
     ctx.body = response(true, data, "成功");
@@ -147,11 +144,10 @@ export const detail = async (ctx, next) => {
     const { _id } = ctx.request.query;
     const data = await Order.findById({ _id })
       .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
+        path: "orderData.items.capsuleStyle",
       })
       .populate("user")
-      .populate("orderData.size")
+
       .lean();
     ctx.body = response(true, data, "成功");
   } catch (err) {
