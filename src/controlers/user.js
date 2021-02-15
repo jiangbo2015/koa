@@ -113,20 +113,23 @@ export const getUserChannels = (ctx, next) => {
 
 export const add = async (ctx, next) => {
   try {
-    const {
-      account,
-      password,
-      role,
-      name,
-      channels,
-      ...others
-    } = ctx.request.body;
+    const { password = "123456", ...others } = ctx.request.body;
+    const { role, _id } = await getCurrentUser(ctx);
+    let userRole = 1;
+    switch (role) {
+      case 1:
+        userRole = 3;
+        break;
+      case 3:
+        userRole = 4;
+        break;
+      default:
+        userRole = 1;
+    }
     let user = new User({
-      account,
+      role: userRole,
+      owner: _id,
       password,
-      role,
-      name,
-      channels,
       ...others,
       // channels: {
       // 	cid: channels.split(","),

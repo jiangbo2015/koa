@@ -4,11 +4,10 @@ import uniqueValidator from "mongoose-unique-validator";
 
 const channelSchema = new mongoose.Schema(
   {
-    name: String,
-    remark: String,
-    owner: String,
-    goodId: String,
-    code: String,
+    remark: String, // 备注
+    owner: String, //所属人
+    assignedId: String, //被分配ID
+    codename: String, //代号
     empower: Number,
     styles: [
       {

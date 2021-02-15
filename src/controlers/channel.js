@@ -66,8 +66,22 @@ export const del = async (ctx, next) => {
 
 export const update = async (ctx, next) => {
   try {
-    const { _id, ...others } = ctx.request.body;
-    let data = await Channel.findByIdAndUpdate({ _id }, others);
+    const { _id, assignedId, codename, owner, ...others } = ctx.request.body;
+    let data = null;
+    if (_id) {
+      data = await Channel.findByIdAndUpdate({ _id }, others);
+    } else {
+      data = await Channel.findOne({ assignedId, codename, owner });
+
+      console.log("data", data);
+      if (data && data._id) {
+        data = await Channel.findByIdAndUpdate({ _id: data._id }, others);
+      } else {
+        const body = ctx.request.body;
+        let channel = new Channel(body);
+        data = await channel.save();
+      }
+    }
     ctx.body = response(true, data);
   } catch (err) {
     console.log(err);

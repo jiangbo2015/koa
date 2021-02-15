@@ -17,6 +17,7 @@ import order from "./order";
 import branch from "./branch";
 import branchKind from "./branch-kind";
 import test from "./test";
+import channel from "./channel";
 
 const router = new Router({
   prefix: "/api",
@@ -24,6 +25,7 @@ const router = new Router({
 
 router.use("/user", user);
 router.use("/common", common);
+router.use("/channel", channel);
 router.use("/goods", goods);
 router.use("/goodsbase", goodsbase);
 router.use("/branch", branch);
