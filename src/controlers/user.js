@@ -184,16 +184,34 @@ export const getList = async (ctx, next) => {
 
 export const getOwnList = async (ctx, next) => {
   try {
-    // const { role } = ctx.request.query
+    const { search = "" } = ctx.request.query;
     const currentUser = await getCurrentUser(ctx);
     let data = await User.find({
-      role: 3,
-      channels: {
-        $in: currentUser.channels
+      owner: currentUser._id,
+      isDel: 0,
+      name: {
+        $regex: new RegExp(search, "i")
       }
-    }).populate({
-      path: "channels"
     });
+    ctx.body = response(true, data);
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+
+export const delOwnUser = async (ctx, next) => {
+  try {
+    const { ids } = ctx.request.body;
+    let data = await User.updateMany(
+      {
+        _id: {
+          $in: ids
+        }
+      },
+      {
+        isDel: 1
+      }
+    );
     ctx.body = response(true, data);
   } catch (err) {
     ctx.body = response(false, null, err.message);

@@ -67,6 +67,7 @@ router.get("/getList", User.getList);
  *    {"success": true, "data": {}}
  */
 router.get("/getOwnList", User.getOwnList);
+router.post("/delOwnUser", User.delOwnUser);
 
 /**
  * @api {post} /user/delete 删除用户
