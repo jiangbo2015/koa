@@ -160,7 +160,18 @@ export const detail = async (ctx, next) => {
 
 export const orderRank = async (ctx, next) => {
   try {
+    const { startDate, endDate } = ctx.request.query;
+    const match = {};
+    if (startDate) {
+      match.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate)
+      };
+    }
     const data = await Order.aggregate([
+      {
+        $match: match
+      },
       {
         $unwind: "$orderData"
       },
@@ -186,7 +197,18 @@ export const orderRank = async (ctx, next) => {
 
 export const styleRank = async (ctx, next) => {
   try {
+    const { startDate, endDate } = ctx.request.query;
+    const match = {};
+    if (startDate) {
+      match.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate)
+      };
+    }
     const data = await Order.aggregate([
+      {
+        $match: match
+      },
       {
         $unwind: "$orderData"
       },
@@ -212,7 +234,18 @@ export const styleRank = async (ctx, next) => {
 
 export const userRank = async (ctx, next) => {
   try {
+    const { startDate, endDate } = ctx.request.query;
+    const match = {};
+    if (startDate) {
+      match.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate)
+      };
+    }
     const data = await Order.aggregate([
+      {
+        $match: match
+      },
       {
         $unwind: "$orderData"
       },
