@@ -19,18 +19,18 @@ const channelSchema = new mongoose.Schema(
           ref: "style",
         },
         price: Number,
-        plainColors: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "color",
-          },
-        ],
-        flowerColors: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "color",
-          },
-        ],
+      },
+    ],
+    plainColors: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "color",
+      },
+    ],
+    flowerColors: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "color",
       },
     ],
     capsuleStyles: [

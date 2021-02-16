@@ -60,19 +60,19 @@ export const update = async (ctx, next) => {
     let data = null;
     if (_id) {
       data = await Channel.findByIdAndUpdate({ _id }, others);
+      ctx.body = response(true, data);
     } else {
       data = await Channel.findOne({ assignedId, codename, owner });
-
-      console.log("data", data);
       if (data && data._id) {
         data = await Channel.findByIdAndUpdate({ _id: data._id }, others);
+        ctx.body = response(true, data);
       } else {
         const body = { ...ctx.request.body, owner };
         let channel = new Channel(body);
         data = await channel.save();
+        ctx.body = response(true, data);
       }
     }
-    ctx.body = response(true, data);
   } catch (err) {
     console.log(err);
     ctx.body = response(false, null, err.message);

@@ -1,4 +1,5 @@
 import Branch from "../models/branch";
+import BranchKind from "../models/branch-kind";
 import { response } from "../utils";
 
 export const add = async (ctx, next) => {
@@ -17,8 +18,22 @@ export const getList = async (ctx, next) => {
   try {
     let { query } = ctx.request;
     query.isDel = 0;
-    let data = await Branch.find(query);
-    ctx.body = response(true, data, "成功");
+    const resData = [];
+    const data = await Branch.find(query);
+    for (let i = 0; i < data.length; i++) {
+      const bk = await BranchKind.find({ isDel: 0, branch: data[i]._id });
+      const { createdAt, isDel, namecn, nameen, updatedAt, _id } = data[i];
+      resData.push({
+        createdAt,
+        isDel,
+        namecn,
+        nameen,
+        updatedAt,
+        _id,
+        children: bk,
+      });
+    }
+    ctx.body = response(true, resData, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }

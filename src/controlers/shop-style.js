@@ -17,7 +17,14 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
   try {
-    let { code, name, branch, page = 1, limit = 20 } = ctx.request.query;
+    let {
+      code,
+      name,
+      branch,
+      branchKind,
+      page = 1,
+      limit = 20,
+    } = ctx.request.query;
 
     let q = {};
     if (typeof name !== "undefined") {
@@ -35,6 +42,9 @@ export const getList = async (ctx, next) => {
     }
     if (typeof branch !== "undefined") {
       q.branch = branch;
+    }
+    if (typeof branchKind !== "undefined") {
+      q.branchKind = branchKind;
     }
 
     let data = await ShopStyle.paginate(q, {

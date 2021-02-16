@@ -17,15 +17,12 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
   try {
-    let { capsule, name, page = 1, limit = 20 } = ctx.request.query;
+    let { capsule, code, name, page = 1, limit = 20 } = ctx.request.query;
 
     let q = {};
-    if (typeof name !== "undefined") {
-      q.namecn = {
-        $regex: new RegExp(name, "i"),
-      };
-      q.nameen = {
-        $regex: new RegExp(name, "i"),
+    if (typeof code !== "undefined") {
+      q.code = {
+        $regex: new RegExp(code, "i"),
       };
     }
     if (typeof capsule !== "undefined") {
