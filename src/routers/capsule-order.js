@@ -1,5 +1,4 @@
 import Router from "koa-router";
-
 import * as Order from "../controlers/capsule-order";
 
 const router = new Router();
@@ -62,5 +61,8 @@ router.post("/delete", Order.del);
 router.post("/clear", Order.clear);
 router.post("/update", Order.update);
 router.post("/postDownload", Order.postDownload);
+router.get("/orderRank", Order.orderRank);
+router.get("/styleRank", Order.styleRank);
+router.get("/userRank", Order.userRank);
 
 export default router.routes();

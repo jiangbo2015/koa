@@ -1,19 +1,14 @@
+import xl from "excel4node";
+import fs from "fs";
+import fse from "fs-extra";
+import _ from "lodash";
+import moment from "moment";
+import path from "path";
 import Order from "../models/shop-order";
 import User from "../models/user";
-import System from "../models/system";
 import { response } from "../utils";
 // import dataURL2Blob from "../utils/dataURL2Blob"
 import { getCurrentUser } from "./user";
-import mongoose from "mongoose";
-import json2xls from "json2xls";
-import fs from "fs";
-import fse from "fs-extra";
-import path from "path";
-import xl from "excel4node";
-import _ from "lodash";
-
-import Mail from "../utils/mail";
-import moment from "moment";
 
 export const add = async (ctx, next) => {
   try {
@@ -56,8 +51,9 @@ export const getMyList = async (ctx, next) => {
   try {
     const currentUser = await getCurrentUser(ctx);
     const q = {
-      user: mongoose.Types.ObjectId(currentUser._id),
-      isDel: 0,
+      //   user: mongoose.Types.ObjectId(currentUser._id),
+      user: currentUser._id,
+      isDel: 0
     };
     const data = await Order.find(q)
       .sort({ createdAt: -1 })
@@ -75,7 +71,7 @@ export const getList = async (ctx, next) => {
   try {
     const { userId } = ctx.request.query;
     let q = {
-      isDel: 0,
+      isDel: 0
     };
     if (userId) {
       q.user = userId;
@@ -98,21 +94,25 @@ export const getAllList = async (ctx, next) => {
     const { orderNo, userName } = ctx.request.query;
     let q = {
       isSend: 1,
-      isDel: 0,
+      isDel: 0
     };
     let data = {};
 
     if (orderNo) {
       q._id = orderNo;
-      await Order.find(q).sort({ createdAt: -1 }).populate("user");
+      await Order.find(q)
+        .sort({ createdAt: -1 })
+        .populate("user");
     } else {
       if (userName) {
         const res = await User.findOne({
-          name: userName,
+          name: userName
         });
         q.user = res ? res._id : null;
       }
-      data = await Order.find(q).sort({ createdAt: -1 }).populate("user");
+      data = await Order.find(q)
+        .sort({ createdAt: -1 })
+        .populate("user");
     }
 
     ctx.body = response(true, data, "成功");
@@ -128,6 +128,101 @@ export const detail = async (ctx, next) => {
       .populate("user")
       .populate("shopStyle")
       .lean();
+    ctx.body = response(true, data, "成功");
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+
+export const orderRank = async (ctx, next) => {
+  try {
+    const data = await Order.aggregate([
+      {
+        $unwind: "$orderData"
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          value: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          date: "$_id",
+          value: 1
+        }
+      }
+    ]);
+    ctx.body = response(true, data, "成功");
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+
+export const styleRank = async (ctx, next) => {
+  try {
+    const data = await Order.aggregate([
+      {
+        $unwind: "$orderData"
+      },
+      {
+        $group: {
+          _id: "$orderData.styleNos",
+          value: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          styleNos: "$_id",
+          value: 1
+        }
+      }
+    ]);
+    ctx.body = response(true, data, "成功");
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+
+export const userRank = async (ctx, next) => {
+  try {
+    const data = await Order.aggregate([
+      {
+        $unwind: "$orderData"
+      },
+      {
+        $group: {
+          _id: "$user",
+          value: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          user: "$_id",
+          value: 1
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "userInfo"
+        }
+      },
+      {
+        $unwind: "$userInfo"
+      },
+      {
+        $project: {
+          user: "$userInfo.name",
+          value: 1
+        }
+      }
+    ]);
     ctx.body = response(true, data, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
@@ -157,14 +252,14 @@ export const download = async (ctx, next) => {
     const order = await Order.findById({ _id })
       .populate({
         path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
+        populate: "styleAndColor.styleId styleAndColor.colorIds"
       })
       .populate("user")
       .populate("orderData.size")
       .lean();
     let maxSize = 1;
-    order.orderData.map((o) => {
-      let itemMax = _.maxBy(o.items, (i) => i.sizeInfo.length);
+    order.orderData.map(o => {
+      let itemMax = _.maxBy(o.items, i => i.sizeInfo.length);
       maxSize =
         maxSize > itemMax.sizeInfo.length ? maxSize : itemMax.sizeInfo.length;
     });
@@ -180,16 +275,16 @@ export const download = async (ctx, next) => {
         type: "pattern",
         bgColor: "#fff0e5",
         fgColor: "#fff0e5",
-        patternType: "solid",
-      },
+        patternType: "solid"
+      }
     });
     const deepStyle = wb.createStyle({
       fill: {
         type: "pattern",
         bgColor: "#cccccc",
         patternType: "solid",
-        fgColor: "#cccccc",
-      },
+        fgColor: "#cccccc"
+      }
     });
 
     let orderUser = `下单人：${order.user.name}(账号：${order.user.account})`;
@@ -197,10 +292,18 @@ export const download = async (ctx, next) => {
     // Head
     let row = 2;
 
-    ws.cell(row, 1).string("").style(headerStyle);
-    ws.cell(row, 2).string("样衣编号").style(headerStyle);
-    ws.cell(row, 3).string("颜色").style(headerStyle);
-    ws.cell(row, 4).string("款式图").style(headerStyle);
+    ws.cell(row, 1)
+      .string("")
+      .style(headerStyle);
+    ws.cell(row, 2)
+      .string("样衣编号")
+      .style(headerStyle);
+    ws.cell(row, 3)
+      .string("颜色")
+      .style(headerStyle);
+    ws.cell(row, 4)
+      .string("款式图")
+      .style(headerStyle);
     ws.cell(row, 5, row, 4 + maxSize, true)
       .string("尺码/配比")
       .style(headerStyle);
@@ -220,7 +323,7 @@ export const download = async (ctx, next) => {
       .string(`总价/${rateSign}`)
       .style(headerStyle);
     let styleCount = 1;
-    order.orderData.map((groupData) => {
+    order.orderData.map(groupData => {
       // Insert Size
       row++;
       groupData.size.values.map((v, vIndex) => {
@@ -232,11 +335,11 @@ export const download = async (ctx, next) => {
       groupData.items.map((item, itemIndex) => {
         row++;
         let styleNos = item.favorite.styleAndColor
-          .map((x) => x.styleId.styleNo)
+          .map(x => x.styleId.styleNo)
           .toString();
 
         let colorCodes = item.favorite.styleAndColor
-          .map((x) => x.colorIds.map((c) => c.code).toString())
+          .map(x => x.colorIds.map(c => c.code).toString())
           .toString();
         console.log("colorCodes", colorCodes);
         ws.cell(row, 1).number(styleCount++);
@@ -273,7 +376,7 @@ export const download = async (ctx, next) => {
         ws.cell(row, 7 + maxSize).number(allSum);
 
         let piecePrice = 0;
-        let prices = item.favorite.styleAndColor.map((x) => {
+        let prices = item.favorite.styleAndColor.map(x => {
           let signal = (x.styleId.price * rateVal).toFixed(2);
           piecePrice += x.styleId.price;
           return signal;
@@ -306,7 +409,7 @@ export const download = async (ctx, next) => {
     // koaSend(ctx, `xlsx/${order.orderNo}.xlsx`)
 
     ctx.body = response(true, {
-      url: `xlsx/${order.orderNo}-${timeString}.xlsx`,
+      url: `xlsx/${order.orderNo}-${timeString}.xlsx`
     });
   } catch (err) {
     console.error(err);
@@ -322,19 +425,19 @@ export const postDownload = async (ctx, next) => {
       _id,
       rateSign = "¥",
       rateVal = 1,
-      orderItemImages,
+      orderItemImages
     } = ctx.request.body;
     const order = await Order.findById({ _id })
       .populate({
         path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
+        populate: "styleAndColor.styleId styleAndColor.colorIds"
       })
       .populate("user")
       .populate("orderData.size")
       .lean();
     let maxSize = 1;
-    order.orderData.map((o) => {
-      let itemMax = _.maxBy(o.items, (i) => i.sizeInfo.length);
+    order.orderData.map(o => {
+      let itemMax = _.maxBy(o.items, i => i.sizeInfo.length);
       maxSize =
         maxSize > itemMax.sizeInfo.length ? maxSize : itemMax.sizeInfo.length;
     });
@@ -350,31 +453,31 @@ export const postDownload = async (ctx, next) => {
         type: "pattern",
         bgColor: "#fff0e5",
         fgColor: "#fff0e5",
-        patternType: "solid",
+        patternType: "solid"
       },
       alignment: {
         horizontal: "center",
-        vertical: "center",
-      },
+        vertical: "center"
+      }
     });
     const deepStyle = wb.createStyle({
       fill: {
         type: "pattern",
         bgColor: "#cccccc",
         patternType: "solid",
-        fgColor: "#cccccc",
+        fgColor: "#cccccc"
       },
       alignment: {
         horizontal: "center",
-        vertical: "center",
-      },
+        vertical: "center"
+      }
     });
 
     const centerStyle = wb.createStyle({
       alignment: {
         horizontal: "center",
-        vertical: "center",
-      },
+        vertical: "center"
+      }
     });
 
     let orderUser = `下单人：${order.user.name}(账号：${order.user.account})`;
@@ -384,10 +487,18 @@ export const postDownload = async (ctx, next) => {
     // Head
     let row = 2;
 
-    ws.cell(row, 1).string("").style(headerStyle);
-    ws.cell(row, 2).string("样衣编号").style(headerStyle);
-    ws.cell(row, 3).string("颜色").style(headerStyle);
-    ws.cell(row, 4).string("款式图").style(headerStyle);
+    ws.cell(row, 1)
+      .string("")
+      .style(headerStyle);
+    ws.cell(row, 2)
+      .string("样衣编号")
+      .style(headerStyle);
+    ws.cell(row, 3)
+      .string("颜色")
+      .style(headerStyle);
+    ws.cell(row, 4)
+      .string("款式图")
+      .style(headerStyle);
     ws.cell(row, 5, row, 4 + maxSize, true)
       .string("尺码/配比")
       .style(headerStyle);
@@ -407,7 +518,7 @@ export const postDownload = async (ctx, next) => {
       .string(`总价/${rateSign}`)
       .style(headerStyle);
     let styleCount = 1;
-    order.orderData.map((groupData) => {
+    order.orderData.map(groupData => {
       // Insert Size
       row++;
       groupData.size.values.map((v, vIndex) => {
@@ -422,18 +533,22 @@ export const postDownload = async (ctx, next) => {
         row++;
 
         let styleNos = item.favorite.styleAndColor
-          .map((x) => x.styleId.styleNo)
+          .map(x => x.styleId.styleNo)
           .toString();
 
         let colorCodes = item.favorite.styleAndColor
-          .map((x) => x.colorIds.map((c) => c.code).join("\n "))
+          .map(x => x.colorIds.map(c => c.code).join("\n "))
           .toString();
         // console.log("colorCodes", colorCodes)
         ws.cell(row, 1)
           .number(styleCount++)
           .style(centerStyle);
-        ws.cell(row, 2).string(styleNos).style(centerStyle);
-        ws.cell(row, 3).string(colorCodes).style(centerStyle);
+        ws.cell(row, 2)
+          .string(styleNos)
+          .style(centerStyle);
+        ws.cell(row, 3)
+          .string(colorCodes)
+          .style(centerStyle);
         ws.cell(row, 4).style(centerStyle);
         ws.column(4).setWidth(18);
 
@@ -454,9 +569,9 @@ export const postDownload = async (ctx, next) => {
                 col: 4,
                 colOff: "0.2in",
                 row,
-                rowOff: `${imageContextHeight * 0.012}in`,
-              },
-            },
+                rowOff: `${imageContextHeight * 0.012}in`
+              }
+            }
           });
           imageContextHeight += parseInt(orderItemImages[fsId].frontHeight, 10);
         }
@@ -488,7 +603,7 @@ export const postDownload = async (ctx, next) => {
           .style(centerStyle);
 
         let piecePrice = 0;
-        let prices = item.favorite.styleAndColor.map((x) => {
+        let prices = item.favorite.styleAndColor.map(x => {
           let signal = (x.styleId.price * rateVal).toFixed(2);
           piecePrice += x.styleId.price;
           return signal;
@@ -525,7 +640,7 @@ export const postDownload = async (ctx, next) => {
     // koaSend(ctx, `xlsx/${order.orderNo}.xlsx`)
 
     ctx.body = response(true, {
-      url: `xlsx/${order.orderNo}-${timeString}.xlsx`,
+      url: `xlsx/${order.orderNo}-${timeString}.xlsx`
     });
 
     // orderItemImages
