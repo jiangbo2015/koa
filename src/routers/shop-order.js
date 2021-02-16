@@ -1,5 +1,4 @@
 import Router from "koa-router";
-
 import * as ShopOrder from "../controlers/shop-order";
 
 const router = new Router();
@@ -26,6 +25,7 @@ router.post("/add", ShopOrder.add);
  *    {"success": true, "data": {}}
  */
 router.get("/getList", ShopOrder.getList);
+router.get("/getMyList", ShopOrder.getMyList);
 
 /**
  * @api {post} /ShopOrder/update 更新
