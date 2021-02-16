@@ -25,7 +25,7 @@ router.post("/add", Channel.add);
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getList", Channel.getList);
+router.get("/getMyAdminList", Channel.getMyAdminList);
 
 /**
  * @api {post} /Channel/update 更新

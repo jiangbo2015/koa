@@ -29,7 +29,9 @@ export const getList = async (ctx, next) => {
       };
     }
     if (typeof code !== "undefined") {
-      q.code = code;
+      q.code = {
+        $regex: new RegExp(code, "i"),
+      };
     }
     if (typeof branch !== "undefined") {
       q.branch = branch;

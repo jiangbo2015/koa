@@ -5,27 +5,50 @@ import uniqueValidator from "mongoose-unique-validator";
 const channelSchema = new mongoose.Schema(
   {
     remark: String, // 备注
-    owner: String, //所属人
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    }, //所属人
     assignedId: String, //被分配ID
     codename: String, //代号
-    empower: Number,
+    // empower: Number,
     styles: [
       {
-        styleId: String,
+        style: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "style",
+        },
         price: Number,
-        plainColors: Array,
-        flowerColors: Array,
+        plainColors: [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "color",
+          },
+        ],
+        flowerColors: [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "color",
+          },
+        ],
       },
     ],
     capsuleStyles: [
       {
-        styleId: String,
+        style: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "shopStyle",
+        },
         price: Number,
       },
     ],
     shopStyles: [
       {
-        styleId: String,
+        style: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "style",
+        },
+
         price: Number,
       },
     ],

@@ -2,7 +2,7 @@ import Channel from "../models/channel";
 import Color from "../models/color";
 import User from "../models/user";
 import { response } from "../utils";
-
+import { getCurrentUser } from "./user";
 /**导出excel */
 // var json2xls = require("json2xls")
 // import fs from "fs"
@@ -21,34 +21,22 @@ export const add = async (ctx, next) => {
   }
 };
 
-export const getList = async (ctx, next) => {
-  const { page = 1, limit = 20 } = ctx.request.query;
+export const getMyAdminList = async (ctx, next) => {
   try {
-    let data = await Channel.paginate({}, { page, limit: parseInt(limit) });
-    let temp = { ...data };
-    let result = {
-      docs: [],
-      map: {},
-      limit: data.limit,
-      page: data.page,
-      pages: data.pages,
-      total: data.total,
-    };
-    for (let i = 0; i < temp.docs.length; i++) {
-      let channel = temp.docs[i];
-      let cObj = await User.findOne({
-        role: 1,
-        channels: { $in: [channel._id] },
-      });
-      result.docs[i] = channel;
-      if (cObj && cObj.name) {
-        result.map[channel._id] = cObj.name;
-      }
-      // console.log("productorName", channel)
+    const currentUser = await getCurrentUser(ctx);
+    const { assignedId } = ctx.request.query;
+    let q = {};
+    if (assignedId) {
+      q.assignedId = assignedId;
     }
-    ctx.body = response(true, result);
+    // if (owner) {
+    q.owner = currentUser._id;
+    // }
+
+    let data = await Channel.find(q).sort({ codename: 1 });
+
+    ctx.body = response(true, data, "成功");
   } catch (err) {
-    console.log(err);
     ctx.body = response(false, null, err.message);
   }
 };
@@ -66,7 +54,9 @@ export const del = async (ctx, next) => {
 
 export const update = async (ctx, next) => {
   try {
-    const { _id, assignedId, codename, owner, ...others } = ctx.request.body;
+    const { _id, assignedId, codename, ...others } = ctx.request.body;
+    const currentUser = await getCurrentUser(ctx);
+    const owner = currentUser._id;
     let data = null;
     if (_id) {
       data = await Channel.findByIdAndUpdate({ _id }, others);
@@ -77,7 +67,7 @@ export const update = async (ctx, next) => {
       if (data && data._id) {
         data = await Channel.findByIdAndUpdate({ _id: data._id }, others);
       } else {
-        const body = ctx.request.body;
+        const body = { ...ctx.request.body, owner };
         let channel = new Channel(body);
         data = await channel.save();
       }
