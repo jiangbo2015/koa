@@ -1,8 +1,7 @@
-import Router from "koa-router"
+import Router from "koa-router";
+import * as Order from "../controlers/order";
 
-import * as Order from "../controlers/order"
-
-const router = new Router()
+const router = new Router();
 
 /**
  * @api {post} /order/add 添加订单
@@ -15,7 +14,7 @@ const router = new Router()
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/add", Order.add)
+router.post("/add", Order.add);
 
 /**
  * @api {get} /order/getList 获取所有订单列表
@@ -26,7 +25,7 @@ router.post("/add", Order.add)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getList", Order.getList)
+router.get("/getList", Order.getList);
 
 /**
  * @api {get} /order/getMyList 获取该用户订单列表
@@ -39,7 +38,7 @@ router.get("/getList", Order.getList)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getMyList", Order.getMyList)
+router.get("/getMyList", Order.getMyList);
 
 /**
  * @api {post} /order/send 发送订单
@@ -52,15 +51,18 @@ router.get("/getMyList", Order.getMyList)
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/send", Order.send)
+router.post("/send", Order.send);
 
-router.get("/download", Order.download)
-router.get("/detail", Order.detail)
-router.get("/getAllList", Order.getAllList)
+router.get("/download", Order.download);
+router.get("/detail", Order.detail);
+router.get("/getAllList", Order.getAllList);
 
-router.post("/delete", Order.del)
-router.post("/clear", Order.clear)
-router.post("/update", Order.update)
-router.post("/postDownload", Order.postDownload)
+router.post("/delete", Order.del);
+router.post("/clear", Order.clear);
+router.post("/update", Order.update);
+router.post("/postDownload", Order.postDownload);
+router.get("/orderRank", Order.orderRank);
+router.get("/styleRank", Order.styleRank);
+router.get("/userRank", Order.userRank);
 
-export default router.routes()
+export default router.routes();

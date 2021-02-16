@@ -134,6 +134,101 @@ export const detail = async (ctx, next) => {
   }
 };
 
+export const orderRank = async (ctx, next) => {
+  try {
+    const data = await Order.aggregate([
+      {
+        $unwind: "$orderData"
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          value: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          date: "$_id",
+          value: 1
+        }
+      }
+    ]);
+    ctx.body = response(true, data, "成功");
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+
+export const styleRank = async (ctx, next) => {
+  try {
+    const data = await Order.aggregate([
+      {
+        $unwind: "$orderData"
+      },
+      {
+        $group: {
+          _id: "$orderData.styleNos",
+          value: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          styleNos: "$_id",
+          value: 1
+        }
+      }
+    ]);
+    ctx.body = response(true, data, "成功");
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+
+export const userRank = async (ctx, next) => {
+  try {
+    const data = await Order.aggregate([
+      {
+        $unwind: "$orderData"
+      },
+      {
+        $group: {
+          _id: "$user",
+          value: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          user: "$_id",
+          value: 1
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "userInfo"
+        }
+      },
+      {
+        $unwind: "$userInfo"
+      },
+      {
+        $project: {
+          user: "$userInfo.name",
+          value: 1
+        }
+      }
+    ]);
+    ctx.body = response(true, data, "成功");
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+
 export const del = async (ctx, next) => {
   try {
     const { _id } = ctx.request.body;

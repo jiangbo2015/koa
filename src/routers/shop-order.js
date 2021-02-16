@@ -49,5 +49,8 @@ router.post("/update", ShopOrder.update);
  *    {"success": true, "data": {}}
  */
 router.post("/delete", ShopOrder.del);
+router.get("/orderRank", ShopOrder.orderRank);
+router.get("/styleRank", ShopOrder.styleRank);
+router.get("/userRank", ShopOrder.userRank);
 
 export default router.routes();
