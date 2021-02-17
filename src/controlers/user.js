@@ -4,7 +4,10 @@ import jwt from "jsonwebtoken";
 import path from "path";
 // import Channel from "../models/channel"
 import config from "../config";
+import CapsuleOrder from "../models/capsule-order";
 import Favorite from "../models/favorite";
+import Order from "../models/order";
+import ShopOrder from "../models/shop-order";
 import System from "../models/system";
 import User from "../models/user";
 import { response } from "../utils";
@@ -193,6 +196,47 @@ export const getOwnList = async (ctx, next) => {
         $regex: new RegExp(search, "i")
       }
     });
+    ctx.body = response(true, data);
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+
+export const getOwnOrderList = async (ctx, next) => {
+  try {
+    const currentUser = await getCurrentUser(ctx);
+    const q = {
+      user: currentUser._id,
+      isDel: 0
+    };
+    let order = await Order.find(q).populate();
+    let capsuleOrder = await CapsuleOrder.find(q).populate();
+    let shopOrder = await ShopOrder.find(q).populate();
+    ctx.body = response(true, {
+      order,
+      capsuleOrder,
+      shopOrder
+    });
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+
+export const delOwnOrder = async (ctx, next) => {
+  try {
+    const { _id, orderType } = ctx.request.body;
+    const OrderType = {
+      order: Order,
+      shop: ShopOrder,
+      capsule: CapsuleOrder
+    };
+    const data = await OrderType[orderType].findByIdAndUpdate(
+      { _id },
+      {
+        isDel: 1
+      }
+    );
+
     ctx.body = response(true, data);
   } catch (err) {
     ctx.body = response(false, null, err.message);
