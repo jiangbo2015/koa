@@ -14,7 +14,7 @@ webhooks.on("*", ({ id, name, payload }) => {
   let crmProd =
     "cd ../crm-prod && git pull && yarn && yarn build-prod && pm2 restart crm-prod";
   let miss =
-    "cd ../mrmiss2-dev && git pull && yarn && yarn build && pm2 restart miss";
+    "cd ../mrmiss2-dev && git pull && yarn && yarn build-test && pm2 restart miss";
   let missProd =
     "cd ../mm-next-prod && git pull && yarn && yarn build && pm2 restart miss-prod";
   console.log(payload.ref, "ref");
