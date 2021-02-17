@@ -175,5 +175,6 @@ router.post("/feedback", User.feedback);
 router.post("/changePwd", User.changePwd);
 router.get("/download", User.download);
 router.get("/getOwnOrderList", User.getOwnOrderList);
+router.post("/delOwnOrder", User.delOwnOrder);
 
 export default router.routes();
