@@ -12,6 +12,10 @@ const capsuleSchema = new mongoose.Schema(
       required: true,
       enum: [0, 1],
     },
+    isDel: {
+      type: Number,
+      default: 0,
+    },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",

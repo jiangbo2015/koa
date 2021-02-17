@@ -27,6 +27,8 @@ router.post("/add", Capsule.add);
  */
 router.get("/getList", Capsule.getList);
 
+router.get("/getVisibleList", Capsule.getVisibleList);
+
 /**
  * @api {post} /Capsule/update 更新
  * @apiName update

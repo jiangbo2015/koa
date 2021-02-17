@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
     account: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
     },
     name: { type: String, required: true },
     password: { type: String, required: true },
@@ -48,41 +48,60 @@ const userSchema = new mongoose.Schema(
     type: {
       type: Number,
       enum: [1, 2, 3, 4, 5], // 1零售店  2百货  3连锁店  4网店  5其它
-      default: 5
+      default: 5,
     },
     currency: {
       type: Number,
       enum: [0, 1, 2],
-      default: 0
+      default: 0,
     },
     role: {
       type: Number,
       required: true,
-      enum: [0, 1, 2, 3, 4] // 0管理员 1产品经理  2设计人员  3产品代理 4客户
+      enum: [0, 1, 2, 3, 4], // 0管理员 1产品经理  2设计人员  3产品代理 4客户
     },
     selectFavorites: Array,
     channels: [
       {
         codename: String,
-        assignedId: String
-      }
+        assignedId: String,
+        channel: { type: mongoose.Schema.Types.ObjectId, ref: "channel" },
+        empower: {
+          type: Boolean,
+          default: false,
+        },
+      },
     ],
+    channelEmpowerUserd: {
+      type: Boolean,
+      default: false,
+    },
+    innerDataUserd: {
+      type: Boolean,
+      default: false,
+    },
+    businessUserd: {
+      type: Boolean,
+      default: false,
+    },
     isDel: {
       type: Number,
-      default: 0
+      default: 0,
     },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
-    goods: [{ type: mongoose.Schema.Types.ObjectId, ref: "goods" }]
+    goods: [{ type: mongoose.Schema.Types.ObjectId, ref: "goods" }],
+    branchs: [{ type: mongoose.Schema.Types.ObjectId, ref: "branch" }],
+    capsules: [{ type: mongoose.Schema.Types.ObjectId, ref: "capsule" }],
   },
   {
     versionKey: false,
     timestamps: true,
     toObject: {
-      virtuals: true
+      virtuals: true,
     },
     toJSON: {
-      virtuals: true
-    }
+      virtuals: true,
+    },
   }
 );
 

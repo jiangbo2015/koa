@@ -36,6 +36,8 @@ router.post("/add", Branch.add);
  */
 router.get("/getList", Branch.getList);
 
+router.get("/getVisibleList", Branch.getVisibleList);
+
 /**
  * @api {post} /delete 删除尺寸
  * @apiName delete

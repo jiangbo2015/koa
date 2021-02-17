@@ -12,6 +12,10 @@ const capsuleStyleSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "capsule",
     },
+    isDel: {
+      type: Number,
+      default: 0,
+    },
     code: String,
     price: Number,
     colorWithStyleImgs: [

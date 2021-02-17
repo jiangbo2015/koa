@@ -1,6 +1,8 @@
 import Capsule from "../models/capsule";
+import User from "../models/user";
+
 import { response } from "../utils";
-import moment from "moment";
+import { getCurrentUser } from "./user";
 
 const codePrefix = {
   0: "S-",
@@ -84,6 +86,38 @@ export const del = async (ctx, next) => {
     ctx.body = response(true, data, "成功");
   } catch (err) {
     console.log(err);
+    ctx.body = response(false, null, err.message);
+  }
+};
+
+export const getVisibleList = async (ctx, next) => {
+  try {
+    const { name } = ctx.request.query;
+    let q = {};
+    if (name) {
+      q.name = name;
+    }
+    let data = await Capsule.find(q);
+    const user = await getCurrentUser(ctx);
+    let result = [];
+    if (user.role === 0) {
+      result = data;
+    } else if (user.role === 1) {
+      result = data.filter((d) => user.capsules.indexOf(d._id) >= 0);
+    } else {
+      // let channelId = user.channels[0]
+      // let channelInfo = await Channel.findById({ _id: channelId })
+      // const categories = channelInfo.categories
+      // console.log("categories", categories)
+      // result = data.filter((d) => {
+      // 	const ids = _.map(d.category, "id")
+      // 	const sames = _.intersection(ids, categories)
+      // 	return sames.length > 0
+      // })
+    }
+
+    ctx.body = response(true, result);
+  } catch (err) {
     ctx.body = response(false, null, err.message);
   }
 };
