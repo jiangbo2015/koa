@@ -176,5 +176,6 @@ router.post("/changePwd", User.changePwd);
 router.get("/download", User.download);
 router.get("/getOwnOrderList", User.getOwnOrderList);
 router.post("/delOwnOrder", User.delOwnOrder);
+router.post("/updateUsers", User.updateUsers);
 
 export default router.routes();
