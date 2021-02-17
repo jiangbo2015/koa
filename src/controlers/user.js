@@ -18,7 +18,7 @@ import Mail from "../utils/mail";
  * 获取token中的值
  * @param {*} token
  */
-const verify = token => jwt.verify(token.split(" ")[1], config.secret);
+const verify = (token) => jwt.verify(token.split(" ")[1], config.secret);
 
 export const login = async (ctx, next) => {
   const { account, password } = ctx.request.body;
@@ -69,7 +69,7 @@ export const getCurrentUserDetail = (ctx, next) => {
     try {
       const account = verify(ctx.headers.authorization);
       const data = await User.findOne({ account }).populate({
-        path: "channels"
+        path: "channels",
         // select: "-styles"
       });
 
@@ -88,21 +88,21 @@ export const getUserChannels = (ctx, next) => {
       const data = await User.findOne({ account })
         .populate({
           path: "channels",
-          select: "-styles"
+          select: "-styles",
         })
         .lean();
 
       const users = await User.find({
         channels: {
-          $in: channels
+          $in: channels,
         },
         role: 3,
         _id: {
-          $ne: _id
-        }
+          $ne: _id,
+        },
       }).populate({
         path: "channels",
-        select: "-styles"
+        select: "-styles",
       });
       data.users = users;
 
@@ -134,7 +134,7 @@ export const add = async (ctx, next) => {
       role: userRole,
       owner: _id,
       password,
-      ...others
+      ...others,
       // channels: {
       // 	cid: channels.split(","),
       // 	size: 10
@@ -173,8 +173,8 @@ export const updateUsers = async (ctx, next) => {
     let data = await User.updateMany(
       {
         _id: {
-          $in: ids
-        }
+          $in: ids,
+        },
       },
       others
     );
@@ -197,7 +197,7 @@ export const getList = async (ctx, next) => {
     }
     let data = await User.paginate(q, {
       page,
-      limit: parseInt(limit)
+      limit: parseInt(limit),
     });
     ctx.body = response(true, data);
   } catch (err) {
@@ -213,8 +213,8 @@ export const getOwnList = async (ctx, next) => {
       owner: currentUser._id,
       isDel: 0,
       name: {
-        $regex: new RegExp(search, "i")
-      }
+        $regex: new RegExp(search, "i"),
+      },
     });
     ctx.body = response(true, data);
   } catch (err) {
@@ -227,7 +227,7 @@ export const getOwnOrderList = async (ctx, next) => {
     const { userId } = ctx.request.query;
     const currentUser = await getCurrentUser(ctx);
     const q = {
-      isDel: 0
+      isDel: 0,
     };
     // 查询特定用户的订单
     if (userId) {
@@ -236,7 +236,7 @@ export const getOwnOrderList = async (ctx, next) => {
       // 查询属于当前用户的用户订单
       const users = await User.find({ owner: currentUser._id });
       q.user = {
-        $in: users.map(x => x._id)
+        $in: users.map((x) => x._id),
       };
     }
     let order = await Order.find({ ...q, isSend: 1 }).populate();
@@ -245,7 +245,7 @@ export const getOwnOrderList = async (ctx, next) => {
     ctx.body = response(true, {
       order,
       capsuleOrder,
-      shopOrder
+      shopOrder,
     });
   } catch (err) {
     ctx.body = response(false, null, err.message);
@@ -258,12 +258,12 @@ export const delOwnOrder = async (ctx, next) => {
     const OrderType = {
       order: Order,
       shop: ShopOrder,
-      capsule: CapsuleOrder
+      capsule: CapsuleOrder,
     };
     const data = await OrderType[orderType].findByIdAndUpdate(
       { _id },
       {
-        isDel: 1
+        isDel: 1,
       }
     );
 
@@ -279,11 +279,11 @@ export const delOwnUser = async (ctx, next) => {
     let data = await User.updateMany(
       {
         _id: {
-          $in: ids
-        }
+          $in: ids,
+        },
       },
       {
-        isDel: 1
+        isDel: 1,
       }
     );
     ctx.body = response(true, data);
@@ -299,7 +299,7 @@ export const addFavorite = async (ctx, next) => {
     const favorite = new Favorite({
       user: currentUser._id,
       styleAndColor,
-      goodId
+      goodId,
     });
     let data = await favorite.save();
     ctx.body = response(true, data);
@@ -315,16 +315,16 @@ export const addSelectFavorite = async (ctx, next) => {
     const favorite = await Favorite.findById({ _id });
     await User.findByIdAndUpdate(
       {
-        _id: currentUser._id
+        _id: currentUser._id,
       },
       {
-        selectFavorites: (currentUser.selectFavorites || []).concat(_id)
+        selectFavorites: (currentUser.selectFavorites || []).concat(_id),
       }
     );
     const newFav = new Favorite({
       user: currentUser._id,
       styleAndColor: favorite.styleAndColor,
-      extend: _id
+      extend: _id,
     });
     let data = await newFav.save();
     ctx.body = response(true, data);
@@ -350,8 +350,8 @@ export const getMySelectFavorite = async (ctx, next) => {
 
     const data = await Favorite.find({
       _id: {
-        $in: currentUser.selectFavorites
-      }
+        $in: currentUser.selectFavorites,
+      },
     }).select("_id");
     ctx.body = response(true, data);
   } catch (err) {
@@ -365,18 +365,18 @@ export const updateFavorite = async (ctx, next) => {
     const currentUser = await getCurrentUser(ctx);
     await Favorite.findByIdAndUpdate(
       {
-        _id
+        _id,
       },
       {
         $set: {
-          isDel: 1
-        }
+          isDel: 1,
+        },
       }
     );
 
     const favorite = new Favorite({
       user: currentUser._id,
-      styleAndColor
+      styleAndColor,
     });
     let data = await favorite.save();
 
@@ -391,12 +391,12 @@ export const deleteFavorite = async (ctx, next) => {
     const { _id } = ctx.request.body;
     let data = await Favorite.findByIdAndUpdate(
       {
-        _id
+        _id,
       },
       {
         $set: {
-          isDel: 1
-        }
+          isDel: 1,
+        },
       }
     );
     ctx.body = response(true, data);
@@ -412,14 +412,14 @@ export const getFavoriteList = async (ctx, next) => {
     let data = await Favorite.find({
       user: currentUser._id,
       goodId: goodsId,
-      isDel: 0
+      isDel: 0,
     })
       .populate({
         path: "styleAndColor.style",
         model: "style",
         populate: {
-          path: "plainColors.colorId flowerColors.colorId"
-        }
+          path: "plainColors.colorId flowerColors.colorId",
+        },
       })
       .populate("styleAndColor.colorIds")
       // .lean()
@@ -429,8 +429,8 @@ export const getFavoriteList = async (ctx, next) => {
 
     if (goodsId) {
       console.log("goodsId", goodsId);
-      data = data.filter(x =>
-        x.styleAndColor.some(y => y.style.goodsId.indexOf(goodsId) >= 0)
+      data = data.filter((x) =>
+        x.styleAndColor.some((y) => y.style.goodsId.indexOf(goodsId) >= 0)
       );
     }
 
@@ -445,30 +445,30 @@ export const selectFavoriteList = async (ctx, next) => {
     const currentUser = await getCurrentUser(ctx);
     const users = await User.find({
       channels: {
-        $in: currentUser.channels
+        $in: currentUser.channels,
       },
       _id: {
-        $ne: currentUser._id
-      }
+        $ne: currentUser._id,
+      },
     });
     let uids = [];
-    users.map(x => uids.push(x._id));
+    users.map((x) => uids.push(x._id));
     // let channels = []
     // console.log(currentUser.channels, "currentUser channels")
     // users.map(x => channels.push(x.channels))
     // console.log("uids--", uids, channels)
     let data = await Favorite.find({
       user: {
-        $in: uids
+        $in: uids,
       },
-      isDel: 0
+      isDel: 0,
     })
       .populate({
         path: "styleAndColor.style",
         model: "style",
         populate: {
-          path: "plainColors.colorId flowerColors.colorId size"
-        }
+          path: "plainColors.colorId flowerColors.colorId size",
+        },
       })
       .populate("styleAndColor.colorIds")
       // .lean()
@@ -487,7 +487,7 @@ export const updateMany = async (ctx, next) => {
     let data = await Favorite.updateMany(
       {},
       {
-        isDel: 0
+        isDel: 0,
       }
     );
     ctx.body = response(true, data);
@@ -517,7 +517,7 @@ export const feedback = async (ctx, next) => {
     }
     let html = "";
     const keys = Object.keys(body);
-    keys.map(x => (html += `<div>${body[x]}</div>`));
+    keys.map((x) => (html += `<div>${body[x]}</div>`));
 
     Mail(html, email);
     ctx.body = response(true, {});
@@ -526,7 +526,7 @@ export const feedback = async (ctx, next) => {
   }
 };
 
-const writeFile = json => {
+const writeFile = (json) => {
   var xls = json2xls(json);
   let relativePath = "xlsx/客户数据.xlsx";
   let absPath = path.join(__dirname, "../public/" + relativePath);
@@ -537,7 +537,7 @@ export const download = async (ctx, next) => {
   try {
     const data = await User.find({ role: 3 });
     // const channels = await Channel.find()
-    const json = data.map(x => ({
+    const json = data.map((x) => ({
       账号: x.account,
       姓名: x.name,
       密码: x.password,
@@ -548,7 +548,7 @@ export const download = async (ctx, next) => {
       所属通道: "",
       地址: `${x.countries}-${x.address}(${x.postcode})`,
       托运地址: `${x.shippingcountries}-${x.shippingaddress}(${x.shippingpostcode})`,
-      备注: x.remark
+      备注: x.remark,
 
       // channel: x.channels[0]
       // contact: x.contact,
@@ -557,7 +557,7 @@ export const download = async (ctx, next) => {
 
     ctx.body = response(true, {
       url: relativePath,
-      channels: []
+      channels: [],
     });
   } catch (err) {
     ctx.body = response(false, null, err.message);
@@ -572,10 +572,10 @@ export const changePwd = async (ctx, next) => {
     if (body.password === password) {
       await User.findByIdAndUpdate(
         {
-          _id
+          _id,
         },
         {
-          password: body.newPwd
+          password: body.newPwd,
         }
       );
       ctx.body = response(true, {});
