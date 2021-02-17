@@ -1,6 +1,7 @@
 import fs from "fs";
 import json2xls from "json2xls";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import path from "path";
 // import Channel from "../models/channel"
 import config from "../config";
@@ -204,9 +205,10 @@ export const getOwnList = async (ctx, next) => {
 
 export const getOwnOrderList = async (ctx, next) => {
   try {
+    const { userId } = ctx.request.query;
     const currentUser = await getCurrentUser(ctx);
     const q = {
-      user: currentUser._id,
+      user: userId ? mongoose.Types.ObjectId(userId) : currentUser._id,
       isDel: 0
     };
     let order = await Order.find(q).populate();
