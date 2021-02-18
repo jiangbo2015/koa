@@ -75,12 +75,27 @@ export const getList = async (ctx, next) => {
 
 export const update = async (ctx, next) => {
   try {
-    const { _id, ...others } = ctx.request.body;
-    let data = await Color.findByIdAndUpdate(
-      { _id },
-      { ...others },
-      { new: true }
-    );
+    const { _id, ids, ...others } = ctx.request.body;
+    let data = {};
+    if (ids) {
+      data = await Color.updateMany(
+        {
+          _id: {
+            $in: ids
+          }
+        },
+        {
+          ...others
+        }
+      );
+    } else {
+      data = await Color.findByIdAndUpdate(
+        { _id },
+        { ...others },
+        { new: true }
+      );
+    }
+
     ctx.body = response(true, data, "成功");
   } catch (err) {
     console.log(err);
