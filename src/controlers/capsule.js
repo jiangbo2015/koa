@@ -49,7 +49,7 @@ export const getList = async (ctx, next) => {
       sort: {
         createdAt: -1,
       },
-    }).lean();
+    });
 
     ctx.body = response(
       true,

@@ -1,5 +1,7 @@
 import Color from "../models/color";
 import { response } from "../utils";
+import Channel from "../models/channel";
+import { getCurrentUser } from "./user";
 
 const codePrefix = {
   0: "S-",
@@ -49,6 +51,31 @@ export const getList = async (ctx, next) => {
         $in: [goodsId],
       };
     }
+    const currentUser = await getCurrentUser(ctx);
+    let myChannel = null;
+    if (currentUser.role === 3 || currentUser.rolo === 4) {
+      let channel = currentUser.channels.find((x) => x.assignedId === goodsId);
+      let ids = [];
+      if (channel) {
+        if (channel.codename !== "A") {
+          myChannel = await Channel.findOne({
+            assignedId: channel.assignedId,
+            codename: channel.codename,
+          }).lean();
+          ids =
+            type == 1
+              ? myChannel.flowerColors.map((x) => x.toString())
+              : myChannel.plainColors.map((x) => x.toString());
+          q._id = {
+            $in: ids,
+          };
+        }
+      } else {
+        q._id = {
+          $in: ids,
+        };
+      }
+    }
     let data = await Color.paginate(q, {
       page,
       // 如果没有limit字段，不分页
@@ -81,11 +108,11 @@ export const update = async (ctx, next) => {
       data = await Color.updateMany(
         {
           _id: {
-            $in: ids
-          }
+            $in: ids,
+          },
         },
         {
-          ...others
+          ...others,
         }
       );
     } else {
