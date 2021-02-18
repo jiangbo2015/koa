@@ -37,7 +37,7 @@ const channelSchema = new mongoose.Schema(
       {
         style: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "shopStyle",
+          ref: "capsuleStyle",
         },
         price: Number,
       },
@@ -46,7 +46,7 @@ const channelSchema = new mongoose.Schema(
       {
         style: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "style",
+          ref: "shopStyle",
         },
 
         price: Number,
