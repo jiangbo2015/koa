@@ -123,18 +123,19 @@ export const add = async (ctx, next) => {
     switch (role) {
       case 1:
         userRole = 3;
+        break;
+      case 3:
+        userRole = 4;
+        break;
+      default: {
+        userRole = 1;
         others = {
           ...others,
           businessUserd: true,
           channelEmpowerUserd: true,
           innerDataUserd: true,
         };
-        break;
-      case 3:
-        userRole = 4;
-        break;
-      default:
-        userRole = 1;
+      }
     }
     let user = new User({
       role: userRole,
