@@ -117,12 +117,18 @@ export const getUserChannels = (ctx, next) => {
 
 export const add = async (ctx, next) => {
   try {
-    const { password = "123456", ...others } = ctx.request.body;
+    let { password = "123456", ...others } = ctx.request.body;
     const { role, _id } = await getCurrentUser(ctx);
     let userRole = 1;
     switch (role) {
       case 1:
         userRole = 3;
+        others = {
+          ...others,
+          businessUserd: true,
+          channelEmpowerUserd: true,
+          innerDataUserd: true,
+        };
         break;
       case 3:
         userRole = 4;
@@ -302,6 +308,15 @@ export const addFavorite = async (ctx, next) => {
       goodId,
     });
     let data = await favorite.save();
+    ctx.body = response(true, data);
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+export const addFavorites = async (ctx, next) => {
+  try {
+    const { favorites } = ctx.request.body;
+    const data = await Favorite.insertMany(favorites);
     ctx.body = response(true, data);
   } catch (err) {
     ctx.body = response(false, null, err.message);

@@ -177,5 +177,6 @@ router.get("/download", User.download);
 router.get("/getOwnOrderList", User.getOwnOrderList);
 router.post("/delOwnOrder", User.delOwnOrder);
 router.post("/updateUsers", User.updateUsers);
+router.post("/addFavorites", User.addFavorites);
 
 export default router.routes();
