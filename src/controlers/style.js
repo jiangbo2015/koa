@@ -1,6 +1,7 @@
 import Style from "../models/style";
-// import Channel from "../models/channel"
+import Channel from "../models/channel";
 import Goods from "../models/goods";
+import User from "../models/user";
 import { response } from "../utils";
 import { getCurrentUser } from "./user";
 import _ from "lodash";
@@ -70,7 +71,8 @@ export const getUserStyleList = async (ctx, next) => {
     let { tag, styleNo, _id } = ctx.request.query;
     let goodData = await Goods.findById({ _id }).lean();
     const currentUser = await getCurrentUser(ctx);
-    let styleIds = [];
+    let channel = currentUser.channels.find((x) => x.assignedId === _id);
+
     let q = {};
     if (tag) {
       q.tags = {
@@ -85,36 +87,7 @@ export const getUserStyleList = async (ctx, next) => {
     }
 
     let categoryData = [];
-
-    if (currentUser.role === 3) {
-      // let channel = await Channel.findById({ _id: currentUser.channels[0] })
-      // channel.styles.map((x) => styleIds.push(x.styleId))
-
-      let match = {
-        _id: {
-          $in: styleIds,
-        },
-        isDel: 0,
-        ...q,
-      };
-
-      // for (let i = 0; i < goodData.category.length; i++) {
-      // 	let c = goodData.category[i]
-      // 	if (_.intersection([c._id.toString()], channel.categories).length > 0) {
-      // 		let styles = await Style.find({
-      // 			isDel: 0,
-      // 			...match,
-      // 			categoryId: { $in: [c._id.toString()] },
-      // 		})
-      // 		categoryData.push({
-      // 			name: c.name,
-      // 			v: "1.4",
-      // 			_id: c._id,
-      // 			styles: styles,
-      // 		})
-      // 	}
-      // }
-    } else {
+    if ((channel && channel.codename === "A") || currentUser.role === 1) {
       for (let i = 0; i < goodData.category.length; i++) {
         let c = goodData.category[i];
         let styles = await Style.find({
@@ -126,6 +99,36 @@ export const getUserStyleList = async (ctx, next) => {
           name: c.name,
           _id: c._id,
           styles: styles,
+        });
+      }
+    } else if (channel) {
+      const myChannel = await Channel.findOne({
+        assignedId: channel.assignedId,
+        codename: channel.codename,
+      })
+        .populate({
+          path: "styles.style",
+        })
+        .lean();
+      const styles = myChannel.styles.map((x) => ({
+        ...x.style,
+        price: x.price,
+      }));
+      for (let i = 0; i < goodData.category.length; i++) {
+        let c = goodData.category[i];
+        const filterData = [];
+        styles.map((x) => {
+          let f = x.categoryId.find((t) => t == c._id.toString());
+          console.log(f);
+          if (f) {
+            filterData.push(x);
+          }
+        });
+
+        categoryData.push({
+          name: c.name,
+          _id: c._id,
+          styles: filterData,
         });
       }
     }

@@ -77,21 +77,24 @@ export const getVisibleList = async (ctx, next) => {
     let data = await Branch.find(q).sort({ sort: 1 });
     const user = await getCurrentUser(ctx);
     let result = [];
-    if (user.role === 1) {
-      result = data.filter((d) => user.branchs.indexOf(d._id) >= 0);
-    } else {
-      // let channelId = user.channels[0]
-      // let channelInfo = await Channel.findById({ _id: channelId })
-      // const categories = channelInfo.categories
-      // console.log("categories", categories)
-      // result = data.filter((d) => {
-      // 	const ids = _.map(d.category, "id")
-      // 	const sames = _.intersection(ids, categories)
-      // 	return sames.length > 0
-      // })
+    let resData = [];
+    result = data.filter((d) => user.branchs.indexOf(d._id) >= 0);
+
+    for (let i = 0; i < result.length; i++) {
+      const bk = await BranchKind.find({ isDel: 0, branch: result[i]._id });
+      const { createdAt, isDel, namecn, nameen, updatedAt, _id } = result[i];
+      resData.push({
+        createdAt,
+        isDel,
+        namecn,
+        nameen,
+        updatedAt,
+        _id,
+        children: bk,
+      });
     }
 
-    ctx.body = response(true, result);
+    ctx.body = response(true, resData);
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }

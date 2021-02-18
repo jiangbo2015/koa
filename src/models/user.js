@@ -65,11 +65,6 @@ const userSchema = new mongoose.Schema(
       {
         codename: String,
         assignedId: String,
-        channel: { type: mongoose.Schema.Types.ObjectId, ref: "channel" },
-        empower: {
-          type: Boolean,
-          default: false,
-        },
       },
     ],
     channelEmpowerUserd: {

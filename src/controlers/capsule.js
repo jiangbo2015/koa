@@ -1,5 +1,6 @@
 import Capsule from "../models/capsule";
 import User from "../models/user";
+import Channel from "../models/channel";
 
 import { response } from "../utils";
 import { getCurrentUser } from "./user";
@@ -48,7 +49,8 @@ export const getList = async (ctx, next) => {
       sort: {
         createdAt: -1,
       },
-    });
+    }).lean();
+
     ctx.body = response(
       true,
       {
@@ -102,18 +104,8 @@ export const getVisibleList = async (ctx, next) => {
     let result = [];
     if (user.role === 0) {
       result = data;
-    } else if (user.role === 1) {
-      result = data.filter((d) => user.capsules.indexOf(d._id) >= 0);
     } else {
-      // let channelId = user.channels[0]
-      // let channelInfo = await Channel.findById({ _id: channelId })
-      // const categories = channelInfo.categories
-      // console.log("categories", categories)
-      // result = data.filter((d) => {
-      // 	const ids = _.map(d.category, "id")
-      // 	const sames = _.intersection(ids, categories)
-      // 	return sames.length > 0
-      // })
+      result = data.filter((d) => user.capsules.indexOf(d._id) >= 0);
     }
 
     ctx.body = response(true, result);

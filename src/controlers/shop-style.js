@@ -1,6 +1,7 @@
 import ShopStyle from "../models/shop-style";
 import { response } from "../utils";
-
+import { getCurrentUser } from "./user";
+import Channel from "../models/channel";
 export const add = async (ctx, next) => {
   try {
     const { ...others } = ctx.request.body;
@@ -46,6 +47,28 @@ export const getList = async (ctx, next) => {
     if (typeof branchKind !== "undefined") {
       q.branchKind = branchKind;
     }
+    const currentUser = await getCurrentUser(ctx);
+    let myChannel = null;
+    if (currentUser.role === 3 || currentUser.rolo === 4) {
+      let channel = currentUser.channels.find((x) => x.assignedId === branch);
+      let ids = [];
+      if (channel) {
+        if (channel.codename !== "A") {
+          myChannel = await Channel.findOne({
+            assignedId: channel.assignedId,
+            codename: channel.codename,
+          }).lean();
+          ids = myChannel.shopStyles.map((cs) => cs.style);
+          q._id = {
+            $in: ids,
+          };
+        }
+      } else {
+        q._id = {
+          $in: ids,
+        };
+      }
+    }
 
     let data = await ShopStyle.paginate(q, {
       populate: {
@@ -59,7 +82,18 @@ export const getList = async (ctx, next) => {
       sort: {
         createdAt: -1,
       },
+      lean: true,
     });
+    if (myChannel) {
+      data.docs = data.docs.map((x) => {
+        let f = myChannel.shopStyles.find((cs) => cs.style == x._id.toString());
+        f = f ? f : {};
+        return {
+          ...x,
+          price: f.price,
+        };
+      });
+    }
     ctx.body = response(
       true,
       {

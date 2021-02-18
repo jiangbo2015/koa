@@ -3,7 +3,7 @@ import { response } from "../utils";
 
 const codePrefix = {
   0: "S-",
-  1: "H-"
+  1: "H-",
 };
 
 export const add = async (ctx, next) => {
@@ -14,7 +14,7 @@ export const add = async (ctx, next) => {
       type,
       value,
       code,
-      ...others
+      ...others,
     });
     let data = await color.save();
     ctx.body = response(true, data, "成功");
@@ -25,12 +25,19 @@ export const add = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
   try {
-    let { type, code, page = 1, limit = 20, goodsId } = ctx.request.query;
+    let {
+      type,
+      code,
+      page = 1,
+      limit = 20,
+      goodsId,
+      createdAt = -1,
+    } = ctx.request.query;
 
     let q = {};
     if (typeof code !== "undefined") {
       q.code = {
-        $regex: new RegExp(code, "i")
+        $regex: new RegExp(code, "i"),
       };
     }
     if (typeof type !== "undefined") {
@@ -39,7 +46,7 @@ export const getList = async (ctx, next) => {
 
     if (goodsId) {
       q.goodsId = {
-        $in: [goodsId]
+        $in: [goodsId],
       };
     }
     let data = await Color.paginate(q, {
@@ -48,15 +55,15 @@ export const getList = async (ctx, next) => {
       // limit: limit ? limit : 10000,
       limit: parseInt(limit),
       sort: {
-        createdAt: -1
-      }
+        createdAt,
+      },
     });
     ctx.body = response(
       true,
       {
         ...data,
         v: "1.6",
-        q
+        q,
       },
       "成功v2"
     );
@@ -106,8 +113,8 @@ export const del = async (ctx, next) => {
     if (ids) {
       data = await Color.deleteMany({
         _id: {
-          $in: ids
-        }
+          $in: ids,
+        },
       });
     }
 

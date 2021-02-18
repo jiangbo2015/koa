@@ -1,5 +1,7 @@
-import CapsuleStyle from "../models/capsule-style";
 import { response } from "../utils";
+import Channel from "../models/channel";
+import CapsuleStyle from "../models/capsule-style";
+import { getCurrentUser } from "./user";
 
 export const add = async (ctx, next) => {
   try {
@@ -28,7 +30,28 @@ export const getList = async (ctx, next) => {
     if (typeof capsule !== "undefined") {
       q.capsule = capsule;
     }
-
+    const currentUser = await getCurrentUser(ctx);
+    let myChannel = null;
+    if (currentUser.role === 3 || currentUser.rolo === 4) {
+      let channel = currentUser.channels.find((x) => x.assignedId === capsule);
+      let ids = [];
+      if (channel) {
+        if (channel.codename !== "A") {
+          myChannel = await Channel.findOne({
+            assignedId: channel.assignedId,
+            codename: channel.codename,
+          }).lean();
+          ids = myChannel.capsuleStyles.map((cs) => cs.style);
+          q._id = {
+            $in: ids,
+          };
+        }
+      } else {
+        q._id = {
+          $in: ids,
+        };
+      }
+    }
     let data = await CapsuleStyle.paginate(q, {
       page,
       // 如果没有limit字段，不分页
@@ -56,7 +79,21 @@ export const getList = async (ctx, next) => {
       sort: {
         createdAt: -1,
       },
+      lean: true,
     });
+    if (myChannel) {
+      data.docs = data.docs.map((x) => {
+        let f = myChannel.capsuleStyles.find(
+          (cs) => cs.style == x._id.toString()
+        );
+        f = f ? f : {};
+        return {
+          ...x,
+          price: f.price,
+        };
+      });
+    }
+
     ctx.body = response(
       true,
       {
