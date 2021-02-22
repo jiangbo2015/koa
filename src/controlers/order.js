@@ -182,14 +182,20 @@ export const orderRank = async (ctx, next) => {
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m", date: "$createTime" } },
-          value: { $sum: 1 }
+          amount: {
+            $sum: {
+              $multiply: ["$orderData.rowTotal", "$orderData.rowTotalPrice"]
+            }
+          },
+          number: { $sum: 1 }
         }
       },
       {
         $project: {
           _id: 0,
           date: "$_id",
-          value: 1
+          amount: 1,
+          number: 1
         }
       }
     ]);

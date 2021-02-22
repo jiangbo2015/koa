@@ -154,14 +154,18 @@ export const orderRank = async (ctx, next) => {
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
-          value: { $sum: 1 }
+          number: { $sum: 1 },
+          amount: {
+            $first: "$sumPrice"
+          }
         }
       },
       {
         $project: {
           _id: 0,
           date: "$_id",
-          value: 1
+          number: 1,
+          amount: 1
         }
       }
     ]);
