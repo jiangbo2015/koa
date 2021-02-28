@@ -54,15 +54,23 @@ router.get("/getMyList", Order.getMyList);
 router.post("/send", Order.send);
 
 router.get("/download", Order.download);
+
 router.get("/detail", Order.detail);
+
 router.get("/getAllList", Order.getAllList);
 
 router.post("/delete", Order.del);
+
 router.post("/clear", Order.clear);
+
 router.post("/update", Order.update);
+
 router.post("/postDownload", Order.postDownload);
+
 router.get("/orderRank", Order.orderRank);
+
 router.get("/styleRank", Order.styleRank);
+
 router.get("/userRank", Order.userRank);
 
 export default router.routes();
