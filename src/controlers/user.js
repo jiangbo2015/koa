@@ -301,12 +301,13 @@ export const delOwnUser = async (ctx, next) => {
 
 export const addFavorite = async (ctx, next) => {
   try {
-    const { styleAndColor, goodId } = ctx.request.body;
+    const { styleAndColor, goodId, goodCategory } = ctx.request.body;
     const currentUser = await getCurrentUser(ctx);
     const favorite = new Favorite({
       user: currentUser._id,
       styleAndColor,
       goodId,
+      goodCategory,
     });
     let data = await favorite.save();
     ctx.body = response(true, data);
