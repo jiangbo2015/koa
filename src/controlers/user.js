@@ -42,8 +42,8 @@ export const login = async (ctx, next) => {
 export const getCurrentUser = (ctx, next) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const account = verify(ctx.headers.authorization);
-      const data = await User.findOne({ account });
+      const account = ctx.headers ? verify(ctx.headers.authorization) : false;
+      const data = account ? await User.findOne({ account }) : {};
       // .populate({
       // 	path: "channels",
       // 	select: "-styles"

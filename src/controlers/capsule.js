@@ -101,7 +101,7 @@ export const getVisibleList = async (ctx, next) => {
       q.name = name;
     }
     let data = await Capsule.find(q).lean();
-    const user = await getCurrentUser(ctx);
+    const user = await getCurrentUser(ctx, next);
     let result = [];
     if (user.role === 0) {
       result = data;
@@ -114,12 +114,17 @@ export const getVisibleList = async (ctx, next) => {
         ...ctx,
         request: { ...ctx.request, query: { capsule: result[i]._id } },
       });
-      let group = lodash.groupBy(capsuleStyles, (cs) => cs.goodCategory.name);
+      let group = lodash.groupBy(
+        capsuleStyles.filter((x) => !!x.goodCategory),
+        (cs) => cs.goodCategory.name
+      );
       let children = Object.values(group).map((x) => ({
         namecn: x[0].goodCategory.name,
         nameen: x[0].goodCategory.enname,
       }));
-      result.children = children;
+      console.log("capsuleStyles", capsuleStyles);
+      console.log("children", children);
+      result[i].children = children;
     }
 
     ctx.body = response(true, result);
