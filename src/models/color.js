@@ -26,6 +26,7 @@ const colorSchema = new mongoose.Schema(
     height: Number,
     size: Number,
     sizeOrigin: Number,
+    colorSystem: { type: Number, default: 0 },
     namecn: String,
     nameen: String,
     relatedColors: [
