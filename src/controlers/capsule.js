@@ -1,9 +1,10 @@
 import Capsule from "../models/capsule";
-import User from "../models/user";
+import lodash from "lodash";
 import Channel from "../models/channel";
 
 import { response } from "../utils";
 import { getCurrentUser } from "./user";
+import { getList } from "./capsule-style";
 
 const codePrefix = {
   0: "S-",
@@ -99,13 +100,26 @@ export const getVisibleList = async (ctx, next) => {
     if (name) {
       q.name = name;
     }
-    let data = await Capsule.find(q);
+    let data = await Capsule.find(q).lean();
     const user = await getCurrentUser(ctx);
     let result = [];
     if (user.role === 0) {
       result = data;
     } else {
       result = data.filter((d) => user.capsules.indexOf(d._id) >= 0);
+    }
+
+    for (let i = 0; i < result.length; i++) {
+      let capsuleStyles = await getList({
+        ...ctx,
+        request: { ...ctx.request, query: { capsule: result[i]._id } },
+      });
+      let group = lodash.groupBy(capsuleStyles, (cs) => cs.goodCategory.name);
+      let children = Object.values(group).map((x) => ({
+        namecn: x[0].goodCategory.name,
+        nameen: x[0].goodCategory.enname,
+      }));
+      result.children = children;
     }
 
     ctx.body = response(true, result);
