@@ -20,7 +20,13 @@ export const add = async (ctx, next) => {
 export const getList = async (ctx, next) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let { capsule, code, name, page = 1, limit = 20 } = ctx.request.query;
+      let {
+        capsule,
+        code,
+        goodCategray,
+        page = 1,
+        limit = 20,
+      } = ctx.request.query;
 
       let q = {};
       if (typeof code !== "undefined") {
@@ -31,8 +37,11 @@ export const getList = async (ctx, next) => {
       if (typeof capsule !== "undefined") {
         q.capsule = capsule;
       }
+      if (typeof goodCategray !== "undefined") {
+        q["goodCategray.enname"] = goodCategray;
+      }
       const currentUser = await getCurrentUser(ctx);
-      console.log("capsule-style getList", capsule);
+      console.log("capsule-style getList", q);
       let myChannel = null;
       if (currentUser.role === 3 || currentUser.rolo === 4) {
         let channel = currentUser.channels.find(

@@ -119,6 +119,7 @@ export const getVisibleList = async (ctx, next) => {
         (cs) => cs.goodCategory.name
       );
       let children = Object.values(group).map((x) => ({
+        _id: `${x[0].goodCategory.name}-${result[i]._id}`,
         namecn: x[0].goodCategory.name,
         nameen: x[0].goodCategory.enname,
       }));
