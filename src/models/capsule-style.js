@@ -16,8 +16,15 @@ const capsuleStyleSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    weight: {
+      type: Number,
+      default: 0,
+    },
     code: String,
-    price: Number,
+    price: {
+      type: Number,
+      default: 0,
+    },
     goodCategory: Object,
     colorWithStyleImgs: [
       {
