@@ -10,7 +10,7 @@ const codePrefix = {
   1: "H-",
 };
 
-export const add = async (ctx, next) => {
+export const add = async (ctx) => {
   try {
     const { ...others } = ctx.request.body;
     // const code = codePrefix[type] + moment().format("YYMMDDHHMMss")
@@ -24,7 +24,7 @@ export const add = async (ctx, next) => {
   }
 };
 
-export const getList = async (ctx, next) => {
+export const getList = async (ctx) => {
   try {
     let { status, name, page = 1, limit = 20 } = ctx.request.query;
 
