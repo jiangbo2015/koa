@@ -66,7 +66,10 @@ const styleSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    weight: Number,
+    weight: {
+      type: Number,
+      default: 0,
+    },
     vposition: String,
     // hposition: String,
     size: String,
