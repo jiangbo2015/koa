@@ -4,7 +4,7 @@ import Channel from "../models/channel";
 
 import { response } from "../utils";
 import { getCurrentUser } from "./user";
-import { getList } from "./capsule-style";
+import { getList as csGetList } from "./capsule-style";
 
 const codePrefix = {
   0: "S-",
@@ -110,7 +110,7 @@ export const getVisibleList = async (ctx, next) => {
     }
 
     for (let i = 0; i < result.length; i++) {
-      let capsuleStyles = await getList({
+      let capsuleStyles = await csGetList({
         ...ctx,
         request: { ...ctx.request, query: { capsule: result[i]._id } },
       });
