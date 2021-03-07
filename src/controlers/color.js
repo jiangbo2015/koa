@@ -33,9 +33,17 @@ export const getList = async (ctx, next) => {
       page = 1,
       limit = 20,
       goodsId,
-      createdAt = -1,
+      sort = "time",
     } = ctx.request.query;
 
+    let sortProps =
+      sort === "time"
+        ? {
+            createdAt: -1,
+          }
+        : {
+            colorSystem: -1,
+          };
     let q = {};
     if (typeof code !== "undefined") {
       q.code = {
@@ -53,7 +61,7 @@ export const getList = async (ctx, next) => {
     }
     const currentUser = await getCurrentUser(ctx);
     let myChannel = null;
-    if (currentUser.role === 3 || currentUser.rolo === 4) {
+    if (currentUser.role === 3 || currentUser.role === 4) {
       let channel = currentUser.channels.find((x) => x.assignedId === goodsId);
       let ids = [];
       if (channel) {
@@ -81,9 +89,7 @@ export const getList = async (ctx, next) => {
       // 如果没有limit字段，不分页
       // limit: limit ? limit : 10000,
       limit: parseInt(limit),
-      sort: {
-        createdAt,
-      },
+      sort: sortProps,
     });
     ctx.body = response(
       true,
