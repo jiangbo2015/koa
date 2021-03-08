@@ -25,7 +25,10 @@ const capsuleStyleSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    goodCategory: Object,
+    goodCategory: {
+      name: String,
+      enname: String,
+    },
     colorWithStyleImgs: [
       {
         type: {
