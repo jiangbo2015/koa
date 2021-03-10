@@ -133,7 +133,7 @@ export const getUserStyleList = async (ctx, next) => {
       }
     }
 
-    ctx.body = response(true, { category: categoryData }, "成功");
+    ctx.body = response(true, { category: categoryData, channel }, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
