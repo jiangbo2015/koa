@@ -7,7 +7,12 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
     },
+    isReaded: {
+      type: Number,
+      default: 0,
+    },
     date: String,
+    orderNo: String,
     isDel: {
       type: Number,
       default: 0,

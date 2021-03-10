@@ -11,7 +11,10 @@ const orderSchema = new mongoose.Schema(
     capsuleId: String,
     orderGoodNo: String,
     packageCount: Number,
-
+    isReaded: {
+      type: Number,
+      default: 0,
+    },
     date: String,
     isSend: {
       type: Number,

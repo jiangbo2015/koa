@@ -231,20 +231,39 @@ export const getOwnList = async (ctx, next) => {
 
 export const getOwnOrderList = async (ctx, next) => {
   try {
-    const { userId } = ctx.request.query;
+    const { userId, timeRange, selectedUsers, queryKey } = ctx.request.query;
     const currentUser = await getCurrentUser(ctx);
     const q = {
       isDel: 0,
     };
+    if (queryKey) {
+      q.orderNo = {
+        $regex: new RegExp(queryKey, "i"),
+      };
+    }
+    if (timeRange) {
+      q.createdAt = {
+        $gt: new Date(timeRange[0]).toISOString(),
+        $lt: new Date(timeRange[1]).toISOString(),
+      };
+    }
     // 查询特定用户的订单
     if (userId) {
       q.user = mongoose.Types.ObjectId(userId);
     } else {
       // 查询属于当前用户的用户订单
-      const users = await User.find({ owner: currentUser._id });
-      q.user = {
-        $in: users.map((x) => x._id),
-      };
+      if (selectedUsers) {
+        // 特定用户
+        q.user = {
+          $in: selectedUsers,
+        };
+      } else {
+        //所有用户
+        const users = await User.find({ owner: currentUser._id });
+        q.user = {
+          $in: users.map((x) => x._id),
+        };
+      }
     }
     let order = await Order.find({ ...q, isSend: 1 }).populate();
     let capsuleOrder = await CapsuleOrder.find({ ...q, isSend: 1 }).populate();
@@ -261,20 +280,53 @@ export const getOwnOrderList = async (ctx, next) => {
 
 export const delOwnOrder = async (ctx, next) => {
   try {
-    const { _id, orderType } = ctx.request.body;
+    const { _id, orderType, ids } = ctx.request.body;
     const OrderType = {
       order: Order,
       shop: ShopOrder,
       capsule: CapsuleOrder,
     };
-    const data = await OrderType[orderType].findByIdAndUpdate(
-      { _id },
-      {
-        isDel: 1,
-      }
-    );
-
-    ctx.body = response(true, data);
+    if (ids) {
+      let data = await Order.updateMany(
+        {
+          _id: {
+            $in: ids,
+          },
+        },
+        {
+          isDel: 1,
+        }
+      );
+      data = await ShopOrder.updateMany(
+        {
+          _id: {
+            $in: ids,
+          },
+        },
+        {
+          isDel: 1,
+        }
+      );
+      data = await CapsuleOrder.updateMany(
+        {
+          _id: {
+            $in: ids,
+          },
+        },
+        {
+          isDel: 1,
+        }
+      );
+      ctx.body = response(true, data);
+    } else {
+      const data = await OrderType[orderType].findByIdAndUpdate(
+        { _id },
+        {
+          isDel: 1,
+        }
+      );
+      ctx.body = response(true, data);
+    }
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
