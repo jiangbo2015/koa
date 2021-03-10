@@ -85,7 +85,7 @@ export const getUserStyleList = async (ctx, next) => {
         $regex: new RegExp(styleNo, "i"),
       };
     }
-
+    let myC = {};
     let categoryData = [];
     if ((channel && channel.codename === "A") || currentUser.role === 1) {
       for (let i = 0; i < goodData.category.length; i++) {
@@ -114,6 +114,7 @@ export const getUserStyleList = async (ctx, next) => {
         ...x.style,
         price: x.price,
       }));
+      myC = myChannel;
       for (let i = 0; i < goodData.category.length; i++) {
         let c = goodData.category[i];
         const filterData = [];
@@ -133,7 +134,7 @@ export const getUserStyleList = async (ctx, next) => {
       }
     }
 
-    ctx.body = response(true, { category: categoryData, channel }, "成功");
+    ctx.body = response(true, { category: categoryData, channel, myC }, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
