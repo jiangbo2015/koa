@@ -106,6 +106,7 @@ export const getUserStyleList = async (ctx, next) => {
       const myChannel = await Channel.findOne({
         assignedId: channel.assignedId,
         codename: channel.codename,
+        owner: currentUser.owner,
       })
         .populate({
           path: "styles.style",
