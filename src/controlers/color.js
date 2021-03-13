@@ -69,6 +69,7 @@ export const getList = async (ctx, next) => {
           myChannel = await Channel.findOne({
             assignedId: channel.assignedId,
             codename: channel.codename,
+            owner: currentUser.owner,
           }).lean();
           ids =
             type == 1

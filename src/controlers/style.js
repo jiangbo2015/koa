@@ -85,7 +85,7 @@ export const getUserStyleList = async (ctx, next) => {
         $regex: new RegExp(styleNo, "i"),
       };
     }
-    let myC = { step: 0 };
+    let myC = { step: "start" };
     let categoryData = [];
     if ((channel && channel.codename === "A") || currentUser.role === 1) {
       for (let i = 0; i < goodData.category.length; i++) {
@@ -102,7 +102,7 @@ export const getUserStyleList = async (ctx, next) => {
         });
       }
     } else if (channel) {
-      myC = { step: 1 };
+      myC = { step: "else if" };
       const myChannel = await Channel.findOne({
         assignedId: channel.assignedId,
         codename: channel.codename,
