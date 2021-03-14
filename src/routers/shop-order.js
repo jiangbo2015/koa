@@ -52,5 +52,5 @@ router.post("/delete", ShopOrder.del);
 router.get("/orderRank", ShopOrder.orderRank);
 router.get("/styleRank", ShopOrder.styleRank);
 router.get("/userRank", ShopOrder.userRank);
-
+router.post("/postDownload", ShopOrder.postDownload);
 export default router.routes();

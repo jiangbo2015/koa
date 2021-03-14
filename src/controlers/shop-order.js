@@ -1,13 +1,14 @@
 import xl from "excel4node";
 import fs from "fs";
 import fse from "fs-extra";
+
 import _ from "lodash";
 import moment from "moment";
 import path from "path";
 import Order from "../models/shop-order";
 import User from "../models/user";
-import { response } from "../utils";
-// import dataURL2Blob from "../utils/dataURL2Blob"
+import { response, downImg } from "../utils";
+import dataURL2Blob from "../utils/dataURL2Blob";
 import { getCurrentUser } from "./user";
 
 export const add = async (ctx, next) => {
@@ -446,7 +447,7 @@ export const download = async (ctx, next) => {
 
 export const postDownload = async (ctx, next) => {
   console.log("download");
-  const baseUrl = "https://we-idesign.com";
+  const baseUrl = "https://ik.imagekit.io/";
   try {
     const {
       _id,
@@ -455,19 +456,11 @@ export const postDownload = async (ctx, next) => {
       orderItemImages,
     } = ctx.request.body;
     const order = await Order.findById({ _id })
-      .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
-      })
+      .populate("shopStyle")
       .populate("user")
-      .populate("orderData.size")
       .lean();
     let maxSize = 1;
-    order.orderData.map((o) => {
-      let itemMax = _.maxBy(o.items, (i) => i.sizeInfo.length);
-      maxSize =
-        maxSize > itemMax.sizeInfo.length ? maxSize : itemMax.sizeInfo.length;
-    });
+
     // console.log("orderItemImages", orderItemImages)
     // Create a new instance of a Workbook class
     let wb = new xl.Workbook();
@@ -499,7 +492,6 @@ export const postDownload = async (ctx, next) => {
         vertical: "center",
       },
     });
-
     const centerStyle = wb.createStyle({
       alignment: {
         horizontal: "center",
@@ -508,135 +500,65 @@ export const postDownload = async (ctx, next) => {
     });
 
     let orderUser = `下单人：${order.user.name}(账号：${order.user.account})`;
-    ws.cell(1, 1, 1, 9 + maxSize, true)
-      .string(orderUser)
-      .style(centerStyle);
+    ws.cell(1, 1, 1, 8, true).string(orderUser).style(centerStyle);
+
     // Head
     let row = 2;
 
-    ws.cell(row, 1).string("").style(headerStyle);
-    ws.cell(row, 2).string("样衣编号").style(headerStyle);
-    ws.cell(row, 3).string("颜色").style(headerStyle);
-    ws.cell(row, 4).string("款式图").style(headerStyle);
-    ws.cell(row, 5, row, 4 + maxSize, true)
-      .string("尺码/配比")
-      .style(headerStyle);
-    ws.cell(row, 5 + maxSize)
-      .string("中包数")
-      .style(headerStyle);
-    ws.cell(row, 6 + maxSize)
-      .string("箱数")
-      .style(headerStyle);
-    ws.cell(row, 7 + maxSize)
-      .string("件数")
-      .style(headerStyle);
-    ws.cell(row, 8 + maxSize)
-      .string(`单价/${rateSign}`)
-      .style(headerStyle);
-    ws.cell(row, 9 + maxSize)
-      .string(`总价/${rateSign}`)
-      .style(headerStyle);
-    let styleCount = 1;
-    order.orderData.map((groupData) => {
-      // Insert Size
+    ws.column(1).setWidth(16);
+    ws.cell(row, 1).string("产品图").style(headerStyle);
+    ws.cell(row, 2).string("款式编号").style(headerStyle);
+    ws.cell(row, 3).string("尺码段").style(headerStyle);
+    ws.cell(row, 4).string("装数").style(headerStyle);
+    ws.cell(row, 5).string("份数").style(headerStyle);
+    ws.cell(row, 6).string("总数量").style(headerStyle);
+    ws.cell(row, 7).string("单价").style(headerStyle);
+    ws.cell(row, 8).string("总金额").style(headerStyle);
+
+    //
+
+    // let styleCount = 1;
+    for (let i = 0; i < order.orderData.length; i++) {
+      let groupData = order.orderData[i];
       row++;
-      groupData.size.values.map((v, vIndex) => {
-        ws.cell(row, 5 + vIndex)
-          .string(v.name)
-          .style(centerStyle);
-        ws.cell(row, 1, row, 9 + maxSize).style(deepStyle);
+      ws.row(row).setHeight(100);
+      let imageContextHeight = 10;
+      let shopStyleObj = groupData.shopStyleObj;
+      let copies = shopStyleObj.numInBag; //装数
+      let productImgUrl = `${baseUrl}${shopStyleObj.colorWithStyleImgs[0].imgs[0]}?tr=w-120,h-120,cm-pad_resize`;
+      let opts = {
+        url: productImgUrl,
+        encoding: null,
+      };
+      console.log("productImgUrl");
+      console.log(productImgUrl);
+      //  let path = "./1.jpg";
+      let r1 = await downImg(opts);
+      console.log("r1", r1);
+      ws.addImage({
+        image: r1,
+        type: "picture",
+        position: {
+          type: "oneCellAnchor",
+          from: {
+            col: 1,
+            row,
+          },
+        },
       });
-      const itemsLength = groupData.items.length;
+      ws.cell(row, 2).string(shopStyleObj.code).style(centerStyle);
+      ws.cell(row, 3).string(shopStyleObj.size).style(centerStyle);
+      ws.cell(row, 4).number(shopStyleObj.numInBag).style(centerStyle);
+      ws.cell(row, 5).number(groupData.count).style(centerStyle);
+      ws.cell(row, 6)
+        .number(copies * groupData.count)
+        .style(centerStyle);
+      ws.cell(row, 7).number(shopStyleObj.price).style(centerStyle);
+      ws.cell(row, 8)
+        .number(copies * groupData.count * shopStyleObj.price)
+        .style(centerStyle);
+    }
 
-      groupData.items.map((item, itemIndex) => {
-        row++;
-
-        let styleNos = item.favorite.styleAndColor
-          .map((x) => x.styleId.styleNo)
-          .toString();
-
-        let colorCodes = item.favorite.styleAndColor
-          .map((x) => x.colorIds.map((c) => c.code).join("\n "))
-          .toString();
-        // console.log("colorCodes", colorCodes)
-        ws.cell(row, 1)
-          .number(styleCount++)
-          .style(centerStyle);
-        ws.cell(row, 2).string(styleNos).style(centerStyle);
-        ws.cell(row, 3).string(colorCodes).style(centerStyle);
-        ws.cell(row, 4).style(centerStyle);
-        ws.column(4).setWidth(18);
-
-        let imageContextHeight = 10;
-        for (let i = 0; i < item.favorite.styleAndColor.length; i++) {
-          const fsitem = item.favorite.styleAndColor[i].styleId;
-          let fsId = `${item.favorite._id}-${fsitem._id}`;
-          let imagePath = path.join(
-            __dirname,
-            "../public" + `/${orderItemImages[fsId].frontImageUrl}`
-          );
-          ws.addImage({
-            image: fse.readFileSync(imagePath),
-            type: "picture",
-            position: {
-              type: "oneCellAnchor",
-              from: {
-                col: 4,
-                colOff: "0.2in",
-                row,
-                rowOff: `${imageContextHeight * 0.012}in`,
-              },
-            },
-          });
-          imageContextHeight += parseInt(orderItemImages[fsId].frontHeight, 10);
-        }
-        // px 转磅
-        ws.row(row).setHeight(
-          ((imageContextHeight + 20 * item.favorite.styleAndColor.length) * 5) /
-            7
-        );
-
-        let allSizeSum = 0;
-        item.sizeInfo.map((v, index) => {
-          ws.cell(row, 5 + index)
-            .number(v)
-            .style(centerStyle);
-          allSizeSum += v;
-        });
-        let allSum = allSizeSum * groupData.cnts * groupData.packageCount;
-        if (itemIndex < 1) {
-          ws.cell(row, 5 + maxSize, row + itemsLength - 1, 5 + maxSize, true)
-            .number(groupData.packageCount)
-            .style(centerStyle);
-          ws.cell(row, 6 + maxSize, row + itemsLength - 1, 6 + maxSize, true)
-            .number(groupData.cnts)
-            .style(centerStyle);
-        }
-
-        ws.cell(row, 7 + maxSize)
-          .number(allSum)
-          .style(centerStyle);
-
-        let piecePrice = 0;
-        let prices = item.favorite.styleAndColor.map((x) => {
-          let signal = (x.styleId.price * rateVal).toFixed(2);
-          piecePrice += x.styleId.price;
-          return signal;
-        });
-
-        let pricesStr = prices.toString();
-        let pricesAllOrice = (piecePrice * allSum * rateVal).toFixed(2);
-        ws.cell(row, 8 + maxSize)
-          .string(pricesStr)
-          .style(centerStyle);
-        ws.cell(row, 9 + maxSize)
-          .string(pricesAllOrice)
-          .style(centerStyle);
-      });
-    });
-    // ws.cell(1, 1, 1, 9 + maxSize, true).string(
-    // 	`下单人：${order.user.name}(账号：${order.user.account})`
-    // )
     let date = new Date();
     let timeString = date.getTime();
     // const relativePath = writeFile(json)

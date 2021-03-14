@@ -33,7 +33,7 @@ const orderSchema = new mongoose.Schema(
         styleNos: String,
         packageCount: Number,
         cnts: Number,
-
+        aboutCases: Number, //大约箱数
         rowTotal: Number,
         rowTotalPrice: Number,
         rowRemarks: String,
@@ -72,12 +72,14 @@ orderSchema.virtual("orderData.items.favorite", {
   foreignField: "_id",
   justOne: true,
 });
+
 orderSchema.virtual("orderData.size", {
   ref: "size",
   localField: "orderData.sizeId",
   foreignField: "_id",
   justOne: true,
 });
+
 // orderSchema.set("toObject", { virtuals: true })
 // orderSchema.set("toJSON", { virtuals: true })
 // orderSchema.virtual("favor").get(function() {

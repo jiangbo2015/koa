@@ -26,6 +26,7 @@ const orderSchema = new mongoose.Schema(
     },
     orderData: [
       {
+        aboutCases: Number, //大约箱数
         rowTotal: Number,
         rowTotalPrice: Number,
         rowRemarks: String,

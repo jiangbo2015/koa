@@ -62,7 +62,7 @@ export const getMyList = async (ctx, next) => {
     const { isSend, goodsId } = ctx.request.query;
     const q = {
       user: mongoose.Types.ObjectId(currentUser._id),
-      isDel: 0
+      isDel: 0,
     };
     if (typeof isSend !== "undefined") {
       q.isSend = isSend;
@@ -74,7 +74,7 @@ export const getMyList = async (ctx, next) => {
       .sort({ createdAt: -1 })
       .populate({
         path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds"
+        populate: "styleAndColor.styleId styleAndColor.colorIds",
       })
       .populate("user")
       .lean();
@@ -89,7 +89,7 @@ export const getList = async (ctx, next) => {
   try {
     const { userId } = ctx.request.query;
     let q = {
-      isDel: 0
+      isDel: 0,
     };
     if (userId) {
       q.user = userId;
@@ -101,7 +101,7 @@ export const getList = async (ctx, next) => {
       .sort({ createdAt: -1 })
       .populate({
         path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds"
+        populate: "styleAndColor.styleId styleAndColor.colorIds",
       })
       .populate("orderData.size")
       .populate("user");
@@ -118,25 +118,21 @@ export const getAllList = async (ctx, next) => {
     const { orderNo, userName } = ctx.request.query;
     let q = {
       isSend: 1,
-      isDel: 0
+      isDel: 0,
     };
     let data = {};
 
     if (orderNo) {
       q._id = orderNo;
-      await Order.find(q)
-        .sort({ createdAt: -1 })
-        .populate("user");
+      await Order.find(q).sort({ createdAt: -1 }).populate("user");
     } else {
       if (userName) {
         const res = await User.findOne({
-          name: userName
+          name: userName,
         });
         q.user = res ? res._id : null;
       }
-      data = await Order.find(q)
-        .sort({ createdAt: -1 })
-        .populate("user");
+      data = await Order.find(q).sort({ createdAt: -1 }).populate("user");
     }
 
     ctx.body = response(true, data, "成功");
@@ -151,7 +147,7 @@ export const detail = async (ctx, next) => {
     const data = await Order.findById({ _id })
       .populate({
         path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds"
+        populate: "styleAndColor.styleId styleAndColor.colorIds",
       })
       .populate("user")
       .populate("orderData.size")
@@ -169,35 +165,29 @@ export const orderRank = async (ctx, next) => {
     if (startDate) {
       match.createdAt = {
         $gt: new Date(startDate),
-        $lt: new Date(endDate)
+        $lt: new Date(endDate),
       };
     }
     const data = await Order.aggregate([
       {
-        $match: match
+        $match: match,
       },
       {
-        $unwind: "$orderData"
+        $unwind: "$orderData",
       },
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m", date: "$createTime" } },
-          amount: {
-            $sum: {
-              $multiply: ["$orderData.rowTotal", "$orderData.rowTotalPrice"]
-            }
-          },
-          number: { $sum: 1 }
-        }
+          value: { $sum: 1 },
+        },
       },
       {
         $project: {
           _id: 0,
           date: "$_id",
-          amount: 1,
-          number: 1
-        }
-      }
+          value: 1,
+        },
+      },
     ]);
     ctx.body = response(true, data, "成功");
   } catch (err) {
@@ -212,29 +202,29 @@ export const styleRank = async (ctx, next) => {
     if (startDate) {
       match.createdAt = {
         $gt: new Date(startDate),
-        $lt: new Date(endDate)
+        $lt: new Date(endDate),
       };
     }
     const data = await Order.aggregate([
       {
-        $match: match
+        $match: match,
       },
       {
-        $unwind: "$orderData"
+        $unwind: "$orderData",
       },
       {
         $group: {
           _id: "$orderData.styleNos",
-          value: { $sum: 1 }
-        }
+          value: { $sum: 1 },
+        },
       },
       {
         $project: {
           _id: 0,
           styleNos: "$_id",
-          value: 1
-        }
-      }
+          value: 1,
+        },
+      },
     ]);
     ctx.body = response(true, data, "成功");
   } catch (err) {
@@ -249,46 +239,46 @@ export const userRank = async (ctx, next) => {
     if (startDate) {
       match.createdAt = {
         $gt: new Date(startDate),
-        $lt: new Date(endDate)
+        $lt: new Date(endDate),
       };
     }
     const data = await Order.aggregate([
       {
-        $match: match
+        $match: match,
       },
       {
-        $unwind: "$orderData"
+        $unwind: "$orderData",
       },
       {
         $group: {
           _id: "$user",
-          value: { $sum: 1 }
-        }
+          value: { $sum: 1 },
+        },
       },
       {
         $project: {
           _id: 0,
           user: "$_id",
-          value: 1
-        }
+          value: 1,
+        },
       },
       {
         $lookup: {
           from: "users",
           localField: "user",
           foreignField: "_id",
-          as: "userInfo"
-        }
+          as: "userInfo",
+        },
       },
       {
-        $unwind: "$userInfo"
+        $unwind: "$userInfo",
       },
       {
         $project: {
           user: "$userInfo.name",
-          value: 1
-        }
-      }
+          value: 1,
+        },
+      },
     ]);
     ctx.body = response(true, data, "成功");
   } catch (err) {
@@ -355,7 +345,7 @@ export const send = async (ctx, next) => {
     }
     let hrefs = "";
     list.map(
-      x =>
+      (x) =>
         (hrefs += `<h3><a href="https://we-idesign.com/download?id=${x}">订单链接</a></h3>`)
     );
     const html = `<div><h1>您有新的订单<h1/>${hrefs}</div>`;
@@ -367,7 +357,7 @@ export const send = async (ctx, next) => {
   }
 };
 
-const writeFile = json => {
+const writeFile = (json) => {
   var xls = json2xls(json);
   let relativePath = "xlsx/data.xlsx";
   let absPath = path.join(__dirname, "../public/" + relativePath);
@@ -376,21 +366,21 @@ const writeFile = json => {
 };
 
 export const download = async (ctx, next) => {
-  console.log("download");
+  //   console.log("download");
   const baseUrl = "https://we-idesign.com";
   try {
     const { _id, rateSign = "¥", rateVal = 1 } = ctx.request.query;
     const order = await Order.findById({ _id })
       .populate({
         path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds"
+        populate: "styleAndColor.styleId styleAndColor.colorIds",
       })
       .populate("user")
       .populate("orderData.size")
       .lean();
     let maxSize = 1;
-    order.orderData.map(o => {
-      let itemMax = _.maxBy(o.items, i => i.sizeInfo.length);
+    order.orderData.map((o) => {
+      let itemMax = _.maxBy(o.items, (i) => i.sizeInfo.length);
       maxSize =
         maxSize > itemMax.sizeInfo.length ? maxSize : itemMax.sizeInfo.length;
     });
@@ -406,16 +396,16 @@ export const download = async (ctx, next) => {
         type: "pattern",
         bgColor: "#fff0e5",
         fgColor: "#fff0e5",
-        patternType: "solid"
-      }
+        patternType: "solid",
+      },
     });
     const deepStyle = wb.createStyle({
       fill: {
         type: "pattern",
         bgColor: "#cccccc",
         patternType: "solid",
-        fgColor: "#cccccc"
-      }
+        fgColor: "#cccccc",
+      },
     });
 
     let orderUser = `下单人：${order.user.name}(账号：${order.user.account})`;
@@ -423,18 +413,10 @@ export const download = async (ctx, next) => {
     // Head
     let row = 2;
 
-    ws.cell(row, 1)
-      .string("")
-      .style(headerStyle);
-    ws.cell(row, 2)
-      .string("样衣编号")
-      .style(headerStyle);
-    ws.cell(row, 3)
-      .string("颜色")
-      .style(headerStyle);
-    ws.cell(row, 4)
-      .string("款式图")
-      .style(headerStyle);
+    ws.cell(row, 1).string("").style(headerStyle);
+    ws.cell(row, 2).string("样衣编号").style(headerStyle);
+    ws.cell(row, 3).string("颜色").style(headerStyle);
+    ws.cell(row, 4).string("款式图").style(headerStyle);
     ws.cell(row, 5, row, 4 + maxSize, true)
       .string("尺码/配比")
       .style(headerStyle);
@@ -454,7 +436,7 @@ export const download = async (ctx, next) => {
       .string(`总价/${rateSign}`)
       .style(headerStyle);
     let styleCount = 1;
-    order.orderData.map(groupData => {
+    order.orderData.map((groupData) => {
       // Insert Size
       row++;
       groupData.size.values.map((v, vIndex) => {
@@ -466,11 +448,11 @@ export const download = async (ctx, next) => {
       groupData.items.map((item, itemIndex) => {
         row++;
         let styleNos = item.favorite.styleAndColor
-          .map(x => x.styleId.styleNo)
+          .map((x) => x.styleId.styleNo)
           .toString();
 
         let colorCodes = item.favorite.styleAndColor
-          .map(x => x.colorIds.map(c => c.code).toString())
+          .map((x) => x.colorIds.map((c) => c.code).toString())
           .toString();
         console.log("colorCodes", colorCodes);
         ws.cell(row, 1).number(styleCount++);
@@ -507,7 +489,7 @@ export const download = async (ctx, next) => {
         ws.cell(row, 7 + maxSize).number(allSum);
 
         let piecePrice = 0;
-        let prices = item.favorite.styleAndColor.map(x => {
+        let prices = item.favorite.styleAndColor.map((x) => {
           let signal = (x.styleId.price * rateVal).toFixed(2);
           piecePrice += x.styleId.price;
           return signal;
@@ -540,7 +522,7 @@ export const download = async (ctx, next) => {
     // koaSend(ctx, `xlsx/${order.orderNo}.xlsx`)
 
     ctx.body = response(true, {
-      url: `xlsx/${order.orderNo}-${timeString}.xlsx`
+      url: `xlsx/${order.orderNo}-${timeString}.xlsx`,
     });
   } catch (err) {
     console.error(err);
@@ -549,29 +531,15 @@ export const download = async (ctx, next) => {
 };
 
 export const postDownload = async (ctx, next) => {
-  console.log("download");
-  const baseUrl = "https://we-idesign.com";
   try {
-    const {
-      _id,
-      rateSign = "¥",
-      rateVal = 1,
-      orderItemImages
-    } = ctx.request.body;
+    const { _id, orderItemImages } = ctx.request.body;
     const order = await Order.findById({ _id })
       .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds"
+        path: "orderData.items.capsuleStyle",
       })
       .populate("user")
-      .populate("orderData.size")
       .lean();
-    let maxSize = 1;
-    order.orderData.map(o => {
-      let itemMax = _.maxBy(o.items, i => i.sizeInfo.length);
-      maxSize =
-        maxSize > itemMax.sizeInfo.length ? maxSize : itemMax.sizeInfo.length;
-    });
+
     // console.log("orderItemImages", orderItemImages)
     // Create a new instance of a Workbook class
     let wb = new xl.Workbook();
@@ -584,175 +552,209 @@ export const postDownload = async (ctx, next) => {
         type: "pattern",
         bgColor: "#fff0e5",
         fgColor: "#fff0e5",
-        patternType: "solid"
+        patternType: "solid",
       },
       alignment: {
         horizontal: "center",
-        vertical: "center"
-      }
+        vertical: "center",
+      },
     });
     const deepStyle = wb.createStyle({
       fill: {
         type: "pattern",
         bgColor: "#cccccc",
         patternType: "solid",
-        fgColor: "#cccccc"
+        fgColor: "#cccccc",
       },
       alignment: {
         horizontal: "center",
-        vertical: "center"
-      }
+        vertical: "center",
+      },
     });
 
     const centerStyle = wb.createStyle({
       alignment: {
         horizontal: "center",
-        vertical: "center"
-      }
+        vertical: "center",
+      },
     });
 
-    let orderUser = `下单人：${order.user.name}(账号：${order.user.account})`;
-    ws.cell(1, 1, 1, 9 + maxSize, true)
-      .string(orderUser)
-      .style(centerStyle);
     // Head
-    let row = 2;
+    let row = 1;
 
-    ws.cell(row, 1)
-      .string("")
+    let maxSize = 2;
+    order.orderData.map((o) => {
+      console.log(o.size, "size");
+      let sizeArr = [];
+      if (o.size) {
+        sizeArr = o.size.split("/");
+        let itemMax = sizeArr.length;
+        console.log(itemMax, "itemMax");
+        maxSize = maxSize > itemMax ? maxSize : itemMax;
+      }
+    });
+    maxSize = maxSize - 1;
+    console.log("maxSize", maxSize);
+    let productCols = 3;
+
+    ws.column(1).setWidth(16);
+    ws.column(2).setWidth(16);
+    ws.column(3).setWidth(16);
+    ws.column(4).setWidth(16);
+    ws.cell(row, 1, row, 4, true).string("产品图片").style(headerStyle);
+    ws.cell(row, 2 + productCols)
+      .string("订单编码")
       .style(headerStyle);
-    ws.cell(row, 2)
-      .string("样衣编号")
+    ws.cell(row, 3 + productCols)
+      .string("批注")
       .style(headerStyle);
-    ws.cell(row, 3)
-      .string("颜色")
+    ws.cell(row, 4 + productCols)
+      .string("款式编号")
       .style(headerStyle);
-    ws.cell(row, 4)
-      .string("款式图")
+    ws.cell(row, 5 + productCols)
+      .string("色号/花号")
       .style(headerStyle);
-    ws.cell(row, 5, row, 4 + maxSize, true)
-      .string("尺码/配比")
+    ws.cell(row, 6 + productCols, row, 6 + productCols + maxSize, true)
+      .string("尺码/数量 配比")
       .style(headerStyle);
-    ws.cell(row, 5 + maxSize)
-      .string("中包数")
+    ws.cell(row, 7 + productCols + maxSize)
+      .string("小计")
       .style(headerStyle);
-    ws.cell(row, 6 + maxSize)
-      .string("箱数")
+    ws.cell(row, 8 + productCols + maxSize)
+      .string("份数")
       .style(headerStyle);
-    ws.cell(row, 7 + maxSize)
-      .string("件数")
+    ws.cell(row, 9 + productCols + maxSize)
+      .string("总数")
       .style(headerStyle);
-    ws.cell(row, 8 + maxSize)
-      .string(`单价/${rateSign}`)
+    ws.cell(row, 10 + productCols + maxSize)
+      .string("单价")
       .style(headerStyle);
-    ws.cell(row, 9 + maxSize)
-      .string(`总价/${rateSign}`)
+    ws.cell(row, 11 + productCols + maxSize)
+      .string("总数量")
       .style(headerStyle);
-    let styleCount = 1;
-    order.orderData.map(groupData => {
-      // Insert Size
+    ws.cell(row, 12 + productCols + maxSize)
+      .string("总金额")
+      .style(headerStyle);
+    ws.cell(row, 13 + productCols + maxSize)
+      .string("箱数(大约)")
+      .style(headerStyle);
+
+    for (let i = 0; i < order.orderData.length; i++) {
+      let groupData = order.orderData[i];
+      let imgUrls = orderItemImages[i];
+
+      //尺码行
       row++;
-      groupData.size.values.map((v, vIndex) => {
-        ws.cell(row, 5 + vIndex)
-          .string(v.name)
-          .style(centerStyle);
-        ws.cell(row, 1, row, 9 + maxSize).style(deepStyle);
-      });
-      const itemsLength = groupData.items.length;
+      ws.cell(row, 1, row, 13 + productCols + maxSize).style(deepStyle);
+      let sizeArr = groupData.size ? groupData.size.split("/") : [];
+      for (let k = 0; k < sizeArr.length; k++) {
+        ws.cell(row, 6 + productCols + k).string(sizeArr[k]);
+      }
 
-      groupData.items.map((item, itemIndex) => {
-        row++;
+      //包装方式
+      if (groupData.pickType) {
+        ws.cell(
+          row,
+          7 + productCols + maxSize,
+          row,
+          9 + productCols + maxSize,
+          true
+        ).string(pickInfos[groupData.pickType.val].label);
+      }
 
-        let styleNos = item.favorite.styleAndColor
-          .map(x => x.styleId.styleNo)
-          .toString();
-
-        let colorCodes = item.favorite.styleAndColor
-          .map(x => x.colorIds.map(c => c.code).join("\n "))
-          .toString();
-        // console.log("colorCodes", colorCodes)
-        ws.cell(row, 1)
-          .number(styleCount++)
-          .style(centerStyle);
-        ws.cell(row, 2)
-          .string(styleNos)
-          .style(centerStyle);
-        ws.cell(row, 3)
-          .string(colorCodes)
-          .style(centerStyle);
-        ws.cell(row, 4).style(centerStyle);
-        ws.column(4).setWidth(18);
-
-        let imageContextHeight = 10;
-        for (let i = 0; i < item.favorite.styleAndColor.length; i++) {
-          const fsitem = item.favorite.styleAndColor[i].styleId;
-          let fsId = `${item.favorite._id}-${fsitem._id}`;
-          let imagePath = path.join(
-            __dirname,
-            "../public" + `/${orderItemImages[fsId].frontImageUrl}`
-          );
+      //产品图
+      let j = 0;
+      let imgRow = 0;
+      row++;
+      for (j = 0; j < imgUrls.length; j++) {
+        // let rowNum = 1;
+        for (let k = 0; k < imgUrls[j].length; k++) {
+          let productImgUrl = `${baseImgUrl}${imgUrls[j][k]}?tr=w-100,h-100,cm-pad_resize`;
+          let opts = {
+            url: productImgUrl,
+            encoding: null,
+          };
+          let r1 = await downImg(opts);
+          imgRow = row + Math.floor(j / 4) * 5 + k * 5;
           ws.addImage({
-            image: fse.readFileSync(imagePath),
+            image: r1,
             type: "picture",
             position: {
               type: "oneCellAnchor",
               from: {
-                col: 4,
-                colOff: "0.2in",
-                row,
-                rowOff: `${imageContextHeight * 0.012}in`
-              }
-            }
+                col: (j % 4) + 1,
+                row: imgRow,
+              },
+            },
           });
-          imageContextHeight += parseInt(orderItemImages[fsId].frontHeight, 10);
         }
-        // px 转磅
-        ws.row(row).setHeight(
-          ((imageContextHeight + 20 * item.favorite.styleAndColor.length) * 5) /
-            7
+      }
+      //批注
+      ws.cell(row, 3 + productCols, imgRow + 4, 3 + productCols, true).string(
+        groupData.rowRemarks
+      );
+      //款号
+      ws.cell(row, 4 + productCols).string(groupData.styleNos);
+
+      //花号、色号；尺码配比；小计；份数
+      for (let k = 0; k < groupData.items.length; k++) {
+        const item = groupData.items[k];
+        let itemRow = row + k;
+        const { sizeInfoObject, total, parte } = item;
+        sizeArr.map((s, i) => {
+          let sizeCol = 6 + productCols + i;
+          ws.cell(itemRow, sizeCol).number(sizeInfoObject[s]);
+        });
+        console.log("groupData.pickType.val == 1", groupData.pickType.val);
+        if (groupData.pickType.val == 1) {
+          //包装方式 为混色混码
+        } else {
+          ws.cell(itemRow, 7 + productCols + maxSize).number(total / parte);
+          ws.cell(itemRow, 8 + productCols + maxSize).number(parte);
+          ws.cell(itemRow, 9 + productCols + maxSize).number(total);
+          ws.cell(itemRow, 10 + productCols + maxSize).number(groupData.price);
+        }
+      }
+
+      if (groupData.pickType.val == 1) {
+        //包装方式 为混色混码
+        ws.cell(imgRow + 4, 7 + productCols + maxSize).number(
+          groupData.rowTotal / groupData.pickType.pieceCount
         );
+        ws.cell(imgRow + 4, 8 + productCols + maxSize).number(
+          groupData.pickType.pieceCount
+        );
+        ws.cell(imgRow + 4, 9 + productCols + maxSize).number(
+          groupData.rowTotal
+        );
+        ws.cell(imgRow + 4, 10 + productCols + maxSize).number(groupData.price);
+      }
 
-        let allSizeSum = 0;
-        item.sizeInfo.map((v, index) => {
-          ws.cell(row, 5 + index)
-            .number(v)
-            .style(centerStyle);
-          allSizeSum += v;
-        });
-        let allSum = allSizeSum * groupData.cnts * groupData.packageCount;
-        if (itemIndex < 1) {
-          ws.cell(row, 5 + maxSize, row + itemsLength - 1, 5 + maxSize, true)
-            .number(groupData.packageCount)
-            .style(centerStyle);
-          ws.cell(row, 6 + maxSize, row + itemsLength - 1, 6 + maxSize, true)
-            .number(groupData.cnts)
-            .style(centerStyle);
-        }
+      ws.cell(
+        row,
+        11 + productCols + maxSize,
+        imgRow + 4,
+        11 + productCols + maxSize,
+        true
+      ).number(groupData.rowTotal);
+      ws.cell(
+        row,
+        12 + productCols + maxSize,
+        imgRow + 4,
+        12 + productCols + maxSize,
+        true
+      ).number(groupData.rowTotalPrice);
+      ws.cell(
+        row,
+        13 + productCols + maxSize,
+        imgRow + 4,
+        13 + productCols + maxSize,
+        true
+      ).number(groupData.aboutCases);
 
-        ws.cell(row, 7 + maxSize)
-          .number(allSum)
-          .style(centerStyle);
-
-        let piecePrice = 0;
-        let prices = item.favorite.styleAndColor.map(x => {
-          let signal = (x.styleId.price * rateVal).toFixed(2);
-          piecePrice += x.styleId.price;
-          return signal;
-        });
-
-        let pricesStr = prices.toString();
-        let pricesAllOrice = (piecePrice * allSum * rateVal).toFixed(2);
-        ws.cell(row, 8 + maxSize)
-          .string(pricesStr)
-          .style(centerStyle);
-        ws.cell(row, 9 + maxSize)
-          .string(pricesAllOrice)
-          .style(centerStyle);
-      });
-    });
-    // ws.cell(1, 1, 1, 9 + maxSize, true).string(
-    // 	`下单人：${order.user.name}(账号：${order.user.account})`
-    // )
+      row = imgRow + 4;
+      //   ws.cell(itemRow, 13 + productCols + maxSize).number(groupData.price);
+    }
     let date = new Date();
     let timeString = date.getTime();
     // const relativePath = writeFile(json)
@@ -771,7 +773,7 @@ export const postDownload = async (ctx, next) => {
     // koaSend(ctx, `xlsx/${order.orderNo}.xlsx`)
 
     ctx.body = response(true, {
-      url: `xlsx/${order.orderNo}-${timeString}.xlsx`
+      url: `xlsx/${order.orderNo}-${timeString}.xlsx`,
     });
 
     // orderItemImages
