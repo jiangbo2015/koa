@@ -103,7 +103,6 @@ export const getList = async (ctx, next) => {
         path: "orderData.items.favorite",
         populate: "styleAndColor.styleId styleAndColor.colorIds",
       })
-      .populate("orderData.size")
       .populate("user");
 
     ctx.body = response(true, data, "成功");

@@ -265,7 +265,13 @@ export const getOwnOrderList = async (ctx, next) => {
         };
       }
     }
-    let order = await Order.find({ ...q, isSend: 1 }).populate();
+    let order = await Order.find({ ...q, isSend: 1 })
+      .populate({
+        path: "orderData.items.favorite",
+        populate: "styleAndColor.styleId styleAndColor.colorIds",
+      })
+      .populate("user")
+      .populate();
     let capsuleOrder = await CapsuleOrder.find({ ...q, isSend: 1 }).populate();
     let shopOrder = await ShopOrder.find(q).populate();
     ctx.body = response(true, {
