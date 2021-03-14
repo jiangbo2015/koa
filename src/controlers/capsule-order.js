@@ -751,7 +751,7 @@ export const postDownload = async (ctx, next) => {
         imgRow + 4,
         13 + productCols + maxSize,
         true
-      ).number(groupData.aboutCases);
+      ).number(groupData.aboutCases ? groupData.aboutCases : 0);
 
       row = imgRow + 4;
       //   ws.cell(itemRow, 13 + productCols + maxSize).number(groupData.price);

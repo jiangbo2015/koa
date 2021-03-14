@@ -9,11 +9,11 @@ import path from "path";
 import Order from "../models/order";
 import System from "../models/system";
 import User from "../models/user";
-import { response } from "../utils";
+import { response, downImg, pickInfos } from "../utils";
 import Mail from "../utils/mail";
 // import dataURL2Blob from "../utils/dataURL2Blob"
 import { getCurrentUser } from "./user";
-
+const baseImgUrl = "https://ik.imagekit.io/";
 export const add = async (ctx, next) => {
   try {
     const currentUser = await getCurrentUser(ctx);
@@ -750,7 +750,7 @@ export const postDownload = async (ctx, next) => {
         imgRow + 4,
         13 + productCols + maxSize,
         true
-      ).number(groupData.aboutCases);
+      ).number(groupData.aboutCases ? groupData.aboutCases : 0);
 
       row = imgRow + 4;
       //   ws.cell(itemRow, 13 + productCols + maxSize).number(groupData.price);

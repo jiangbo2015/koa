@@ -26,10 +26,8 @@ const orderSchema = new mongoose.Schema(
     },
     orderData: [
       {
-        sizeId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "size",
-        },
+        size: String,
+        price: Number,
         styleNos: String,
         packageCount: Number,
         cnts: Number,
@@ -69,13 +67,6 @@ const orderSchema = new mongoose.Schema(
 orderSchema.virtual("orderData.items.favorite", {
   ref: "favorite",
   localField: "orderData.items.favoriteId",
-  foreignField: "_id",
-  justOne: true,
-});
-
-orderSchema.virtual("orderData.size", {
-  ref: "size",
-  localField: "orderData.sizeId",
   foreignField: "_id",
   justOne: true,
 });
