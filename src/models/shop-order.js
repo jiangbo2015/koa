@@ -11,6 +11,10 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    isMerge: {
+        type: Number,
+        default: 0,
+    },
     date: String,
     orderNo: String,
     isDel: {

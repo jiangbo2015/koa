@@ -7,14 +7,19 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
     },
-    orderNo: String,
-    goodsId: String,
-    orderGoodNo: String,
-    packageCount: Number,
     isReaded: {
       type: Number,
       default: 0,
     },
+    isMerge: {
+        type: Number,
+        default: 0,
+    },
+    orderNo: String,
+    goodsId: String,
+    orderGoodNo: String,
+    packageCount: Number,
+
     date: String,
     isSend: {
       type: Number,

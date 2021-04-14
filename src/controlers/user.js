@@ -229,13 +229,46 @@ export const getOwnList = async (ctx, next) => {
   }
 };
 
-export const getOwnOrderList = async (ctx, next) => {
+export const getOwnUnReadedOrder = async (ctx, next) => {
   try {
     const { userId, timeRange, selectedUsers, queryKey } = ctx.request.query;
     const currentUser = await getCurrentUser(ctx);
     const q = {
       isDel: 0,
+      isReaded: 0,
     };
+    const users = await User.find({ owner: currentUser._id });
+    console.log("users", users);
+    q.user = {
+      $in: users.map((x) => x._id),
+    };
+
+    let order = await Order.find({ ...q, isSend: 1 });
+    let capsuleOrder = await CapsuleOrder.find({
+      ...q,
+      isSend: 1,
+    });
+    let shopOrder = await ShopOrder.find({ ...q });
+    ctx.body = response(true, {
+      order,
+      capsuleOrder,
+      shopOrder,
+    });
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
+
+export const getOwnOrderList = async (ctx, next) => {
+  try {
+    const { userId, timeRange, selectedUsers, queryKey,isMerge } = ctx.request.query;
+    const currentUser = await getCurrentUser(ctx);
+    const q = {
+      isDel: 0,
+    };
+    if (typeof isMerge !== "undefined") {
+        q.isMerge = parseInt(isMerge);
+    }
     if (queryKey) {
       q.orderNo = {
         $regex: new RegExp(queryKey, "i"),
@@ -265,6 +298,7 @@ export const getOwnOrderList = async (ctx, next) => {
         };
       }
     }
+    console.log(q)
     let order = await Order.find({ ...q, isSend: 1 })
       .populate({
         path: "orderData.items.favorite",

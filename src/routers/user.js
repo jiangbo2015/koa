@@ -67,6 +67,7 @@ router.get("/getList", User.getList);
  *    {"success": true, "data": {}}
  */
 router.get("/getOwnList", User.getOwnList);
+router.get("/getOwnUnReadedOrder", User.getOwnUnReadedOrder);
 router.post("/delOwnUser", User.delOwnUser);
 
 /**
