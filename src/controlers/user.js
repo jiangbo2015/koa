@@ -470,7 +470,7 @@ export const getMySelectFavorite = async (ctx, next) => {
 
 export const updateFavorite = async (ctx, next) => {
   try {
-    const { _id, styleAndColor } = ctx.request.body;
+    const { _id, ...props } = ctx.request.body;
     const currentUser = await getCurrentUser(ctx);
     await Favorite.findByIdAndUpdate(
       {
@@ -485,7 +485,7 @@ export const updateFavorite = async (ctx, next) => {
 
     const favorite = new Favorite({
       user: currentUser._id,
-      styleAndColor,
+      ...props,
     });
     let data = await favorite.save();
 
@@ -523,6 +523,7 @@ export const getFavoriteList = async (ctx, next) => {
       goodId: goodsId,
       isDel: 0,
     })
+    .sort({ createTime: -1 })
       .populate({
         path: "styleAndColor.style",
         model: "style",
