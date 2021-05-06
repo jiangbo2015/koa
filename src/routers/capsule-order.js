@@ -60,6 +60,7 @@ router.get("/getAllList", Order.getAllList);
 router.post("/delete", Order.del);
 router.post("/clear", Order.clear);
 router.post("/update", Order.update);
+router.post("/merge", Order.merge);
 router.post("/postDownload", Order.postDownload);
 router.get("/orderRank", Order.orderRank);
 router.get("/styleRank", Order.styleRank);

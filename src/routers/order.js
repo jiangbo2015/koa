@@ -65,6 +65,8 @@ router.post("/clear", Order.clear);
 
 router.post("/update", Order.update);
 
+router.post("/merge", Order.merge);
+
 router.post("/postDownload", Order.postDownload);
 
 router.get("/orderRank", Order.orderRank);

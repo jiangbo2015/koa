@@ -39,6 +39,7 @@ router.get("/getMyList", ShopOrder.getMyList);
  */
 router.post("/update", ShopOrder.update);
 
+router.post("/merge", ShopOrder.merge);
 /**
  * @api {post} /ShopOrder/delete 删除
  * @apiName delete

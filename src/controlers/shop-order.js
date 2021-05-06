@@ -7,6 +7,7 @@ import moment from "moment";
 import path from "path";
 import Order from "../models/shop-order";
 import User from "../models/user";
+import ShopCart from "../models/shop-cart";
 import { response, downImg } from "../utils";
 import dataURL2Blob from "../utils/dataURL2Blob";
 import { getCurrentUser } from "./user";
@@ -21,10 +22,25 @@ export const add = async (ctx, next) => {
     body.date = date;
 
     let total = (await Order.find({ date })).length + 1;
-    body.orderNo = `${currentUser.name}-${date}-${total}`;
+    body.orderNo = `S-${currentUser.name}-${date}-${total}`;
 
     let order = new Order(body);
     const data = await order.save();
+    // ShopCart
+    const { scIds = [] } = ctx.request.body;
+    if(scIds.length > 0 ){
+        await ShopCart.updateMany(
+            {
+              _id: {
+                $in: scIds,
+              },
+            },
+            {
+              isDel: 1,
+            }
+          );
+    }
+
     ctx.body = response(true, data, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
@@ -42,6 +58,36 @@ export const update = async (ctx, next) => {
     ctx.body = response(false, null, err.message);
   }
 };
+
+export const merge = async (ctx, next) => {
+    try {
+      const currentUser = await getCurrentUser(ctx);
+      const body = ctx.request.body;
+      body.user = currentUser._id;
+      let date = moment().format("YYYYMMDD");
+      let total = (await Order.find({ date })).length + 1;
+      body.orderNo = `C-${currentUser.name}-${date}-${total}`;
+      body.date = date;
+      
+      await Order.updateMany(
+        {
+          _id: {
+            $in: body.children,
+          },
+        },
+        {
+            isMerge: 1,
+        }
+      );
+
+      let order = new Order(body);
+      const data = await order.save();
+  
+      ctx.body = response(true, data, "成功");
+    } catch (err) {
+      ctx.body = response(false, null, err.message);
+    }
+  };
 
 export const clear = async (ctx, next) => {
   try {

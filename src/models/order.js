@@ -19,7 +19,10 @@ const orderSchema = new mongoose.Schema(
     goodsId: String,
     orderGoodNo: String,
     packageCount: Number,
-
+    children: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "order",
+    }], 
     date: String,
     isSend: {
       type: Number,
@@ -56,6 +59,8 @@ const orderSchema = new mongoose.Schema(
         ],
       },
     ],
+    sumCount: Number,
+    sumPrice: Number,
   },
   {
     versionKey: false,

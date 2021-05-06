@@ -122,6 +122,7 @@ export const getVisibleList = async (ctx, next) => {
         _id: `${x[0].goodCategory.name}-${result[i]._id}`,
         namecn: x[0].goodCategory.name,
         nameen: x[0].goodCategory.enname,
+        branch: result[i]._id,
       }));
       console.log("capsuleStyles", capsuleStyles);
       console.log("children", children);

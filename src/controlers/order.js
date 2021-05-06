@@ -22,7 +22,7 @@ export const add = async (ctx, next) => {
     if (body.isSend == 1) {
       let date = moment().format("YYYYMMDD");
       let total = (await Order.find({ date })).length + 1;
-      body.orderNo = `${currentUser.name}-${date}-${total}`;
+      body.orderNo = `D-${currentUser.name}-${date}-${total}`;
       body.date = date;
     }
     let order = new Order(body);
@@ -45,6 +45,37 @@ export const update = async (ctx, next) => {
     ctx.body = response(false, null, err.message);
   }
 };
+
+export const merge = async (ctx, next) => {
+    try {
+      const currentUser = await getCurrentUser(ctx);
+      const body = ctx.request.body;
+      body.user = currentUser._id;
+      let date = moment().format("YYYYMMDD");
+      let total = (await Order.find({ date })).length + 1;
+      body.orderNo = `D-${currentUser.name}-${date}-${total}`;
+      body.date = date;
+      
+      await Order.updateMany(
+        {
+          _id: {
+            $in: body.children,
+          },
+        },
+        {
+            isMerge: 1,
+        }
+      );
+
+      let order = new Order(body);
+      const data = await order.save();
+  
+      ctx.body = response(true, data, "成功");
+    } catch (err) {
+      ctx.body = response(false, null, err.message);
+    }
+  };
+
 
 export const clear = async (ctx, next) => {
   try {

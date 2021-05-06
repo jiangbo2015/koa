@@ -21,6 +21,11 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+
+    children: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "order",
+    }], 
     sumCount: Number,
     sumPrice: Number,
     orderData: [
