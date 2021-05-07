@@ -24,6 +24,7 @@ router.post("/add", ShopOrder.add);
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
+router.get("/detail", ShopOrder.detail);
 router.get("/getList", ShopOrder.getList);
 router.get("/getMyList", ShopOrder.getMyList);
 
