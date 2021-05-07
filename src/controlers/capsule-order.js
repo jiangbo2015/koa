@@ -133,7 +133,7 @@ export const getList = async (ctx, next) => {
         path: "orderData.items.capsuleStyle",
       })
       .populate("user");
-
+    await Order.findByIdAndUpdate({ _id }, {isReaded: 1});
     ctx.body = response(true, data, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
@@ -172,15 +172,19 @@ export const getAllList = async (ctx, next) => {
 export const detail = async (ctx, next) => {
   try {
     const { _id } = ctx.request.query;
+    console.log('_id', _id)
     const data = await Order.findById({ _id })
       .populate({
         path: "orderData.items.capsuleStyle",
       })
       .populate("user")
-
+      .populate("children")
+      .populate({
+        path: "children.children",
+       })
       .lean();
     ctx.body = response(true, data, "成功");
-  } catch (err) {
+  } catch (err) {console.log('err', err)
     ctx.body = response(false, null, err.message);
   }
 };

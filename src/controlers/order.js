@@ -179,9 +179,11 @@ export const detail = async (ctx, next) => {
         path: "orderData.items.favorite",
         populate: "styleAndColor.styleId styleAndColor.colorIds",
       })
+      .populate("children")
       .populate("user")
       .populate("orderData.size")
       .lean();
+    await Order.findByIdAndUpdate({ _id }, {isReaded: 1});
     ctx.body = response(true, data, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);

@@ -176,6 +176,7 @@ export const detail = async (ctx, next) => {
       .populate("user")
       .populate("shopStyle")
       .lean();
+    await Order.findByIdAndUpdate({ _id }, {isReaded: 1});
     ctx.body = response(true, data, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
