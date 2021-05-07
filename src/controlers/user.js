@@ -278,7 +278,7 @@ export const getOwnOrderList = async (ctx, next) => {
     }
 
     if (typeof isReaded !== "undefined") {
-      q.isReaded = q.isReaded;
+      q.isReaded = parseInt(isReaded);
     }
     if (queryKey) {
       q.orderNo = {
