@@ -51,6 +51,7 @@ router.post("/merge", ShopOrder.merge);
  *    {"success": true, "data": {}}
  */
 router.post("/delete", ShopOrder.del);
+router.get("/getAllList", ShopOrder.getAllList);
 router.get("/orderRank", ShopOrder.orderRank);
 router.get("/styleRank", ShopOrder.styleRank);
 router.get("/userRank", ShopOrder.userRank);
