@@ -38,6 +38,6 @@ export const handleUploadKit = async (ctx) => {
     file: fse.readFileSync(file.path), //required
     fileName, //required
   });
-  console.log(res);
+//   console.log(res);
   return `mrmiss/${res.name}`;
 };
