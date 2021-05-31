@@ -567,8 +567,10 @@ export const postDownload = async (ctx, next) => {
     const { _id, orderItemImages } = ctx.request.body;
     const order = await Order.findById({ _id })
       .populate({
-        path: "orderData.items.capsuleStyle",
+        path: "orderData.items.favorite",
+        populate: "styleAndColor.styleId styleAndColor.colorIds",
       })
+      .populate("children")
       .populate("user")
       .lean();
 
@@ -756,6 +758,8 @@ export const postDownload = async (ctx, next) => {
           ws.cell(itemRow, sizeCol).number(sizeInfoObject[s]);
         });
 
+        console.log('item', item)
+
         let colorCodes = item.favorite.styleAndColor
           .map((x) => x.colorIds.map((c) => c.code))
         colorCodes = _.difference(_.flattenDeep(colorCodes))
@@ -769,7 +773,7 @@ export const postDownload = async (ctx, next) => {
           ws.cell(itemRow, 7 + productCols + maxSize).number(total);
           ws.cell(itemRow, 8 + productCols + maxSize).number(groupData.pickType.pieceCount);
           ws.cell(itemRow, 9 + productCols + maxSize).number(total*groupData.pickType.pieceCount);
-          ws.cell(itemRow, 10 + productCols + maxSize).number(item.price);
+          ws.cell(itemRow, 10 + productCols + maxSize).number(groupData.price);
         // }
       }
 
