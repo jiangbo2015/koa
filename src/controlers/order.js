@@ -615,28 +615,44 @@ export const postDownload = async (ctx, next) => {
     let row = 1;
 
     let maxSize = 2;
+    let userRole = order.user.role
+    let roleNoMap = {
+        1: 1,
+        3: 2,
+        4: 3
+    }
     order.orderData.map((o) => {
       console.log(o.size, "size");
       let sizeArr = [];
-      if (o.size) {
-        sizeArr = o.size.split("/");
+      if (Array.isArray(o.items) && o.items.length > 0) {
+        sizeArr = Object.keys(o.items[0].sizeInfoObject)
         let itemMax = sizeArr.length;
         console.log(itemMax, "itemMax");
         maxSize = maxSize > itemMax ? maxSize : itemMax;
       }
     });
     maxSize = maxSize - 1;
-    console.log("maxSize", maxSize);
-    let productCols = 3;
+    // console.log("maxSize", maxSize);
+    let productCols = 6;
 
-    ws.column(1).setWidth(16);
-    ws.column(2).setWidth(16);
-    ws.column(3).setWidth(16);
+
+    ws.cell(row, 1)
+    .string("产品经理订单编码")
+    .style(headerStyle);
+    ws.cell(row, 2)
+    .string("产品代理订单编码")
+    .style(headerStyle);
+    ws.cell(row, 3)
+    .string("零售客户订单编码")
+    .style(headerStyle);
+
+
     ws.column(4).setWidth(16);
-    ws.cell(row, 1, row, 4, true).string("产品图片").style(headerStyle);
-    ws.cell(row, 2 + productCols)
-      .string("订单编码")
-      .style(headerStyle);
+    ws.column(5).setWidth(16);
+    ws.column(6).setWidth(16);
+    ws.column(7).setWidth(16);
+    ws.cell(row, 4, row, 7, true).string("产品图片").style(headerStyle);
+
     ws.cell(row, 3 + productCols)
       .string("批注")
       .style(headerStyle);
@@ -721,6 +737,10 @@ export const postDownload = async (ctx, next) => {
           });
         }
       }
+        //订单编号
+        ws.cell(row, roleNoMap[userRole], imgRow + 4, roleNoMap[userRole], true).string(
+            groupData.orderNo
+        );
       //批注
       ws.cell(row, 3 + productCols, imgRow + 4, 3 + productCols, true).string(
         groupData.rowRemarks
