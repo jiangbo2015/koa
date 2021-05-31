@@ -630,10 +630,11 @@ export const postDownload = async (ctx, next) => {
         console.log(itemMax, "itemMax");
         maxSize = maxSize > itemMax ? maxSize : itemMax;
       }
+      o.sizeArr = sizeArr
     });
     maxSize = maxSize - 1;
-    // console.log("maxSize", maxSize);
-    let productCols = 6;
+    console.log("maxSize", maxSize);
+    let productCols = 5;
 
 
     ws.cell(row, 1)
@@ -694,22 +695,12 @@ export const postDownload = async (ctx, next) => {
       //尺码行
       row++;
       ws.cell(row, 1, row, 13 + productCols + maxSize).style(deepStyle);
-      let sizeArr = groupData.size ? groupData.size.split("/") : [];
+      let sizeArr = groupData.sizeArr ? groupData.sizeArr : [];
       for (let k = 0; k < sizeArr.length; k++) {
         ws.cell(row, 6 + productCols + k).string(sizeArr[k]);
       }
 
-      //包装方式
-      if (groupData.pickType) {
-        ws.cell(
-          row,
-          7 + productCols + maxSize,
-          row,
-          9 + productCols + maxSize,
-          true
-        ).string(pickInfos[groupData.pickType.val].label);
-      }
-
+      console.log("//产品图");
       //产品图
       let j = 0;
       let imgRow = 0;
@@ -722,6 +713,7 @@ export const postDownload = async (ctx, next) => {
             url: productImgUrl,
             encoding: null,
           };
+          console.log('productImgUrl', productImgUrl)
           let r1 = await downImg(opts);
           imgRow = row + Math.floor(j / 4) * 5 + k * 5;
           ws.addImage({
@@ -730,16 +722,20 @@ export const postDownload = async (ctx, next) => {
             position: {
               type: "oneCellAnchor",
               from: {
-                col: (j % 4) + 1,
+                col: (j % 4) + 4,
                 row: imgRow,
               },
             },
           });
         }
       }
+      console.log("//订单编号");
         //订单编号
+        ws.cell(row, 1, imgRow + 4, 1, true)
+        ws.cell(row, 2, imgRow + 4, 2, true)
+        ws.cell(row, 3, imgRow + 4, 3, true)
         ws.cell(row, roleNoMap[userRole], imgRow + 4, roleNoMap[userRole], true).string(
-            groupData.orderNo
+            order.orderNo
         );
       //批注
       ws.cell(row, 3 + productCols, imgRow + 4, 3 + productCols, true).string(
@@ -748,6 +744,8 @@ export const postDownload = async (ctx, next) => {
       //款号
       ws.cell(row, 4 + productCols).string(groupData.styleNos);
 
+
+      console.log("//花号、色号；尺码配比；小计；份数");
       //花号、色号；尺码配比；小计；份数
       for (let k = 0; k < groupData.items.length; k++) {
         const item = groupData.items[k];
@@ -757,30 +755,39 @@ export const postDownload = async (ctx, next) => {
           let sizeCol = 6 + productCols + i;
           ws.cell(itemRow, sizeCol).number(sizeInfoObject[s]);
         });
+
+        let colorCodes = item.favorite.styleAndColor
+          .map((x) => x.colorIds.map((c) => c.code))
+        colorCodes = _.difference(_.flattenDeep(colorCodes))
+        console.log("colorCodes", colorCodes);
+        ws.cell(itemRow, 5 + productCols).string(colorCodes.join('/'));
+
         console.log("groupData.pickType.val == 1", groupData.pickType.val);
-        if (groupData.pickType.val == 1) {
-          //包装方式 为混色混码
-        } else {
-          ws.cell(itemRow, 7 + productCols + maxSize).number(total / parte);
-          ws.cell(itemRow, 8 + productCols + maxSize).number(parte);
-          ws.cell(itemRow, 9 + productCols + maxSize).number(total);
-          ws.cell(itemRow, 10 + productCols + maxSize).number(groupData.price);
-        }
+        // if (groupData.pickType.val == 1) {
+        //   //包装方式 为混色混码
+        // } else {
+          ws.cell(itemRow, 7 + productCols + maxSize).number(total);
+          ws.cell(itemRow, 8 + productCols + maxSize).number(groupData.pickType.pieceCount);
+          ws.cell(itemRow, 9 + productCols + maxSize).number(total*groupData.pickType.pieceCount);
+          ws.cell(itemRow, 10 + productCols + maxSize).number(item.price);
+        // }
       }
 
-      if (groupData.pickType.val == 1) {
+    //   if (groupData.pickType.val == 1) {
         //包装方式 为混色混码
         ws.cell(imgRow + 4, 7 + productCols + maxSize).number(
           groupData.rowTotal / groupData.pickType.pieceCount
         );
-        ws.cell(imgRow + 4, 8 + productCols + maxSize).number(
-          groupData.pickType.pieceCount
-        );
-        ws.cell(imgRow + 4, 9 + productCols + maxSize).number(
-          groupData.rowTotal
-        );
-        ws.cell(imgRow + 4, 10 + productCols + maxSize).number(groupData.price);
-      }
+        // ws.cell(imgRow + 4, 8 + productCols + maxSize).number(
+        //   groupData.pickType.pieceCount
+        // );
+        // ws.cell(imgRow + 4, 9 + productCols + maxSize).number(
+        //   groupData.rowTotal
+        // );
+        ws.cell(imgRow + 4, 10 + productCols + maxSize,imgRow + 4,
+            11 + productCols + maxSize,
+            true).number(groupData.price);
+    //   }
 
       ws.cell(
         row,
@@ -789,6 +796,7 @@ export const postDownload = async (ctx, next) => {
         11 + productCols + maxSize,
         true
       ).number(groupData.rowTotal);
+
       ws.cell(
         row,
         12 + productCols + maxSize,
@@ -796,6 +804,7 @@ export const postDownload = async (ctx, next) => {
         12 + productCols + maxSize,
         true
       ).number(groupData.rowTotalPrice);
+
       ws.cell(
         row,
         13 + productCols + maxSize,
@@ -803,7 +812,16 @@ export const postDownload = async (ctx, next) => {
         13 + productCols + maxSize,
         true
       ).number(groupData.aboutCases ? groupData.aboutCases : 0);
-
+      //包装方式
+      if (groupData.pickType) {
+        ws.cell(
+          row,
+          14 + productCols + maxSize,
+          imgRow + 4,
+          14 + productCols + maxSize,
+          true
+        ).string(pickInfos[groupData.pickType.val].label);
+      }
       row = imgRow + 4;
       //   ws.cell(itemRow, 13 + productCols + maxSize).number(groupData.price);
     }
@@ -815,8 +833,15 @@ export const postDownload = async (ctx, next) => {
       __dirname,
       "../public/xlsx" + `/${order.orderNo}-${timeString}.xlsx`
     );
+    console.log('downloadPath->', downloadPath)
+    
     let orderFilePath = path.join(__dirname, "../public/xlsx");
+
+    console.log('orderFilePath->', orderFilePath)
+
     let isExist = fs.existsSync(orderFilePath);
+
+    console.log('isExist->', isExist)
     if (!isExist) {
       fs.mkdirSync(orderFilePath);
     }

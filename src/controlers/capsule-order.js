@@ -489,12 +489,12 @@ export const download = async (ctx, next) => {
           .toString();
 
         let colorCodes = item.favorite.styleAndColor
-          .map((x) => x.colorIds.map((c) => c.code).toString())
-          .toString();
+          .map((x) => x.colorIds.map((c) => c.code))
+        colorCodes = _.difference(_.flattenDeep(colorCodes))
         console.log("colorCodes", colorCodes);
         ws.cell(row, 1).number(styleCount++);
         ws.cell(row, 2).string(styleNos);
-        ws.cell(row, 3).string(colorCodes);
+        ws.cell(row, 3).string(colorCodes.join('/'));
         ws.cell(row, 4).link(
           `${baseUrl}/demo?id=${item.favorite._id}&rid=${order._id}`,
           "款式图"
