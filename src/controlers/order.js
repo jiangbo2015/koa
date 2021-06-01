@@ -617,6 +617,7 @@ export const postDownload = async (ctx, next) => {
     let row = 1;
 
     let maxSize = 2;
+    let maxPic = 1;
     let userRole = order.user.role
     let roleNoMap = {
         1: 1,
@@ -629,14 +630,16 @@ export const postDownload = async (ctx, next) => {
       if (Array.isArray(o.items) && o.items.length > 0) {
         sizeArr = Object.keys(o.items[0].sizeInfoObject)
         let itemMax = sizeArr.length;
+        let itemMaxPic = o.items.length;
         console.log(itemMax, "itemMax");
         maxSize = maxSize > itemMax ? maxSize : itemMax;
+        maxPic = maxPic > itemMaxPic ? maxPic : itemMaxPic;
       }
       o.sizeArr = sizeArr
     });
     maxSize = maxSize - 1;
     console.log("maxSize", maxSize);
-    let productCols = 5;
+    let productCols = 5+(maxPic-4);
 
 
     ws.cell(row, 1)
@@ -717,14 +720,14 @@ export const postDownload = async (ctx, next) => {
           };
           console.log('productImgUrl', productImgUrl)
           let r1 = await downImg(opts);
-          imgRow = row + Math.floor(j / 4) * 5 + k * 5;
+          imgRow = row + k * 5;
           ws.addImage({
             image: r1,
             type: "picture",
             position: {
               type: "oneCellAnchor",
               from: {
-                col: (j % 4) + 4,
+                col: j + 4,
                 row: imgRow,
               },
             },
@@ -788,9 +791,9 @@ export const postDownload = async (ctx, next) => {
         // ws.cell(imgRow + 4, 9 + productCols + maxSize).number(
         //   groupData.rowTotal
         // );
-        ws.cell(imgRow + 4, 10 + productCols + maxSize,imgRow + 4,
-            11 + productCols + maxSize,
-            true).number(groupData.price);
+        // ws.cell(imgRow + 4, 10 + productCols + maxSize,imgRow + 4,
+        //     11 + productCols + maxSize,
+        //     true).number(groupData.price);
     //   }
 
       ws.cell(
