@@ -692,6 +692,9 @@ export const postDownload = async (ctx, next) => {
     ws.cell(row, 13 + productCols + maxSize)
       .string("箱数(大约)")
       .style(headerStyle);
+    ws.cell(row, 14 + productCols + maxSize)
+      .string("包装方式")
+      .style(headerStyle);
 
     for (let i = 0; i < order.orderData.length; i++) {
       let groupData = order.orderData[i];
@@ -699,7 +702,7 @@ export const postDownload = async (ctx, next) => {
 
       //尺码行
       row++;
-      ws.cell(row, 1, row, 13 + productCols + maxSize).style(deepStyle);
+      ws.cell(row, 1, row, 14 + productCols + maxSize).style(deepStyle);
       let sizeArr = groupData.sizeArr ? groupData.sizeArr : [];
       for (let k = 0; k < sizeArr.length; k++) {
         ws.cell(row, 6 + productCols + k).string(sizeArr[k]);
@@ -842,7 +845,7 @@ export const postDownload = async (ctx, next) => {
       //   ws.cell(itemRow, 13 + productCols + maxSize).number(groupData.price);
     }
 
-    ws.cell(row, 11 + productCols + maxSize).number(order.sumCount);
+    ws.cell(row + 1, 11 + productCols + maxSize).number(order.sumCount);
     let date = new Date();
     let timeString = date.getTime();
     // const relativePath = writeFile(json)
