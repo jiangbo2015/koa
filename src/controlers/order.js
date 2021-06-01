@@ -648,7 +648,16 @@ export const postDownload = async (ctx, next) => {
     ws.column(5).setWidth(16);
     ws.column(6).setWidth(16);
     ws.column(7).setWidth(16);
-    ws.cell(row, 4, row, 7, true).string("产品图片").style(headerStyle);
+    ws.cell(
+      row,
+      4,
+      row,
+      3 + maxPic,
+
+      true
+    )
+      .string("产品图片")
+      .style(headerStyle);
 
     ws.cell(row, 3 + productCols)
       .string("批注")
@@ -832,6 +841,8 @@ export const postDownload = async (ctx, next) => {
       row = imgRow + 4;
       //   ws.cell(itemRow, 13 + productCols + maxSize).number(groupData.price);
     }
+
+    ws.cell(row, 11 + productCols + maxSize).number(order.sumCount);
     let date = new Date();
     let timeString = date.getTime();
     // const relativePath = writeFile(json)
