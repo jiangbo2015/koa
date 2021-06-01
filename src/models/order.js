@@ -12,17 +12,19 @@ const orderSchema = new mongoose.Schema(
       default: 0,
     },
     isMerge: {
-        type: Number,
-        default: 0,
+      type: Number,
+      default: 0,
     },
     orderNo: String,
     goodsId: String,
     orderGoodNo: String,
     packageCount: Number,
-    children: [{
+    children: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: "order",
-    }], 
+      },
+    ],
     date: String,
     isSend: {
       type: Number,
@@ -55,6 +57,8 @@ const orderSchema = new mongoose.Schema(
             total: Number,
             totalPrice: Number,
             parte: Number,
+            favoriteObj: Object,
+            colorCodes: String,
           },
         ],
       },
