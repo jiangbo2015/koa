@@ -90,7 +90,9 @@ export const getUserStyleList = async (ctx, next) => {
     if ((channel && channel.codename === "A") || currentUser.role === 1) {
       for (let i = 0; i < goodData.category.length; i++) {
         let c = goodData.category[i];
-        let styles = await Style.find({
+        let styles = await Style.
+        sort({ createdAt: -1 }).
+        find({
           isDel: 0,
           ...q,
           categoryId: { $in: [c._id.toString()] },
