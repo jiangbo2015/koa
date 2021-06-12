@@ -47,35 +47,34 @@ export const update = async (ctx, next) => {
 };
 
 export const merge = async (ctx, next) => {
-    try {
-      const currentUser = await getCurrentUser(ctx);
-      const body = ctx.request.body;
-      body.user = currentUser._id;
-      let date = moment().format("YYYYMMDD");
-      let total = (await Order.find({ date })).length + 1;
-      body.orderNo = `D-${currentUser.name}-${date}-${total}`;
-      body.date = date;
-      
-      await Order.updateMany(
-        {
-          _id: {
-            $in: body.children,
-          },
+  try {
+    const currentUser = await getCurrentUser(ctx);
+    const body = ctx.request.body;
+    body.user = currentUser._id;
+    let date = moment().format("YYYYMMDD");
+    let total = (await Order.find({ date })).length + 1;
+    body.orderNo = `D-${currentUser.name}-${date}-${total}`;
+    body.date = date;
+
+    await Order.updateMany(
+      {
+        _id: {
+          $in: body.children,
         },
-        {
-            isMerge: 1,
-        }
-      );
+      },
+      {
+        isMerge: 1,
+      }
+    );
 
-      let order = new Order(body);
-      const data = await order.save();
-  
-      ctx.body = response(true, data, "成功");
-    } catch (err) {
-      ctx.body = response(false, null, err.message);
-    }
-  };
+    let order = new Order(body);
+    const data = await order.save();
 
+    ctx.body = response(true, data, "成功");
+  } catch (err) {
+    ctx.body = response(false, null, err.message);
+  }
+};
 
 export const clear = async (ctx, next) => {
   try {
@@ -183,7 +182,7 @@ export const detail = async (ctx, next) => {
       .populate("user")
       .populate("orderData.size")
       .lean();
-    await Order.findByIdAndUpdate({ _id }, {isReaded: 1});
+    await Order.findByIdAndUpdate({ _id }, { isReaded: 1 });
     ctx.body = response(true, data, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
@@ -618,46 +617,47 @@ export const postDownload = async (ctx, next) => {
 
     let maxSize = 2;
     let maxPic = 1;
-    let userRole = order.user.role
+    let userRole = order.user.role;
     let roleNoMap = {
-        1: 1,
-        3: 2,
-        4: 3
-    }
+      1: 1,
+      3: 2,
+      4: 3,
+    };
     order.orderData.map((o) => {
       console.log(o.size, "size");
       let sizeArr = [];
       if (Array.isArray(o.items) && o.items.length > 0) {
-        sizeArr = Object.keys(o.items[0].sizeInfoObject)
+        sizeArr = Object.keys(o.items[0].sizeInfoObject);
         let itemMax = sizeArr.length;
         let itemMaxPic = o.items.length;
         console.log(itemMax, "itemMax");
         maxSize = maxSize > itemMax ? maxSize : itemMax;
         maxPic = maxPic > itemMaxPic ? maxPic : itemMaxPic;
       }
-      o.sizeArr = sizeArr
+      o.sizeArr = sizeArr;
     });
     maxSize = maxSize - 1;
     console.log("maxSize", maxSize);
-    let productCols = 5+(maxPic-4);
+    let productCols = 5 + (maxPic - 4);
 
-
-    ws.cell(row, 1)
-    .string("产品经理订单编码")
-    .style(headerStyle);
-    ws.cell(row, 2)
-    .string("产品代理订单编码")
-    .style(headerStyle);
-    ws.cell(row, 3)
-    .string("零售客户订单编码")
-    .style(headerStyle);
-
+    ws.cell(row, 1).string("产品经理订单编码").style(headerStyle);
+    ws.cell(row, 2).string("产品代理订单编码").style(headerStyle);
+    ws.cell(row, 3).string("零售客户订单编码").style(headerStyle);
 
     ws.column(4).setWidth(16);
     ws.column(5).setWidth(16);
     ws.column(6).setWidth(16);
     ws.column(7).setWidth(16);
-    ws.cell(row, 4, row, 7, true).string("产品图片").style(headerStyle);
+    ws.cell(
+      row,
+      4,
+      row,
+      3 + maxPic,
+
+      true
+    )
+      .string("产品图片")
+      .style(headerStyle);
 
     ws.cell(row, 3 + productCols)
       .string("批注")
@@ -692,6 +692,9 @@ export const postDownload = async (ctx, next) => {
     ws.cell(row, 13 + productCols + maxSize)
       .string("箱数(大约)")
       .style(headerStyle);
+    ws.cell(row, 14 + productCols + maxSize)
+      .string("包装方式")
+      .style(headerStyle);
 
     for (let i = 0; i < order.orderData.length; i++) {
       let groupData = order.orderData[i];
@@ -699,7 +702,7 @@ export const postDownload = async (ctx, next) => {
 
       //尺码行
       row++;
-      ws.cell(row, 1, row, 13 + productCols + maxSize).style(deepStyle);
+      ws.cell(row, 1, row, 14 + productCols + maxSize).style(deepStyle);
       let sizeArr = groupData.sizeArr ? groupData.sizeArr : [];
       for (let k = 0; k < sizeArr.length; k++) {
         ws.cell(row, 6 + productCols + k).string(sizeArr[k]);
@@ -718,7 +721,7 @@ export const postDownload = async (ctx, next) => {
             url: productImgUrl,
             encoding: null,
           };
-          console.log('productImgUrl', productImgUrl)
+          console.log("productImgUrl", productImgUrl);
           let r1 = await downImg(opts);
           imgRow = row + k * 5;
           ws.addImage({
@@ -735,20 +738,23 @@ export const postDownload = async (ctx, next) => {
         }
       }
       console.log("//订单编号");
-        //订单编号
-        ws.cell(row, 1, imgRow + 4, 1, true)
-        ws.cell(row, 2, imgRow + 4, 2, true)
-        ws.cell(row, 3, imgRow + 4, 3, true)
-        ws.cell(row, roleNoMap[userRole], imgRow + 4, roleNoMap[userRole], true).string(
-            order.orderNo
-        );
+      //订单编号
+      ws.cell(row, 1, imgRow + 4, 1, true);
+      ws.cell(row, 2, imgRow + 4, 2, true);
+      ws.cell(row, 3, imgRow + 4, 3, true);
+      ws.cell(
+        row,
+        roleNoMap[userRole],
+        imgRow + 4,
+        roleNoMap[userRole],
+        true
+      ).string(order.orderNo);
       //批注
       ws.cell(row, 3 + productCols, imgRow + 4, 3 + productCols, true).string(
         groupData.rowRemarks
       );
       //款号
       ws.cell(row, 4 + productCols).string(groupData.styleNos);
-
 
       console.log("//花号、色号；尺码配比；小计；份数");
       //花号、色号；尺码配比；小计；份数
@@ -761,40 +767,46 @@ export const postDownload = async (ctx, next) => {
           ws.cell(itemRow, sizeCol).number(sizeInfoObject[s]);
         });
 
-        console.log('item', item)
+        // console.log('item', item)
 
-        let colorCodes = item.favorite.styleAndColor
-          .map((x) => x.colorIds.map((c) => c.code))
-        colorCodes = _.difference(_.flattenDeep(colorCodes))
-        console.log("colorCodes", colorCodes);
-        ws.cell(itemRow, 5 + productCols).string(colorCodes.join('/'));
+        // let colorCodes = item.favorite.styleAndColor
+        //   .map((x) => x.colorIds.map((c) => c.code))
+        // colorCodes = _.difference(_.flattenDeep(colorCodes))
+        // console.log("colorCodes", colorCodes);
+        ws.cell(itemRow, 5 + productCols).string(
+          item.colorCodes ? item.colorCodes : ""
+        );
 
         console.log("groupData.pickType.val == 1", groupData.pickType.val);
         // if (groupData.pickType.val == 1) {
         //   //包装方式 为混色混码
         // } else {
-          ws.cell(itemRow, 7 + productCols + maxSize).number(total);
-          ws.cell(itemRow, 8 + productCols + maxSize).number(groupData.pickType.pieceCount);
-          ws.cell(itemRow, 9 + productCols + maxSize).number(total*groupData.pickType.pieceCount);
-          ws.cell(itemRow, 10 + productCols + maxSize).number(groupData.price);
+        ws.cell(itemRow, 7 + productCols + maxSize).number(total);
+        ws.cell(itemRow, 8 + productCols + maxSize).number(
+          groupData.pickType.pieceCount
+        );
+        ws.cell(itemRow, 9 + productCols + maxSize).number(
+          total * groupData.pickType.pieceCount
+        );
+        ws.cell(itemRow, 10 + productCols + maxSize).number(groupData.price);
         // }
       }
 
-    //   if (groupData.pickType.val == 1) {
-        //包装方式 为混色混码
-        ws.cell(imgRow + 4, 7 + productCols + maxSize).number(
-          groupData.rowTotal / groupData.pickType.pieceCount
-        );
-        // ws.cell(imgRow + 4, 8 + productCols + maxSize).number(
-        //   groupData.pickType.pieceCount
-        // );
-        // ws.cell(imgRow + 4, 9 + productCols + maxSize).number(
-        //   groupData.rowTotal
-        // );
-        // ws.cell(imgRow + 4, 10 + productCols + maxSize,imgRow + 4,
-        //     11 + productCols + maxSize,
-        //     true).number(groupData.price);
-    //   }
+      //   if (groupData.pickType.val == 1) {
+      //包装方式 为混色混码
+      ws.cell(imgRow + 4, 7 + productCols + maxSize).number(
+        groupData.rowTotal / groupData.pickType.pieceCount
+      );
+      // ws.cell(imgRow + 4, 8 + productCols + maxSize).number(
+      //   groupData.pickType.pieceCount
+      // );
+      // ws.cell(imgRow + 4, 9 + productCols + maxSize).number(
+      //   groupData.rowTotal
+      // );
+      // ws.cell(imgRow + 4, 10 + productCols + maxSize,imgRow + 4,
+      //     11 + productCols + maxSize,
+      //     true).number(groupData.price);
+      //   }
 
       ws.cell(
         row,
@@ -832,6 +844,8 @@ export const postDownload = async (ctx, next) => {
       row = imgRow + 4;
       //   ws.cell(itemRow, 13 + productCols + maxSize).number(groupData.price);
     }
+
+    ws.cell(row + 1, 11 + productCols + maxSize).number(order.sumCount);
     let date = new Date();
     let timeString = date.getTime();
     // const relativePath = writeFile(json)
@@ -840,15 +854,15 @@ export const postDownload = async (ctx, next) => {
       __dirname,
       "../public/xlsx" + `/${order.orderNo}-${timeString}.xlsx`
     );
-    console.log('downloadPath->', downloadPath)
-    
+    console.log("downloadPath->", downloadPath);
+
     let orderFilePath = path.join(__dirname, "../public/xlsx");
 
-    console.log('orderFilePath->', orderFilePath)
+    console.log("orderFilePath->", orderFilePath);
 
     let isExist = fs.existsSync(orderFilePath);
 
-    console.log('isExist->', isExist)
+    console.log("isExist->", isExist);
     if (!isExist) {
       fs.mkdirSync(orderFilePath);
     }
