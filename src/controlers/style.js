@@ -91,12 +91,11 @@ export const getUserStyleList = async (ctx, next) => {
       for (let i = 0; i < goodData.category.length; i++) {
         let c = goodData.category[i];
         let styles = await Style.
-        sort({ createdAt: -1 }).
         find({
           isDel: 0,
           ...q,
           categoryId: { $in: [c._id.toString()] },
-        });
+        }).sort({ createdAt: -1 });
         categoryData.push({
           name: c.name,
           _id: c._id,
