@@ -68,7 +68,7 @@ export const getList = async (ctx, next) => {
 export const getUserStyleList = async (ctx, next) => {
   try {
     console.log("-----cids-----", _id);
-    let { tag, styleNo, _id } = ctx.request.query;
+    let { tag, styleNo = "", _id } = ctx.request.query;
     let goodData = await Goods.findById({ _id }).lean();
     const currentUser = await getCurrentUser(ctx);
     let channel = currentUser.channels.find((x) => x.assignedId === _id);
@@ -90,8 +90,7 @@ export const getUserStyleList = async (ctx, next) => {
     if ((channel && channel.codename === "A") || currentUser.role === 1) {
       for (let i = 0; i < goodData.category.length; i++) {
         let c = goodData.category[i];
-        let styles = await Style.
-        find({
+        let styles = await Style.find({
           isDel: 0,
           ...q,
           categoryId: { $in: [c._id.toString()] },
@@ -113,10 +112,13 @@ export const getUserStyleList = async (ctx, next) => {
           path: "styles.style",
         })
         .lean();
-      const styles = myChannel.styles.map((x) => ({
-        ...x.style,
-        price: x.price,
-      }));
+
+      const styles = myChannel.styles
+        .map((x) => ({
+          ...x.style,
+          price: x.price,
+        }))
+        .filter((s) => s.styleNo && s.styleNo.includes(styleNo));
       myC.myChannel = myChannel;
       for (let i = 0; i < goodData.category.length; i++) {
         let c = goodData.category[i];
