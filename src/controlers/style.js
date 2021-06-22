@@ -121,7 +121,10 @@ export const getUserStyleList = async (ctx, next) => {
         let c = goodData.category[i];
         const filterData = [];
         styles.map((x) => {
-          let f = x.categoryId.find((t) => t == c._id.toString());
+          let f = null;
+          if (x.categoryId && x.categoryId.find) {
+            f = x.categoryId.find((t) => t == c._id.toString());
+          }
           console.log(f);
           if (f) {
             filterData.push(x);
