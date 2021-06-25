@@ -643,6 +643,9 @@ export const postDownload = async (ctx, next) => {
     ws.cell(row, 1).string("产品经理订单编码").style(headerStyle);
     ws.cell(row, 2).string("产品代理订单编码").style(headerStyle);
     ws.cell(row, 3).string("零售客户订单编码").style(headerStyle);
+    for (let i = 0; i < maxSize; i++) {
+      ws.column(i + 4).setWidth(16);
+    }
 
     ws.column(4).setWidth(16);
     ws.column(5).setWidth(16);
