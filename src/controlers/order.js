@@ -795,7 +795,9 @@ export const postDownload = async (ctx, next) => {
       //   if (groupData.pickType.val == 1) {
       //包装方式 为混色混码
       ws.cell(imgRow + 4, 7 + productCols + maxSize).number(
-        groupData.rowTotal / groupData.pickType.pieceCount
+        groupData.pickType.pieceCount
+          ? groupData.rowTotal / groupData.pickType.pieceCount
+          : 0
       );
       // ws.cell(imgRow + 4, 8 + productCols + maxSize).number(
       //   groupData.pickType.pieceCount
