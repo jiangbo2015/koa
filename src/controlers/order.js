@@ -877,6 +877,7 @@ export const postDownload = async (ctx, next) => {
 
     ctx.body = response(true, {
       url: `xlsx/${order.orderNo}-${timeString}.xlsx`,
+      maxPic,
     });
 
     // orderItemImages
