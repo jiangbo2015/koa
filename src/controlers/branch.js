@@ -43,10 +43,10 @@ export const getList = async (ctx, next) => {
 
 export const update = async (ctx, next) => {
   try {
-    const { _id, values, goods } = ctx.request.body;
+    const { _id, ...values } = ctx.request.body;
     let data = await Branch.findByIdAndUpdate(
       { _id },
-      { values, goods },
+      { ...values },
       { new: true }
     );
     ctx.body = response(true, data, "成功");

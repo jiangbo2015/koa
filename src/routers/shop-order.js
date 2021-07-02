@@ -24,6 +24,7 @@ router.post("/add", ShopOrder.add);
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
+router.get("/detail", ShopOrder.detail);
 router.get("/getList", ShopOrder.getList);
 router.get("/getMyList", ShopOrder.getMyList);
 
@@ -50,6 +51,7 @@ router.post("/merge", ShopOrder.merge);
  *    {"success": true, "data": {}}
  */
 router.post("/delete", ShopOrder.del);
+router.get("/getAllList", ShopOrder.getAllList);
 router.get("/orderRank", ShopOrder.orderRank);
 router.get("/styleRank", ShopOrder.styleRank);
 router.get("/userRank", ShopOrder.userRank);

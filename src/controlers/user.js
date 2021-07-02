@@ -261,13 +261,24 @@ export const getOwnUnReadedOrder = async (ctx, next) => {
 
 export const getOwnOrderList = async (ctx, next) => {
   try {
-    const { userId, timeRange, selectedUsers, queryKey,isMerge } = ctx.request.query;
+    const {
+      userId,
+      timeRange,
+      selectedUsers,
+      queryKey,
+      isMerge,
+      isReaded,
+    } = ctx.request.query;
     const currentUser = await getCurrentUser(ctx);
     const q = {
       isDel: 0,
     };
     if (typeof isMerge !== "undefined") {
-        q.isMerge = parseInt(isMerge);
+      q.isMerge = parseInt(isMerge);
+    }
+
+    if (typeof isReaded !== "undefined") {
+      q.isReaded = parseInt(isReaded);
     }
     if (queryKey) {
       q.orderNo = {
@@ -298,7 +309,7 @@ export const getOwnOrderList = async (ctx, next) => {
         };
       }
     }
-    console.log(q)
+
     let order = await Order.find({ ...q, isSend: 1 })
       .populate({
         path: "orderData.items.favorite",
@@ -523,7 +534,7 @@ export const getFavoriteList = async (ctx, next) => {
       goodId: goodsId,
       isDel: 0,
     })
-    .sort({ createTime: -1 })
+      .sort({ createTime: -1 })
       .populate({
         path: "styleAndColor.style",
         model: "style",
