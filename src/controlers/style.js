@@ -19,9 +19,14 @@ export const add = async (ctx, next) => {
 export const getList = async (ctx, next) => {
   try {
     // let { tag, styleNo } = ctx.request.query
-    let { tag, styleNo, page = 1, limit = 20 } = ctx.request.query;
+    let {
+      tag,
+      styleNo,
+      page = 1,
+      limit = 20,
+      styleIds = [],
+    } = ctx.request.query;
     const currentUser = await getCurrentUser(ctx);
-    let styleIds = [];
     let data = [];
     let q = { isDel: 0 };
     if (tag) {
