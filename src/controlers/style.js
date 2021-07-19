@@ -86,6 +86,7 @@ export const getUserStyleList = async (ctx, next) => {
       };
     }
     let myC = { step: "start" };
+    let myChannelStyles = [];
     let categoryData = [];
     if ((channel && channel.codename === "A") || currentUser.role === 1) {
       for (let i = 0; i < goodData.category.length; i++) {
@@ -112,7 +113,7 @@ export const getUserStyleList = async (ctx, next) => {
           path: "styles.style",
         })
         .lean();
-
+      myChannelStyles = myChannel.styles;
       const styles = myChannel.styles
         .map((x) => ({
           ...x.style,
@@ -144,7 +145,7 @@ export const getUserStyleList = async (ctx, next) => {
 
     ctx.body = response(
       true,
-      { category: categoryData, channel, myC, myStyles: myChannel.styles },
+      { category: categoryData, channel, myC, myStyles: myChannelStyles },
       "成功"
     );
   } catch (err) {
