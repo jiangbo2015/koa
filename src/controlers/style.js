@@ -24,7 +24,7 @@ export const getList = async (ctx, next) => {
       styleNo,
       page = 1,
       limit = 20,
-      styleIds = [],
+      styleIds = "",
     } = ctx.request.query;
     const currentUser = await getCurrentUser(ctx);
     let data = [];
@@ -47,7 +47,7 @@ export const getList = async (ctx, next) => {
       // channel.styles.map((x) => styleIds.push(x.styleId))
       data = await Style.find({
         _id: {
-          $in: styleIds,
+          $in: styleIds.split(","),
         },
 
         ...q,
