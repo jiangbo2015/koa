@@ -1,7 +1,7 @@
 import Style from "../models/style";
 import Channel from "../models/channel";
 import Goods from "../models/goods";
-import User from "../models/user";
+// import User from "../models/user";
 import { response } from "../utils";
 import { getCurrentUser } from "./user";
 import _ from "lodash";
@@ -142,7 +142,11 @@ export const getUserStyleList = async (ctx, next) => {
       }
     }
 
-    ctx.body = response(true, { category: categoryData, channel, myC }, "成功");
+    ctx.body = response(
+      true,
+      { category: categoryData, channel, myC, myStyles: myChannel.styles },
+      "成功"
+    );
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
