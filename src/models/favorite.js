@@ -24,6 +24,7 @@ const favoriteSchema = new mongoose.Schema(
             ref: "color",
           },
         ],
+        favoriteImgUrl: String
         // front: String
       },
     ],
