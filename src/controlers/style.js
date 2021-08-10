@@ -1,7 +1,7 @@
 import Style from "../models/style";
 import Channel from "../models/channel";
 import Goods from "../models/goods";
-import User from "../models/user";
+// import User from "../models/user";
 import { response } from "../utils";
 import { getCurrentUser } from "./user";
 import _ from "lodash";
@@ -19,9 +19,14 @@ export const add = async (ctx, next) => {
 export const getList = async (ctx, next) => {
   try {
     // let { tag, styleNo } = ctx.request.query
-    let { tag, styleNo, page = 1, limit = 20 } = ctx.request.query;
+    let {
+      tag,
+      styleNo,
+      page = 1,
+      limit = 20,
+      styleIds = "",
+    } = ctx.request.query;
     const currentUser = await getCurrentUser(ctx);
-    let styleIds = [];
     let data = [];
     let q = { isDel: 0 };
     if (tag) {
@@ -42,7 +47,7 @@ export const getList = async (ctx, next) => {
       // channel.styles.map((x) => styleIds.push(x.styleId))
       data = await Style.find({
         _id: {
-          $in: styleIds,
+          $in: styleIds.split(","),
         },
 
         ...q,
@@ -86,6 +91,7 @@ export const getUserStyleList = async (ctx, next) => {
       };
     }
     let myC = { step: "start" };
+    let myChannelStyles = [];
     let categoryData = [];
     if ((channel && channel.codename === "A") || currentUser.role === 1) {
       for (let i = 0; i < goodData.category.length; i++) {
@@ -112,7 +118,7 @@ export const getUserStyleList = async (ctx, next) => {
           path: "styles.style",
         })
         .lean();
-
+      myChannelStyles = myChannel.styles;
       const styles = myChannel.styles
         .map((x) => ({
           ...x.style,
@@ -142,7 +148,11 @@ export const getUserStyleList = async (ctx, next) => {
       }
     }
 
-    ctx.body = response(true, { category: categoryData, channel, myC }, "成功");
+    ctx.body = response(
+      true,
+      { category: categoryData, channel, myC, myStyles: myChannelStyles },
+      "成功"
+    );
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }

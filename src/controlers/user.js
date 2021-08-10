@@ -508,17 +508,35 @@ export const updateFavorite = async (ctx, next) => {
 
 export const deleteFavorite = async (ctx, next) => {
   try {
-    const { _id } = ctx.request.body;
-    let data = await Favorite.findByIdAndUpdate(
-      {
-        _id,
-      },
-      {
-        $set: {
-          isDel: 1,
-        },
+    const { _id,ids } = ctx.request.body;
+    let data = null
+    if (ids) {
+        data = await Favorite.updateMany(
+          {
+            _id: {
+              $in: ids,
+            },
+          },
+          {
+            $set: {
+              isDel: 1,
+            },
+          }
+        );
+      } else {
+        data = await Favorite.findByIdAndUpdate(
+            {
+              _id,
+            },
+            {
+              $set: {
+                isDel: 1,
+              },
+            }
+          );
       }
-    );
+
+
     ctx.body = response(true, data);
   } catch (err) {
     ctx.body = response(false, null, err.message);
