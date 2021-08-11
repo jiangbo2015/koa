@@ -255,8 +255,24 @@ export const updateMany = async (ctx, next) => {
 
 export const del = async (ctx, next) => {
   try {
-    const { _id } = ctx.request.body;
-    let data = await Style.findByIdAndUpdate({ _id }, { isDel: 1 });
+    const { _id, ids } = ctx.request.body;
+    
+    let data = {};
+    if (_id) {
+        data = await Style.findByIdAndUpdate({ _id }, { isDel: 1 });
+    }
+    if (ids) {
+        data = await Style.updateMany(
+            {
+              _id: {
+                $in: ids,
+              },
+            },
+            {
+              isDel: 1,
+            }
+          );
+    }
     ctx.body = response(true, data, "成功");
   } catch (err) {
     console.log(err);
