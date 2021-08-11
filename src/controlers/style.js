@@ -230,14 +230,22 @@ export const assign = async (ctx, next) => {
 };
 
 export const updateMany = async (ctx, next) => {
+    // updateMany
   try {
-    const body = ctx.request.body;
-    let data = await Style.updateMany(
-      {},
-      {
-        ...body,
-      }
-    );
+    const { _id, ids, ...others } = ctx.request.body;
+    let data = {};
+    if (ids) {
+      data = await Style.updateMany(
+        {
+          _id: {
+            $in: ids,
+          },
+        },
+        {
+          ...others,
+        }
+      );
+    } 
     ctx.body = response(true, data, "成功");
   } catch (err) {
     console.log(err);
