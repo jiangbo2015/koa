@@ -115,6 +115,49 @@ export const getMyList = async (ctx, next) => {
   }
 };
 
+export const addStyleToOrder = async (ctx, next) => {
+    try {
+      const currentUser = await getCurrentUser(ctx);
+      const { capsuleId,style } = ctx.request.body;
+      const q = {
+        user: mongoose.Types.ObjectId(currentUser._id),
+        isDel: 0,
+        isSend: 0
+      };
+
+      if (typeof capsuleId !== "undefined") {
+        q.capsuleId = capsuleId;
+      }
+      const orderList= await Order.find(q)
+        .sort({ createdAt: -1 })
+        .populate({
+          path: "orderData.items.capsuleStyle",
+        })
+        .populate("user")
+        .lean();
+        let data = {}
+      if(orderList.length > 0){
+         const order = orderList[0]
+         const orderData = order.orderData.concat([
+             style
+         ])
+         data = await Order.findByIdAndUpdate({ _id }, {orderData});
+      }else {
+         // style
+         let order = new Order({
+            user: currentUser._id,
+            capsuleId,
+            orderData: [style]
+         });
+        data = await order.save();
+      }
+  
+      ctx.body = response(true, data, "成功");
+    } catch (err) {
+      ctx.body = response(false, null, err.message);
+    }
+  };
+
 export const getList = async (ctx, next) => {
   try {
     const { userId } = ctx.request.query;
