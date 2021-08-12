@@ -138,10 +138,8 @@ export const addStyleToOrder = async (ctx, next) => {
         let data = {}
       if(orderList.length > 0){
          const order = orderList[0]
-         const orderData = order.orderData.concat([
-             style
-         ])
-         data = await Order.findByIdAndUpdate({ _id: order._id }, {orderData});
+         order.orderData.unshift(style)
+         data = await Order.findByIdAndUpdate({ _id: order._id }, {orderData: order.orderData});
       }else {
          // style
          let order = new Order({
