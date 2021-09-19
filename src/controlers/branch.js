@@ -70,7 +70,7 @@ export const del = async (ctx, next) => {
 export const getVisibleList = async (ctx, next) => {
   try {
     const { name } = ctx.request.query;
-    let q = { createdAt: -1};
+    let q = { };
     if (name) {
       q.name = name;
     }
@@ -81,7 +81,7 @@ export const getVisibleList = async (ctx, next) => {
     result = data.filter((d) => user.branchs.indexOf(d._id) >= 0);
 
     for (let i = 0; i < result.length; i++) {
-      const bk = await BranchKind.find({ isDel: 0, branch: result[i]._id });
+      const bk = await BranchKind.find({ isDel: 0, branch: result[i]._id }).sort({ createdAt: -1 });
       const { createdAt, isDel, namecn, nameen, updatedAt, _id } = result[i];
       resData.push({
         createdAt,

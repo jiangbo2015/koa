@@ -96,11 +96,11 @@ export const del = async (ctx, next) => {
 export const getVisibleList = async (ctx, next) => {
   try {
     const { name } = ctx.request.query;
-    let q = { status: 1, createdAt: -1 };
+    let q = { status: 1};
     if (name) {
       q.name = name;
     }
-    let data = await Capsule.find(q).lean();
+    let data = await Capsule.find(q).sort({ createdAt: -1 }).lean();
     const user = await getCurrentUser(ctx, next);
     let result = [];
     if (user.role === 0) {
