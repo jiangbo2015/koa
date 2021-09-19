@@ -70,7 +70,7 @@ export const del = async (ctx, next) => {
 export const getVisibleList = async (ctx, next) => {
   try {
     const { name } = ctx.request.query;
-    let q = {};
+    let q = { createdAt: -1};
     if (name) {
       q.name = name;
     }

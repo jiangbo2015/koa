@@ -96,7 +96,7 @@ export const del = async (ctx, next) => {
 export const getVisibleList = async (ctx, next) => {
   try {
     const { name } = ctx.request.query;
-    let q = { status: 1 };
+    let q = { status: 1, createdAt: -1 };
     if (name) {
       q.name = name;
     }
