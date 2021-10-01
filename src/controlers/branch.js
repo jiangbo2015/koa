@@ -24,7 +24,7 @@ export const getList = async (ctx, next) => {
     const data = await Branch.find(query);
     for (let i = 0; i < data.length; i++) {
       const bk = await BranchKind.find({ isDel: 0, branch: data[i]._id });
-      const { createdAt, isDel, namecn, nameen, updatedAt, _id } = data[i];
+      const { createdAt, isDel, namecn, nameen, updatedAt, _id ,description, status} = data[i];
       resData.push({
         createdAt,
         isDel,
@@ -32,6 +32,7 @@ export const getList = async (ctx, next) => {
         nameen,
         updatedAt,
         _id,
+        description, status,
         children: bk,
       });
     }
@@ -70,7 +71,7 @@ export const del = async (ctx, next) => {
 export const getVisibleList = async (ctx, next) => {
   try {
     const { name } = ctx.request.query;
-    let q = { };
+    let q = { status: 1};
     if (name) {
       q.name = name;
     }
@@ -82,13 +83,14 @@ export const getVisibleList = async (ctx, next) => {
 
     for (let i = 0; i < result.length; i++) {
       const bk = await BranchKind.find({ isDel: 0, branch: result[i]._id }).sort({ createdAt: -1 });
-      const { createdAt, isDel, namecn, nameen, updatedAt, _id } = result[i];
+      const { createdAt, isDel, namecn, nameen, updatedAt, _id,description, status, } = result[i];
       resData.push({
         createdAt,
         isDel,
         namecn,
         nameen,
         updatedAt,
+        description, status,
         _id,
         children: bk,
       });
