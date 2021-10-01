@@ -4,6 +4,12 @@ const goodsSchema = new mongoose.Schema(
   {
     namecn: String,
     nameen: String,
+    status: {
+        type: Number,
+        required: true,
+        enum: [0, 1],
+    },
+    description: String,
     isDel: {
       type: Number,
       default: 0,
