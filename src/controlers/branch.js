@@ -77,10 +77,13 @@ export const getVisibleList = async (ctx, next) => {
     }
     let data = await Branch.find(q).sort({ createdAt: -1 })
     const user = await getCurrentUser(ctx);
+    if(user.role === 0) {
+        ctx.body = response(true, data);
+        return;
+    }
     let result = [];
     let resData = [];
     result = data.filter((d) => user.branchs.indexOf(d._id) >= 0);
-
     for (let i = 0; i < result.length; i++) {
       const bk = await BranchKind.find({ isDel: 0, branch: result[i]._id }).sort({ createdAt: -1 });
       const { createdAt, isDel, namecn, nameen, updatedAt, _id,description, status, } = result[i];
