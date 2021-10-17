@@ -219,7 +219,7 @@ export const orderRank = async (ctx, next) => {
         },
       },
       { $sort: { date : 1 } }
-    ]).lean();
+    ])
     let emptyItems = []
     let [year, month] = data[0].date.split('-')
     for(let i = 1; i < data.length; i++){
