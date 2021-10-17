@@ -222,8 +222,12 @@ export const orderRank = async (ctx, next) => {
     ])
     let emptyItems = []
     let [year, month] = data[0].date.split('-')
+    month = parseInt(month)
+    year= parseInt(year)
     for(let i = 1; i < data.length; i++){
         let [year2, month2] = data[i].date.split('-')
+        month2 = parseInt(month2)
+        year2= parseInt(year2)
         let difference = (year2 - year) * 12 + (month2 - month) - 1
         let [startYear, startMonth] = [year, month] 
         while(difference > 0) {
@@ -237,7 +241,7 @@ export const orderRank = async (ctx, next) => {
             emptyItems.push({
                 number: 0,
                 amount: 0,
-                date: `${year}-${(month+1)%12}`
+                date: `${tempYear}-${tempMonth}`
             })
 
             [startYear, startMonth] = [tempYear, tempMonth] 
