@@ -219,8 +219,34 @@ export const orderRank = async (ctx, next) => {
         },
       },
       { $sort: { date : 1 } }
-    ]);
-    ctx.body = response(true, data, "成功");
+    ]).lean();
+    let emptyItems = []
+    let [year, month] = data[0].date.split('-')
+    for(let i = 1; i < data.length; i++){
+        let [year2, month2] = data[i].date.split('-')
+        let difference = (year2 - year) * 12 + (month2 - month) - 1
+        let [startYear, startMonth] = [year, month] 
+        while(difference > 0) {
+            difference--
+            let tempMonth = startMonth + 1
+            let tempYear = startYear
+            if(tempMonth > 12) {
+                tempYear = tempYear + 1
+                tempMonth = 1
+            }
+            emptyItems.push({
+                number: 0,
+                amount: 0,
+                date: `${year}-${(month+1)%12}`
+            })
+
+            [startYear, startMonth] = [tempYear, tempMonth] 
+        }
+        year = year2
+        month = month2
+    }
+    // [].concat
+    ctx.body = response(true, data.concat(emptyItems), "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
