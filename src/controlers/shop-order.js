@@ -250,7 +250,7 @@ export const orderRank = async (ctx, next) => {
         month = month2
     }
     // [].concat
-    ctx.body = response(true, data.concat(emptyItems), "成功");
+    ctx.body = response(true, {data, emptyItems}, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
