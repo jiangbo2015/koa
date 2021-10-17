@@ -218,6 +218,7 @@ export const orderRank = async (ctx, next) => {
           amount: 1,
         },
       },
+      { $sort: { date : 1 } }
     ]);
     ctx.body = response(true, data, "成功");
   } catch (err) {
