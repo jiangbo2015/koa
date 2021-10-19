@@ -75,4 +75,7 @@ router.get("/styleRank", Order.styleRank);
 
 router.get("/userRank", Order.userRank);
 
+router.get("/colorRank", Order.colorRank);
+
+
 export default router.routes();

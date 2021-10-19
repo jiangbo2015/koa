@@ -21,8 +21,11 @@ import Mail from "../utils/mail";
 const verify = (token) => jwt.verify(token.split(" ")[1], config.secret);
 
 export const login = async (ctx, next) => {
+  
   const { account, password } = ctx.request.body;
   try {
+    // let list = await User.find()
+    // console.log(list)
     const data = await User.findOne({ account, password }).lean();
     if (!data) {
       ctx.body = response(false, null, "用户名或密码错误");

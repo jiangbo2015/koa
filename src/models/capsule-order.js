@@ -16,7 +16,10 @@ const orderSchema = new mongoose.Schema(
         default: 0,
     },
     orderNo: String,
-    capsuleId: String,
+    capsuleId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "capsule",
+    },
     orderGoodNo: String,
     packageCount: Number,
     children: [{

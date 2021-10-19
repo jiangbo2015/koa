@@ -67,5 +67,7 @@ router.post("/postDownload", Order.postDownload);
 router.get("/orderRank", Order.orderRank);
 router.get("/styleRank", Order.styleRank);
 router.get("/userRank", Order.userRank);
+router.get("/capsuleRank", Order.capsuleRank);
+
 router.post("/postDownload", Order.postDownload);
 export default router.routes();

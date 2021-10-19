@@ -193,6 +193,16 @@ export const orderRank = async (ctx, next) => {
   try {
     const { startDate, endDate } = ctx.request.query;
     const match = {};
+    const currentUser = await getCurrentUser(ctx);
+    let ownerData = await User.find({
+        owner: currentUser._id,
+        // isDel: 0,
+      });
+    if(ownerData){
+        match.user = {
+            $in: ownerData.map(x => x._id)
+        }
+    }
     if (startDate) {
       match.createdAt = {
         $gt: new Date(startDate),
@@ -208,19 +218,76 @@ export const orderRank = async (ctx, next) => {
       },
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m", date: "$createTime" } },
-          value: { $sum: 1 },
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          number: { $sum: "$sumCount" },
+          amount: {
+            $sum: "$sumPrice",
+          },
         },
       },
       {
         $project: {
           _id: 0,
           date: "$_id",
-          value: 1,
+          number: 1,
+          amount: 1,
         },
       },
+      { $sort: { date : 1 } }
     ]);
-    ctx.body = response(true, data, "成功");
+    let emptyItems = []
+    if(data && data.length > 0) {
+        let start = 0
+        let year;
+        let month;
+        while(data[start] && data[start].date && start < data.length){
+            if(!data[start].date) continue;
+            [year, month] = data[start].date.split('-')
+            start++
+        }
+        
+        month = parseInt(month)
+        year= parseInt(year)
+        console.log('0--,',year, month)
+        for(let i = 1; i < data.length; i++){
+            console.log('0:',i)
+            if(!data[i].date) continue;
+            let [year2, month2] = data[i].date.split('-')
+            console.log('1:',i)
+            month2 = parseInt(month2)
+            year2= parseInt(year2)
+            let difference = (year2 - year) * 12 + (month2 - month) - 1
+            let [startYear, startMonth] = [year, month] 
+            console.log('2:',i)
+            console.log('difference:',difference)
+            while(difference > 0) {
+                difference--
+                let tempMonth = startMonth + 1
+                let tempYear = startYear
+                
+                if(tempMonth > 12) {
+                    tempYear = tempYear + 1
+                    tempMonth = 1
+                }
+                console.log('tempYear-tempMonth',`${tempYear}-${tempMonth}`)
+                emptyItems.push({
+                    number: 0,
+                    amount: 0,
+                    date: `${tempYear}-${tempMonth > 10? tempMonth : `0${tempMonth}`}`
+                })
+    
+                startYear = tempYear 
+                startMonth = tempMonth
+            }
+            year = year2
+            month = month2
+            console.log(i,'--,',year, month)
+        }
+    }
+
+    
+    // [].concat
+    ctx.body = response(true, _.sortBy(data.concat(emptyItems), 'date'), "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
@@ -230,6 +297,16 @@ export const styleRank = async (ctx, next) => {
   try {
     const { startDate, endDate } = ctx.request.query;
     const match = {};
+    const currentUser = await getCurrentUser(ctx);
+    let ownerData = await User.find({
+        owner: currentUser._id,
+        // isDel: 0,
+      });
+    if(ownerData){
+        match.user = {
+            $in: ownerData.map(x => x._id)
+        }
+    }
     if (startDate) {
       match.createdAt = {
         $gt: new Date(startDate),
@@ -246,16 +323,21 @@ export const styleRank = async (ctx, next) => {
       {
         $group: {
           _id: "$orderData.styleNos",
-          value: { $sum: 1 },
+          number: { $sum: "$sumCount" },
+          amount: {
+            $sum: "$sumPrice",
+          },
         },
       },
       {
         $project: {
           _id: 0,
           styleNos: "$_id",
-          value: 1,
+          amount: 1,
+          number: 1
         },
       },
+      { $sort: { amount : 1 } }
     ]);
     ctx.body = response(true, data, "成功");
   } catch (err) {
@@ -267,6 +349,16 @@ export const userRank = async (ctx, next) => {
   try {
     const { startDate, endDate } = ctx.request.query;
     const match = {};
+    const currentUser = await getCurrentUser(ctx);
+    let ownerData = await User.find({
+        owner: currentUser._id,
+        // isDel: 0,
+      });
+    if(ownerData){
+        match.user = {
+            $in: ownerData.map(x => x._id)
+        }
+    }
     if (startDate) {
       match.createdAt = {
         $gt: new Date(startDate),
@@ -283,14 +375,18 @@ export const userRank = async (ctx, next) => {
       {
         $group: {
           _id: "$user",
-          value: { $sum: 1 },
+          number: { $sum: "$sumCount" },
+          amount: {
+            $sum: "$sumPrice",
+          },
         },
       },
       {
         $project: {
           _id: 0,
           user: "$_id",
-          value: 1,
+          amount: 1,
+          number: 1
         },
       },
       {
@@ -307,15 +403,82 @@ export const userRank = async (ctx, next) => {
       {
         $project: {
           user: "$userInfo.name",
-          value: 1,
+          amount: 1,
+          number: 1
         },
       },
+      { $sort: { amount : 1 } }
     ]);
     ctx.body = response(true, data, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
 };
+
+
+export const colorRank = async (ctx, next) => {
+    try {
+      const { startDate, endDate } = ctx.request.query;
+      const match = {};
+      const currentUser = await getCurrentUser(ctx);
+      let ownerData = await User.find({
+          owner: currentUser._id,
+        //   isDel: 0,
+        });
+      if(ownerData){
+          match.user = {
+              $in: ownerData.map(x => x._id)
+          }
+      }
+      if (startDate) {
+        match.createdAt = {
+          $gt: new Date(startDate),
+          $lt: new Date(endDate),
+        };
+        match.isSend = 1
+      }
+      const data = await Order.find(match)
+        .populate({
+            path: "orderData.items.favorite",
+            populate: "styleAndColor.styleId styleAndColor.colorIds",
+        })
+        .lean();
+    let colorsInfo = data.map(d => d.orderData.map(o => o.items.map(i => i.favorite.styleAndColor.map(sc => sc.colorIds.map(c => ({
+        _id: c._id,
+        code: c.code,
+        value: c.value,
+        type: c.type,
+        number: i.total ? i.total : 0,
+        amount: i.totalPrice ? i.totalPrice : 0
+    }))))))
+    colorsInfo = colorsInfo.flat(Infinity)
+      const colorGroup = _.groupBy(colorsInfo, 'code')
+      const items = []
+      Object.keys(colorGroup).map(colorCode => {
+          let colorItem = colorGroup[colorCode][0]
+        items.push({
+            code: colorCode,
+            type: colorItem.type,
+            value: colorItem.value,
+            number: _.sumBy(colorGroup[colorCode], 'number'),
+            amount: _.sumBy(colorGroup[colorCode], 'amount'),
+        })
+      })
+      const res = {}
+      const resGroup = _.groupBy(items, 'type')
+
+      if(resGroup[0]) {
+          res.color = _.sortBy(resGroup[0], 'amount')
+      }
+      if(resGroup[1]) {
+        res.img = _.sortBy(resGroup[1], 'amount')
+    }
+      ctx.body = response(true, res, "成功");
+    } catch (err) {
+      ctx.body = response(false, null, err.message);
+    }
+  };
+  
 
 export const del = async (ctx, next) => {
   try {

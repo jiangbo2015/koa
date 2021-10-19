@@ -71,12 +71,13 @@ export const del = async (ctx, next) => {
 export const getVisibleList = async (ctx, next) => {
   try {
     const { name } = ctx.request.query;
-    let q = { status: 1};
+    let q = { status: 1, isDel: 0};
     if (name) {
       q.name = name;
     }
-    let data = await Branch.find(q).sort({ createdAt: -1 })
     const user = await getCurrentUser(ctx);
+    let data = await Branch.find(q).sort({ createdAt: -1 })
+    
     if(user.role === 0) {
         ctx.body = response(true, data);
         return;
