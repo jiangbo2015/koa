@@ -336,7 +336,7 @@ export const styleRank = async (ctx, next) => {
       },
       { $sort: { amount : 1 } }
     ]);
-    ctx.body = response(true, data, "成功");
+    ctx.body = response(true, data.filter(x => x.styleNos), "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
