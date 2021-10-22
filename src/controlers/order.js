@@ -461,7 +461,7 @@ export const colorRank = async (ctx, next) => {
             amount: _.sumBy(colorGroup[colorCode], 'amount'),
         })
       })
-      const res = {color: [], img:[]}
+      const res = {color: [], img:[], data}
       const resGroup = _.groupBy(items, 'type')
 
       if(resGroup[0]) {
