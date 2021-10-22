@@ -284,9 +284,6 @@ export const orderRank = async (ctx, next) => {
             console.log(i,'--,',year, month)
         }
     }
-
-    
-    // [].concat
     ctx.body = response(true, _.sortBy(data.concat(emptyItems), 'date'), "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
