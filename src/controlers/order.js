@@ -448,7 +448,7 @@ export const colorRank = async (ctx, next) => {
         number: i.total ? i.total : 0,
         amount: i.totalPrice ? i.totalPrice : 0
     }))))))
-    colorsInfo = Array.isArray(colorsInfo) && colorsInfo.flat ? colorsInfo.flat(Infinity) : []
+    colorsInfo = _.flattenDeep(colorsInfo)
       const colorGroup = _.groupBy(colorsInfo, 'code')
       const items = []
       Object.keys(colorGroup).map(colorCode => {
@@ -461,7 +461,7 @@ export const colorRank = async (ctx, next) => {
             amount: _.sumBy(colorGroup[colorCode], 'amount'),
         })
       })
-      const res = {color: [], img:[], data}
+      const res = {color: [], img:[]}
       const resGroup = _.groupBy(items, 'type')
 
       if(resGroup[0]) {
