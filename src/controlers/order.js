@@ -448,7 +448,7 @@ export const colorRank = async (ctx, next) => {
         number: i.total ? i.total : 0,
         amount: i.totalPrice ? i.totalPrice : 0
     }))))))
-    colorsInfo = Array.isArray(colorsInfo) ? colorsInfo.flat(Infinity) : []
+    colorsInfo = Array.isArray(colorsInfo) && colorsInfo.flat ? colorsInfo.flat(Infinity) : []
       const colorGroup = _.groupBy(colorsInfo, 'code')
       const items = []
       Object.keys(colorGroup).map(colorCode => {
