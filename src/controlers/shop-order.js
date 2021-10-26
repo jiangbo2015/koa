@@ -664,7 +664,7 @@ export const postDownload = async (ctx, next) => {
       ws.row(row).setHeight(100);
       let imageContextHeight = 10;
       let shopStyleObj = groupData.shopStyleObj;
-      let copies = shopStyleObj.numInBag; //装数
+      let copies = order.user.role === 1 ? shopStyleObj.bagsNum * shopStyleObj.numInBag : shopStyleObj.numInBag ; //装数
       let productImgUrl = `${baseUrl}${shopStyleObj.colorWithStyleImgs[0].imgs[0]}?tr=w-120,h-120,cm-pad_resize`;
       let opts = {
         url: productImgUrl,

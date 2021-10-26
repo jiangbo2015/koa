@@ -937,29 +937,31 @@ export const postDownload = async (ctx, next) => {
           ws.cell(itemRow, sizeCol).number(sizeInfoObject[s]);
         });
         console.log("groupData.pickType.val == 1", groupData.pickType.val);
-        if (groupData.pickType.val == 1) {
-          //包装方式 为混色混码
-        } else {
-          ws.cell(itemRow, 7 + productCols + maxSize).number(total / parte);
-          ws.cell(itemRow, 8 + productCols + maxSize).number(parte);
-          ws.cell(itemRow, 9 + productCols + maxSize).number(total);
-          ws.cell(itemRow, 10 + productCols + maxSize).number(groupData.price);
-        }
-      }
-
-      if (groupData.pickType.val == 1) {
-        //包装方式 为混色混码
-        ws.cell(imgRow + 4, 7 + productCols + maxSize).number(
-          groupData.rowTotal / groupData.pickType.pieceCount
-        );
-        ws.cell(imgRow + 4, 8 + productCols + maxSize).number(
+        ws.cell(itemRow, 7 + productCols + maxSize).number(total);
+        ws.cell(itemRow, 8 + productCols + maxSize).number(
           groupData.pickType.pieceCount
         );
-        ws.cell(imgRow + 4, 9 + productCols + maxSize).number(
-          groupData.rowTotal
+        ws.cell(itemRow, 9 + productCols + maxSize).number(
+          total * groupData.pickType.pieceCount
         );
-        ws.cell(imgRow + 4, 10 + productCols + maxSize).number(groupData.price);
+        ws.cell(itemRow, 10 + productCols + maxSize).number(groupData.price);
       }
+
+      ws.cell(imgRow + 4, 7 + productCols + maxSize).number(
+        groupData.pickType.pieceCount
+          ? groupData.rowTotal / groupData.pickType.pieceCount
+          : 0
+      );
+      // ws.cell(imgRow + 4, 8 + productCols + maxSize).number(
+      //   groupData.pickType.pieceCount
+      // );
+      // ws.cell(imgRow + 4, 9 + productCols + maxSize).number(
+      //   groupData.rowTotal
+      // );
+      // ws.cell(imgRow + 4, 10 + productCols + maxSize,imgRow + 4,
+      //     11 + productCols + maxSize,
+      //     true).number(groupData.price);
+      //   }
 
       ws.cell(
         row,
@@ -968,6 +970,7 @@ export const postDownload = async (ctx, next) => {
         11 + productCols + maxSize,
         true
       ).number(groupData.rowTotal);
+
       ws.cell(
         row,
         12 + productCols + maxSize,
@@ -975,6 +978,7 @@ export const postDownload = async (ctx, next) => {
         12 + productCols + maxSize,
         true
       ).number(groupData.rowTotalPrice);
+
       ws.cell(
         row,
         13 + productCols + maxSize,
@@ -982,7 +986,16 @@ export const postDownload = async (ctx, next) => {
         13 + productCols + maxSize,
         true
       ).number(groupData.aboutCases ? groupData.aboutCases : 0);
-
+      //包装方式
+      if (groupData.pickType) {
+        ws.cell(
+          row,
+          14 + productCols + maxSize,
+          imgRow + 4,
+          14 + productCols + maxSize,
+          true
+        ).string(pickInfos[groupData.pickType.val].label);
+      }
       row = imgRow + 4;
       //   ws.cell(itemRow, 13 + productCols + maxSize).number(groupData.price);
     }
