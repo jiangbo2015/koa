@@ -507,6 +507,7 @@ export const capsuleRank = async (ctx, next) => {
         {
           $project: {
             capsuleNamecn: "$capsuleInfo.namecn",
+            capsuleNameen: "$capsuleInfo.nameen",
             amount: 1,
             number: 1,
             capsuleId: 1,
