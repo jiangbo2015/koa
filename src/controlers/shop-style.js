@@ -47,7 +47,7 @@ export const getList = async (ctx, next) => {
       q.branch = branch;
     }
     if (typeof branchKind !== "undefined") {
-      q.branchKind = branchKind;
+      q.goodCategoryId = branchKind;
     }
     const currentUser = await getCurrentUser(ctx);
     let myChannel = null;

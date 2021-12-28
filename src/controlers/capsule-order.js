@@ -139,6 +139,7 @@ export const addStyleToOrder = async (ctx, next) => {
       if(orderList.length > 0){
          const order = orderList[0]
          order.orderData.unshift(style)
+         console.log('order.orderData', order.orderData)
          data = await Order.findByIdAndUpdate({ _id: order._id }, {orderData: order.orderData});
       }else {
          // style
