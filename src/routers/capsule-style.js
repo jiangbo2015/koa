@@ -50,4 +50,16 @@ router.post("/update", CapsuleStyle.update);
  */
 router.post("/delete", CapsuleStyle.del);
 
+/**
+ * @api {post} /capsuleStyle/sort 排序
+ * @apiName update
+ * @apiGroup CapsuleStyle
+ *
+ * @apiParam  {String} _id 商品id
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ */
+ router.post("/sort", CapsuleStyle.sort)
+
 export default router.routes();
