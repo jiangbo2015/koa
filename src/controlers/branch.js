@@ -77,7 +77,7 @@ export const getVisibleList = async (ctx, next) => {
       q.name = name;
     }
     const user = await getCurrentUser(ctx);
-    let data = await Branch.find(q).sort({ createdAt: -1 })
+    let data = await Branch.find(q).sort({ createdAt: -1 }).lean()
     
     if(user.role === 0) {
         ctx.body = response(true, data);
