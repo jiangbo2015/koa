@@ -141,7 +141,6 @@ export const del = async (ctx, next) => {
   try {
     const { _id, ids } = ctx.request.body;
     let data = {};
-    let data = {};
     if (_id) {
         data = await Color.findByIdAndUpdate({ _id }, { isDel: 1 });
     }
