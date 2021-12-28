@@ -44,7 +44,7 @@ export const getList = async (ctx, next) => {
         : {
             colorSystem: -1,
           };
-    let q = {};
+    let q = {isDel: 0};
     if (typeof code !== "undefined") {
       q.code = {
         $regex: new RegExp(code, "i"),
@@ -141,15 +141,21 @@ export const del = async (ctx, next) => {
   try {
     const { _id, ids } = ctx.request.body;
     let data = {};
+    let data = {};
     if (_id) {
-      data = await Color.findByIdAndRemove({ _id });
+        data = await Color.findByIdAndUpdate({ _id }, { isDel: 1 });
     }
     if (ids) {
-      data = await Color.deleteMany({
-        _id: {
-          $in: ids,
-        },
-      });
+        data = await Color.updateMany(
+            {
+              _id: {
+                $in: ids,
+              },
+            },
+            {
+              isDel: 1,
+            }
+          );
     }
 
     ctx.body = response(true, data, "成功");
