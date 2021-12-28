@@ -25,6 +25,8 @@ const capsuleStyleSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    goodId: String,
+    goodCategoryId: String,
     goodCategory: {
       name: String,
       enname: String,

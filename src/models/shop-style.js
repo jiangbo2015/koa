@@ -28,6 +28,8 @@ const shopStyleSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "branch-kind",
     }, // 品牌分类
+    goodId: String,
+    goodCategoryId: String,
     goodCategory: {
         name: String,
         enname: String,
