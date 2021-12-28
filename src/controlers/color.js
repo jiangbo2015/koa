@@ -44,7 +44,7 @@ export const getList = async (ctx, next) => {
         : {
             colorSystem: -1,
           };
-    let q = {isDel: 0};
+    let q = {isDel: { $ne : 1 } };
     if (typeof code !== "undefined") {
       q.code = {
         $regex: new RegExp(code, "i"),
