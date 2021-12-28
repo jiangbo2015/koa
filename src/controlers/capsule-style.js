@@ -7,8 +7,10 @@ export const add = async (ctx, next) => {
   try {
     const { ...others } = ctx.request.body;
     // const code = codePrefix[type] + moment().format("YYMMDDHHMMss")
+    const count = await CapsuleStyle.find({capsule: others.capsule}).count();
     let capsuleStyle = new CapsuleStyle({
       ...others,
+      sort: count
     });
     let data = await capsuleStyle.save();
     ctx.body = response(true, data, "成功");
@@ -112,7 +114,7 @@ export const getList = async (ctx, next) => {
           },
         ],
         sort: {
-          createdAt: -1,
+          sort: 1,
         },
         lean: true,
       });

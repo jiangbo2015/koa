@@ -6,8 +6,10 @@ export const add = async (ctx, next) => {
   try {
     const { ...others } = ctx.request.body;
     // const code = codePrefix[type] + moment().format("YYMMDDHHMMss")
+    const count = await ShopStyle.find({branch: others.branch}).count();
     let shopStyle = new ShopStyle({
       ...others,
+      sort: count
     });
     let data = await shopStyle.save();
     ctx.body = response(true, data, "成功");
@@ -80,7 +82,7 @@ export const getList = async (ctx, next) => {
       // limit: limit ? limit : 10000,
       limit: parseInt(limit),
       sort: {
-        createdAt: -1,
+        sort: 1,
       },
       lean: true,
     });
