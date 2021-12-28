@@ -124,6 +124,28 @@ export const update = async (ctx, next) => {
   }
 };
 
+export const sort = async (ctx, next) => {
+    try {
+      const { newSort = [] } = ctx.request.body;
+      for (var i = 0; i < newSort.length; i++) {
+        const { _id, sort } = newSort[i];
+        await ShopStyle.findByIdAndUpdate(
+          { _id },
+          {
+            sort,
+          },
+          {
+            new: true,
+          }
+        );
+      }
+  
+      ctx.body = response(true);
+    } catch (err) {
+      ctx.body = response(false, null, err.message);
+    }
+  };
+
 export const del = async (ctx, next) => {
   try {
     const { _id } = ctx.request.body;

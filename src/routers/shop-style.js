@@ -40,6 +40,18 @@ router.get("/getList", ShopStyle.getList);
 router.post("/update", ShopStyle.update);
 
 /**
+ * @api {post} /shopStyle/sort 排序
+ * @apiName update
+ * @apiGroup ShopStyle
+ *
+ * @apiParam  {String} _id 商品id
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ */
+ router.post("/sort", ShopStyle.sort)
+
+/**
  * @api {post} /ShopStyle/delete 删除
  * @apiName delete
  * @apiGroup ShopStyle

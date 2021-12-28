@@ -17,6 +17,28 @@ export const add = async (ctx, next) => {
   }
 };
 
+export const sort = async (ctx, next) => {
+    try {
+      const { newSort = [] } = ctx.request.body;
+      for (var i = 0; i < newSort.length; i++) {
+        const { _id, sort } = newSort[i];
+        await CapsuleStyle.findByIdAndUpdate(
+          { _id },
+          {
+            sort,
+          },
+          {
+            new: true,
+          }
+        );
+      }
+  
+      ctx.body = response(true);
+    } catch (err) {
+      ctx.body = response(false, null, err.message);
+    }
+  };
+
 export const getList = async (ctx, next) => {
   return new Promise(async (resolve, reject) => {
     try {

@@ -34,6 +34,7 @@ const shopStyleSchema = new mongoose.Schema(
         name: String,
         enname: String,
     },
+    sort: Number,
     colorWithStyleImgs: [
       {
         type: {
