@@ -86,6 +86,7 @@ export const getVisibleList = async (ctx, next) => {
     let result = [];
     let resData = [];
     result = data.filter((d) => user.branchs.indexOf(d._id) >= 0);
+    console.log('1~~~~~~')
     // for (let i = 0; i < result.length; i++) {
     //   const bk = await BranchKind.find({ isDel: 0, branch: result[i]._id }).sort({ createdAt: -1 });
     //   const { createdAt, isDel, namecn, nameen, updatedAt, _id,description, status, } = result[i];
@@ -101,24 +102,27 @@ export const getVisibleList = async (ctx, next) => {
     //   });
     // }
     for (let i = 0; i < result.length; i++) {
+        
         let shopStyles = await ssGetList({
-          ...ctx,
-          request: { ...ctx.request, query: { branch: result[i]._id } },
-        });
+            ...ctx,
+            request: { ...ctx.request, query: { branch: result[i]._id } },
+          });
         let group = lodash.groupBy(
           shopStyles.filter((x) => !!x.goodCategory),
           (cs) => cs.goodCategory.name
         );
+
+        console.log('2~~~~~~',i)
         let children = Object.values(group).map((x) => ({
           _id: x[0].goodCategoryId,
           namecn: x[0].goodCategory.name,
           nameen: x[0].goodCategory.enname,
           branch: result[i]._id,
         }));
-        result[i].children = children;
+        result[i].children = children ? children : [];
       }
 
-    ctx.body = response(true, resData);
+    ctx.body = response(true, result);
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }

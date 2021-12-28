@@ -65,7 +65,7 @@ export const getList = async (ctx, next) => {
         q["goodCategory.name"] = goodCategray;
       }
       const currentUser = await getCurrentUser(ctx);
-      //   console.log("capsule-style getList", q);
+
       let myChannel = null;
       if (currentUser.role === 3 || currentUser.rolo === 4) {
         let channel = currentUser.channels.find(
