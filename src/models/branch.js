@@ -10,6 +10,7 @@ const goodsSchema = new mongoose.Schema(
         enum: [0, 1],
     },
     description: String,
+    descriptionen: String,
     isDel: {
       type: Number,
       default: 0,
