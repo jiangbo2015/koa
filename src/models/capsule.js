@@ -24,6 +24,7 @@ const capsuleSchema = new mongoose.Schema(
     nameen: String,
     covermap: String,
     description: String,
+    descriptionen: String,
     exhibition1: String,
     exhibition2: String,
     exhibition3: String,

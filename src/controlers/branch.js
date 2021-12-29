@@ -25,7 +25,7 @@ export const getList = async (ctx, next) => {
     const data = await Branch.find(query).sort({ createdAt: -1 });
     for (let i = 0; i < data.length; i++) {
       const bk = await BranchKind.find({ isDel: 0, branch: data[i]._id });
-      const { createdAt, isDel, namecn, nameen, updatedAt, _id ,description, status} = data[i];
+      const { createdAt, isDel, namecn, nameen, updatedAt, _id ,description, descriptionen,status} = data[i];
       resData.push({
         createdAt,
         isDel,
@@ -33,7 +33,7 @@ export const getList = async (ctx, next) => {
         nameen,
         updatedAt,
         _id,
-        description, status,
+        description, status,descriptionen,
         children: bk,
       });
     }
