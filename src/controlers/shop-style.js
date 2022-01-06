@@ -28,7 +28,7 @@ export const getList = async (ctx, next) => {
               branch,
               branchKind,
               page = 1,
-              limit = 20,
+              limit = 200,
             } = ctx.request.query;
         
             let q = {};
