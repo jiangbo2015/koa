@@ -49,7 +49,7 @@ export const getList = async (ctx, next) => {
         code,
         goodCategray,
         page = 1,
-        limit = 20,
+        limit = 2000,
       } = ctx.request.query;
 
       let q = {};
