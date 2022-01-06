@@ -18,6 +18,11 @@ const colorSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    isDel: {
+        type: Number,
+        default: 0,
+    },
+
     flowerCode: String,
     goodsId: Array,
     categoryId: Array,
