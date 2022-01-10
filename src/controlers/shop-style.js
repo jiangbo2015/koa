@@ -26,7 +26,7 @@ export const getList = async (ctx, next) => {
               code,
               name,
               branch,
-              branchKind,
+              goodCategoryId,
               page = 1,
               limit = 2000,
             } = ctx.request.query;
@@ -48,9 +48,10 @@ export const getList = async (ctx, next) => {
             if (typeof branch !== "undefined") {
               q.branch = branch;
             }
-            if (typeof branchKind !== "undefined") {
-              q.goodCategoryId = branchKind;
+            if (typeof goodCategoryId !== "undefined") {
+              q.goodCategoryId = goodCategoryId;
             }
+
            
             let myChannel = null;
             if (currentUser.role === 3 || currentUser.rolo === 4) {
