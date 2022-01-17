@@ -120,7 +120,7 @@ export const getVisibleList = async (ctx, next) => {
           branch: result[i]._id,
         }));
         result[i].children = children ? children : [];
-        result[i].origin = shopStyles
+        // result[i].origin = shopStyles
       }
 
     ctx.body = response(true, result);
