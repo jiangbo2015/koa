@@ -28,16 +28,22 @@ var imagekit = new ImageKit({
 })
 
 export const handleUploadKit = async (ctx) => {
-	const file = ctx.request.files.file
-	// 创建可读流
-	// const reader = fse.createReadStream(file.path)
+	try {
+        const file = ctx.request.files.file
+        // 创建可读流
+        // const reader = fse.createReadStream(file.path)
 
-	let fileName = `${new Date().getTime()}${path.extname(file.name)}`
+        let fileName = `${new Date().getTime()}${path.extname(file.name)}`
 
-	const res = await imagekit.upload({
-		file: fse.readFileSync(file.path), //required
-		fileName, //required
-	})
-	console.log(res)
-	return `mrmiss/${res.name}`
+        const res = await imagekit.upload({
+            file: fse.readFileSync(file.path), //required
+            fileName, //required
+        })
+        console.log(res)
+        return `mrmiss/${res.name}`
+    } catch(e) {
+        console.log('上传错误')
+        console.error(e)
+        return ''
+    }
 }
