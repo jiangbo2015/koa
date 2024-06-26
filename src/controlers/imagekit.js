@@ -34,10 +34,14 @@ export const handleUploadKit = async (ctx) => {
 
   let fileName = `${new Date().getTime()}${path.extname(file.name)}`;
   console.log("handleUploadKit");
-  const res = await imagekit.upload({
-    file: fse.readFileSync(file.path), //required
-    fileName, //required
-  });
-//   console.log(res);
-  return `mrmiss/${res.name}`;
+  try {
+    const res = await imagekit.upload({
+        file: fse.readFileSync(file.path), //required
+        fileName, //required
+      });
+    //   console.log(res);
+      return `mrmiss/${res.name}`;
+  } catch(e) {
+    console.error(e, '上传错误')
+  }
 };
