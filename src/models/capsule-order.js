@@ -12,19 +12,20 @@ const orderSchema = new mongoose.Schema(
       default: 0,
     },
     isMerge: {
-      type: Number,
-      default: 0,
+        type: Number,
+        default: 0,
     },
     orderNo: String,
-    goodsId: String,
+    capsuleId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "capsule",
+    },
     orderGoodNo: String,
     packageCount: Number,
-    children: [
-      {
+    children: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "order",
-      },
-    ],
+        ref: "capsule-order",
+    }], 
     date: String,
     isSend: {
       type: Number,
@@ -36,29 +37,28 @@ const orderSchema = new mongoose.Schema(
     },
     orderData: [
       {
-        size: String,
-        price: Number,
-        styleNos: String,
-        packageCount: Number,
-        cnts: Number,
         aboutCases: Number, //大约箱数
         rowTotal: Number,
         rowTotalPrice: Number,
         rowRemarks: String,
         pickType: Object,
+        size: String,
+        price: Number,
+        styleNos: String,
         items: [
           {
-            favoriteId: {
-              type: mongoose.Schema.Types.ObjectId,
-              ref: "favorite",
+            type: {
+              type: Number,
+              default: 0,
+              enum: [0, 1], // 1 有相关的代表定制的款式
             },
-            sizeInfo: Array,
+            favorite: Object,
+            imgs: [String],
+            colorObj: Object,
             sizeInfoObject: Object,
             total: Number,
             totalPrice: Number,
             parte: Number,
-            favoriteObj: Object,
-            colorCodes: String,
           },
         ],
       },
@@ -78,13 +78,6 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
-orderSchema.virtual("orderData.items.favorite", {
-  ref: "favorite",
-  localField: "orderData.items.favoriteId",
-  foreignField: "_id",
-  justOne: true,
-});
-
 // orderSchema.set("toObject", { virtuals: true })
 // orderSchema.set("toJSON", { virtuals: true })
 // orderSchema.virtual("favor").get(function() {
@@ -93,6 +86,6 @@ orderSchema.virtual("orderData.items.favorite", {
 
 orderSchema.plugin(uniqueValidator);
 
-const orderModel = mongoose.model("order", orderSchema);
+const orderModel = mongoose.model("capsule-order", orderSchema);
 
 export default orderModel;

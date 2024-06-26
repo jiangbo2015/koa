@@ -1,5 +1,5 @@
 import Router from "koa-router";
-import * as Order from "../controlers/order";
+import * as Order from "../controlers/capsule-order";
 
 const router = new Router();
 
@@ -54,28 +54,20 @@ router.get("/getMyList", Order.getMyList);
 router.post("/send", Order.send);
 
 router.get("/download", Order.download);
-
 router.get("/detail", Order.detail);
-
 router.get("/getAllList", Order.getAllList);
 
 router.post("/delete", Order.del);
-
 router.post("/clear", Order.clear);
-
 router.post("/update", Order.update);
+router.post("/addStyleToOrder", Order.addStyleToOrder);
 
 router.post("/merge", Order.merge);
+router.post("/postDownload", Order.postDownload);
+router.get("/orderRank", Order.orderRank);
+router.get("/styleRank", Order.styleRank);
+router.get("/userRank", Order.userRank);
+router.get("/capsuleRank", Order.capsuleRank);
 
 router.post("/postDownload", Order.postDownload);
-
-router.get("/orderRank", Order.orderRank);
-
-router.get("/styleRank", Order.styleRank);
-
-router.get("/userRank", Order.userRank);
-
-router.get("/colorRank", Order.colorRank);
-
-
 export default router.routes();

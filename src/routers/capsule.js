@@ -1,53 +1,55 @@
 import Router from "koa-router";
 
-import * as Channel from "../controlers/channel";
+import * as Capsule from "../controlers/capsule";
 
 const router = new Router();
 
 /**
- * @api {post} /Channel/add 添加素色或花色
+ * @api {post} /Capsule/add 添加素色或花色
  * @apiName add
- * @apiGroup Channel
+ * @apiGroup Capsule
  *
  * @apiParam  {Number} type 0-素色，1-花色
  * @apiParam  {String} value url或者RGB颜色
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/add", Channel.add);
+router.post("/add", Capsule.add);
 
 /**
- * @api {get} /Channel/getList 获取颜色列表
+ * @api {get} /Capsule/getList 获取颜色列表
  * @apiName getList
- * @apiGroup Channel
+ * @apiGroup Capsule
  *
  * @apiParam  {String} type 0-素色，1-花色，不传则获取所有
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getMyAdminList", Channel.getMyAdminList);
+router.get("/getList", Capsule.getList);
+
+router.get("/getVisibleList", Capsule.getVisibleList);
 
 /**
- * @api {post} /Channel/update 更新
+ * @api {post} /Capsule/update 更新
  * @apiName update
- * @apiGroup Channel
+ * @apiGroup Capsule
  *
  * @apiParam  {String} _id 花色或者素色的id
  * @apiParam  {String} value 颜色或url
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/update", Channel.update);
+router.post("/update", Capsule.update);
 
 /**
- * @api {post} /Channel/delete 删除
+ * @api {post} /Capsule/delete 删除
  * @apiName delete
- * @apiGroup Channel
+ * @apiGroup Capsule
  *
  * @apiParam  {String} _id 花色或者素色的id
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/delete", Channel.del);
+router.post("/delete", Capsule.del);
 
 export default router.routes();

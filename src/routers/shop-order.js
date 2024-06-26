@@ -1,53 +1,59 @@
 import Router from "koa-router";
-
-import * as Channel from "../controlers/channel";
+import * as ShopOrder from "../controlers/shop-order";
 
 const router = new Router();
 
 /**
- * @api {post} /Channel/add 添加素色或花色
+ * @api {post} /ShopOrder/add 添加素色或花色
  * @apiName add
- * @apiGroup Channel
+ * @apiGroup ShopOrder
  *
  * @apiParam  {Number} type 0-素色，1-花色
  * @apiParam  {String} value url或者RGB颜色
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/add", Channel.add);
+router.post("/add", ShopOrder.add);
 
 /**
- * @api {get} /Channel/getList 获取颜色列表
+ * @api {get} /ShopOrder/getList 获取颜色列表
  * @apiName getList
- * @apiGroup Channel
+ * @apiGroup ShopOrder
  *
  * @apiParam  {String} type 0-素色，1-花色，不传则获取所有
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getMyAdminList", Channel.getMyAdminList);
+router.get("/detail", ShopOrder.detail);
+router.get("/getList", ShopOrder.getList);
+router.get("/getMyList", ShopOrder.getMyList);
 
 /**
- * @api {post} /Channel/update 更新
+ * @api {post} /ShopOrder/update 更新
  * @apiName update
- * @apiGroup Channel
+ * @apiGroup ShopOrder
  *
  * @apiParam  {String} _id 花色或者素色的id
  * @apiParam  {String} value 颜色或url
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/update", Channel.update);
+router.post("/update", ShopOrder.update);
 
+router.post("/merge", ShopOrder.merge);
 /**
- * @api {post} /Channel/delete 删除
+ * @api {post} /ShopOrder/delete 删除
  * @apiName delete
- * @apiGroup Channel
+ * @apiGroup ShopOrder
  *
  * @apiParam  {String} _id 花色或者素色的id
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/delete", Channel.del);
-
+router.post("/delete", ShopOrder.del);
+router.get("/getAllList", ShopOrder.getAllList);
+router.get("/orderRank", ShopOrder.orderRank);
+router.get("/styleRank", ShopOrder.styleRank);
+router.get("/userRank", ShopOrder.userRank);
+router.post("/postDownload", ShopOrder.postDownload);
 export default router.routes();

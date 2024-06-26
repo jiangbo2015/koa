@@ -1,4 +1,4 @@
-import Channel from "../models/test"
+// import Channel from "../models/test"
 import { response } from "../utils"
 
 /**导出excel */
@@ -12,21 +12,21 @@ export const add = async (ctx, next) => {
 		const { ref, name, _id } = ctx.request.body
 		// let channel = new Channel({ ref, name })
 		// let data = await channel.save()
-		let data = await Channel.findOneAndUpdate(
-			{
-				_id
-				// "arrs.flagId": flag.flagId
-			},
-			{
-				$addToSet: {
-					styles: { ref, name }
-				}
-			},
-			{
-				new: true,
-				upsert: true
-			}
-		)
+		// let data = await Channel.findOneAndUpdate(
+		// 	{
+		// 		_id
+		// 		// "arrs.flagId": flag.flagId
+		// 	},
+		// 	{
+		// 		$addToSet: {
+		// 			styles: { ref, name }
+		// 		}
+		// 	},
+		// 	{
+		// 		new: true,
+		// 		upsert: true
+		// 	}
+		// )
 
 		// if (!data) {
 		// 	data = await Channel.findOneAndUpdate(
@@ -62,58 +62,58 @@ export const adds = async (ctx, next) => {
 		let data = ""
 		if (false) {
 			console.log("!data")
-			data = await Channel.findOneAndUpdate(
-				{
-					_id
-				},
-				{
-					$push: {
-						arrs: flag
-					}
-				}
-			)
+			// data = await Channel.findOneAndUpdate(
+			// 	{
+			// 		_id
+			// 	},
+			// 	{
+			// 		$push: {
+			// 			arrs: flag
+			// 		}
+			// 	}
+			// )
 		} else {
 			console.log("set")
-			data = await Channel.findOneAndUpdate(
-				{
-					_id,
-					"arrs.flagId": {
-						$ne: flag.flagId
-					}
-					// "arrs.flagId": flag.flagId
-				},
-				{
-					// $addToSet: {
-					// 	arrs: flag
-					// }
-					// $addToSet: {
-					// 	arrs: flag
-					// }
-					// $set: {
-					// 	"arrs.$": flag
-					// }
-					/**
-					 * 向数组中添加一项
-					 */
-					$push: {
-						arrs: flag
-					}
-					/**
-					 * 删除数组中的匹配项
-					 */
-					// $pull: {
-					// 	arrs: {
-					// 		flagId: flag.flagId
-					// 	}
-					// }
-				},
-				{
-					new: true
-					// upsert: true
-				}
-			)
+			// data = await Channel.findOneAndUpdate(
+			// 	{
+			// 		_id,
+			// 		"arrs.flagId": {
+			// 			$ne: flag.flagId
+			// 		}
+			// 		// "arrs.flagId": flag.flagId
+			// 	},
+			// 	{
+			// 		// $addToSet: {
+			// 		// 	arrs: flag
+			// 		// }
+			// 		// $addToSet: {
+			// 		// 	arrs: flag
+			// 		// }
+			// 		// $set: {
+			// 		// 	"arrs.$": flag
+			// 		// }
+			// 		/**
+			// 		 * 向数组中添加一项
+			// 		 */
+			// 		$push: {
+			// 			arrs: flag
+			// 		}
+			// 		/**
+			// 		 * 删除数组中的匹配项
+			// 		 */
+			// 		// $pull: {
+			// 		// 	arrs: {
+			// 		// 		flagId: flag.flagId
+			// 		// 	}
+			// 		// }
+			// 	},
+			// 	{
+			// 		new: true
+			// 		// upsert: true
+			// 	}
+			// )
 		}
-		var datas = await Channel.find()
+		let datas = {} // var datas = await Channel.find()
 		ctx.body = response(true, datas)
 		// ctx.body = response(true, data)
 	} catch (err) {
@@ -124,7 +124,7 @@ export const adds = async (ctx, next) => {
 
 export const getList = async (ctx, next) => {
 	try {
-		let data = await Channel.find().populate("styles.ref")
+		// let data = await Channel.find().populate("styles.ref")
 		// await assign("5deda268d7571c131607f877", "sizeIds", ["A", "B"])
 		ctx.body = response(true, data)
 	} catch (err) {
@@ -136,7 +136,7 @@ export const getList = async (ctx, next) => {
 export const del = async (ctx, next) => {
 	try {
 		const { _id } = ctx.request.body
-		let data = await Channel.deleteOne({ _id })
+		let data = {} // let data = await Channel.deleteOne({ _id })
 		ctx.body = response(true, data)
 	} catch (err) {
 		console.log(err)
@@ -150,7 +150,7 @@ export const del = async (ctx, next) => {
 export const assign = async (ctx, next) => {
 	const { _id, ...others } = ctx.request.body
 	try {
-		let data = await Channel.findByIdAndUpdate(_id, others)
+		let data = {} // let data = await Channel.findByIdAndUpdate(_id, others)
 		return response(true, data)
 	} catch (err) {
 		console.log(err)

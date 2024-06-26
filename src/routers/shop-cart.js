@@ -1,53 +1,64 @@
 import Router from "koa-router";
 
-import * as Channel from "../controlers/channel";
+import * as ShopCart from "../controlers/shop-cart";
 
 const router = new Router();
 
 /**
- * @api {post} /Channel/add 添加素色或花色
+ * @api {post} /ShopCart/add 添加素色或花色
  * @apiName add
- * @apiGroup Channel
+ * @apiGroup ShopCart
  *
  * @apiParam  {Number} type 0-素色，1-花色
  * @apiParam  {String} value url或者RGB颜色
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/add", Channel.add);
+router.post("/add", ShopCart.add);
 
 /**
- * @api {get} /Channel/getList 获取颜色列表
+ * @api {get} /ShopCart/getList 获取颜色列表
  * @apiName getList
- * @apiGroup Channel
+ * @apiGroup ShopCart
  *
  * @apiParam  {String} type 0-素色，1-花色，不传则获取所有
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getMyAdminList", Channel.getMyAdminList);
+router.get("/getList", ShopCart.getList);
 
 /**
- * @api {post} /Channel/update 更新
+ * @api {get} /ShopCart/getMyList 获取我的购物车列表
+ * @apiName getList
+ * @apiGroup ShopCart
+ *
+ * @apiParam  {String} type 0-素色，1-花色，不传则获取所有
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ */
+router.get("/getMyList", ShopCart.getMyList);
+
+/**
+ * @api {post} /ShopCart/update 更新
  * @apiName update
- * @apiGroup Channel
+ * @apiGroup ShopCart
  *
  * @apiParam  {String} _id 花色或者素色的id
  * @apiParam  {String} value 颜色或url
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/update", Channel.update);
+router.post("/update", ShopCart.update);
 
 /**
- * @api {post} /Channel/delete 删除
+ * @api {post} /ShopCart/delete 删除
  * @apiName delete
- * @apiGroup Channel
+ * @apiGroup ShopCart
  *
  * @apiParam  {String} _id 花色或者素色的id
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.post("/delete", Channel.del);
+router.post("/delete", ShopCart.del);
 
 export default router.routes();

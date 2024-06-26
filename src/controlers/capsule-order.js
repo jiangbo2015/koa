@@ -6,14 +6,15 @@ import _ from "lodash";
 import moment from "moment";
 import mongoose from "mongoose";
 import path from "path";
-import Order from "../models/order";
+import Order from "../models/capsule-order";
 import System from "../models/system";
 import User from "../models/user";
-import { response, downImg, pickInfos } from "../utils";
 import Mail from "../utils/mail";
 // import dataURL2Blob from "../utils/dataURL2Blob"
 import { getCurrentUser } from "./user";
+import { response, downImg, pickInfos } from "../utils";
 const baseImgUrl = "https://ik.imagekit.io/";
+
 export const add = async (ctx, next) => {
   try {
     const currentUser = await getCurrentUser(ctx);
@@ -22,7 +23,7 @@ export const add = async (ctx, next) => {
     if (body.isSend == 1) {
       let date = moment().format("YYYYMMDD");
       let total = (await Order.find({ date })).length + 1;
-      body.orderNo = `D-${currentUser.name}-${date}-${total}`;
+      body.orderNo = `C-${currentUser.name}-${date}-${total}`;
       body.date = date;
     }
     let order = new Order(body);
@@ -47,34 +48,34 @@ export const update = async (ctx, next) => {
 };
 
 export const merge = async (ctx, next) => {
-  try {
-    const currentUser = await getCurrentUser(ctx);
-    const body = ctx.request.body;
-    body.user = currentUser._id;
-    let date = moment().format("YYYYMMDD");
-    let total = (await Order.find({ date })).length + 1;
-    body.orderNo = `D-${currentUser.name}-${date}-${total}`;
-    body.date = date;
-
-    await Order.updateMany(
-      {
-        _id: {
-          $in: body.children,
+    try {
+      const currentUser = await getCurrentUser(ctx);
+      const body = ctx.request.body;
+      body.user = currentUser._id;
+      let date = moment().format("YYYYMMDD");
+      let total = (await Order.find({ date })).length + 1;
+      body.orderNo = `C-${currentUser.name}-${date}-${total}`;
+      body.date = date;
+      
+      await Order.updateMany(
+        {
+          _id: {
+            $in: body.children,
+          },
         },
-      },
-      {
-        isMerge: 1,
-      }
-    );
+        {
+            isMerge: 1,
+        }
+      );
 
-    let order = new Order(body);
-    const data = await order.save();
-
-    ctx.body = response(true, data, "成功");
-  } catch (err) {
-    ctx.body = response(false, null, err.message);
-  }
-};
+      let order = new Order(body);
+      const data = await order.save();
+  
+      ctx.body = response(true, data, "成功");
+    } catch (err) {
+      ctx.body = response(false, null, err.message);
+    }
+  };
 
 export const clear = async (ctx, next) => {
   try {
@@ -89,7 +90,7 @@ export const clear = async (ctx, next) => {
 export const getMyList = async (ctx, next) => {
   try {
     const currentUser = await getCurrentUser(ctx);
-    const { isSend, goodsId } = ctx.request.query;
+    const { isSend, capsuleId } = ctx.request.query;
     const q = {
       user: mongoose.Types.ObjectId(currentUser._id),
       isDel: 0,
@@ -97,14 +98,13 @@ export const getMyList = async (ctx, next) => {
     if (typeof isSend !== "undefined") {
       q.isSend = isSend;
     }
-    if (typeof goodsId !== "undefined") {
-      q.goodsId = goodsId;
+    if (typeof capsuleId !== "undefined") {
+      q.capsuleId = capsuleId;
     }
     const data = await Order.find(q)
       .sort({ createdAt: -1 })
       .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
+        path: "orderData.items.capsuleStyle",
       })
       .populate("user")
       .lean();
@@ -114,6 +114,48 @@ export const getMyList = async (ctx, next) => {
     ctx.body = response(false, null, err.message);
   }
 };
+
+export const addStyleToOrder = async (ctx, next) => {
+    try {
+      const currentUser = await getCurrentUser(ctx);
+      const { capsuleId,style } = ctx.request.body;
+      const q = {
+        user: mongoose.Types.ObjectId(currentUser._id),
+        isDel: 0,
+        isSend: 0
+      };
+
+      if (typeof capsuleId !== "undefined") {
+        q.capsuleId = capsuleId;
+      }
+      const orderList= await Order.find(q)
+        .sort({ createdAt: -1 })
+        .populate({
+          path: "orderData.items.capsuleStyle",
+        })
+        .populate("user")
+        .lean();
+        let data = {}
+      if(orderList.length > 0){
+         const order = orderList[0]
+         order.orderData.unshift(style)
+         console.log('order.orderData', order.orderData)
+         data = await Order.findByIdAndUpdate({ _id: order._id }, {orderData: order.orderData});
+      }else {
+         // style
+         let order = new Order({
+            user: currentUser._id,
+            capsuleId,
+            orderData: [style]
+         });
+        data = await order.save();
+      }
+  
+      ctx.body = response(true, data, "成功");
+    } catch (err) {
+      ctx.body = response(false, null, err.message);
+    }
+  };
 
 export const getList = async (ctx, next) => {
   try {
@@ -130,11 +172,10 @@ export const getList = async (ctx, next) => {
     let data = await Order.find(q)
       .sort({ createdAt: -1 })
       .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
+        path: "orderData.items.capsuleStyle",
       })
       .populate("user");
-
+    await Order.findByIdAndUpdate({ _id }, {isReaded: 1});
     ctx.body = response(true, data, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
@@ -173,18 +214,19 @@ export const getAllList = async (ctx, next) => {
 export const detail = async (ctx, next) => {
   try {
     const { _id } = ctx.request.query;
+    console.log('_id', _id)
     const data = await Order.findById({ _id })
       .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
+        path: "orderData.items.capsuleStyle",
       })
-      .populate("children")
       .populate("user")
-      .populate("orderData.size")
+      .populate("children")
+      .populate({
+        path: "children.children",
+       })
       .lean();
-    await Order.findByIdAndUpdate({ _id }, { isReaded: 1 });
     ctx.body = response(true, data, "成功");
-  } catch (err) {
+  } catch (err) {console.log('err', err)
     ctx.body = response(false, null, err.message);
   }
 };
@@ -234,24 +276,16 @@ export const orderRank = async (ctx, next) => {
         },
       },
       { $sort: { date : 1 } }
-    ]);
+    ])
     let emptyItems = []
     if(data && data.length > 0) {
-        let start = 0
-        let year;
-        let month;
-        while(data[start] && data[start].date && start < data.length){
-            if(!data[start].date) continue;
-            [year, month] = data[start].date.split('-')
-            start++
-        }
-        
+       
+        let [year, month] = data[0].date.split('-')
         month = parseInt(month)
         year= parseInt(year)
         console.log('0--,',year, month)
         for(let i = 1; i < data.length; i++){
             console.log('0:',i)
-            if(!data[i].date) continue;
             let [year2, month2] = data[i].date.split('-')
             console.log('1:',i)
             month2 = parseInt(month2)
@@ -284,6 +318,9 @@ export const orderRank = async (ctx, next) => {
             console.log(i,'--,',year, month)
         }
     }
+
+    
+    // [].concat
     ctx.body = response(true, _.sortBy(data.concat(emptyItems), 'date'), "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
@@ -336,7 +373,7 @@ export const styleRank = async (ctx, next) => {
       },
       { $sort: { amount : 1 } }
     ]);
-    ctx.body = response(true, data.filter(x => x.styleNos), "成功");
+    ctx.body = response(true, data, "成功");
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
@@ -345,8 +382,8 @@ export const styleRank = async (ctx, next) => {
 export const userRank = async (ctx, next) => {
   try {
     const { startDate, endDate } = ctx.request.query;
-    const match = {};
     const currentUser = await getCurrentUser(ctx);
+    const match = {}
     let ownerData = await User.find({
         owner: currentUser._id,
         // isDel: 0,
@@ -400,6 +437,7 @@ export const userRank = async (ctx, next) => {
       {
         $project: {
           user: "$userInfo.name",
+          userInfo: 1,
           amount: 1,
           number: 1
         },
@@ -412,15 +450,14 @@ export const userRank = async (ctx, next) => {
   }
 };
 
-
-export const colorRank = async (ctx, next) => {
+export const capsuleRank = async (ctx, next) => {
     try {
       const { startDate, endDate } = ctx.request.query;
-      const match = {};
       const currentUser = await getCurrentUser(ctx);
+      const match = {}
       let ownerData = await User.find({
           owner: currentUser._id,
-        //   isDel: 0,
+          // isDel: 0,
         });
       if(ownerData){
           match.user = {
@@ -432,50 +469,57 @@ export const colorRank = async (ctx, next) => {
           $gt: new Date(startDate),
           $lt: new Date(endDate),
         };
-        match.isSend = 1
       }
-      const data = await Order.find(match)
-        .populate({
-            path: "orderData.items.favorite",
-            populate: "styleAndColor.styleId styleAndColor.colorIds",
-        })
-        .lean();
-    let colorsInfo = data.map(d => d.orderData.map(o => o.items.map(i => i.favorite.styleAndColor.map(sc => sc.colorIds.map(c => ({
-        _id: c._id,
-        code: c.code,
-        value: c.value,
-        type: c.type,
-        number: i.total ? i.total : 0,
-        amount: i.totalPrice ? i.totalPrice : 0
-    }))))))
-    colorsInfo = _.flattenDeep(colorsInfo)
-      const colorGroup = _.groupBy(colorsInfo, 'code')
-      const items = []
-      Object.keys(colorGroup).map(colorCode => {
-          let colorItem = colorGroup[colorCode][0]
-        items.push({
-            code: colorCode,
-            type: colorItem.type,
-            value: colorItem.value,
-            number: _.sumBy(colorGroup[colorCode], 'number'),
-            amount: _.sumBy(colorGroup[colorCode], 'amount'),
-        })
-      })
-      const res = {color: [], img:[]}
-      const resGroup = _.groupBy(items, 'type')
-
-      if(resGroup[0]) {
-          res.color = _.sortBy(resGroup[0], 'amount')
-      }
-      if(resGroup[1]) {
-        res.img = _.sortBy(resGroup[1], 'amount')
-    }
-      ctx.body = response(true, res, "成功");
+      const data = await Order.aggregate([
+        {
+          $match: match,
+        },
+        {
+          $unwind: "$orderData",
+        },
+        {
+          $group: {
+            _id: "$capsuleId",
+            number: { $sum: "$sumCount" },
+            amount: {
+              $sum: "$sumPrice",
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            capsuleId: "$_id",
+            amount: 1,
+            number: 1
+          },
+        },
+        {
+          $lookup: {
+            from: "capsules",
+            localField: "capsuleId",
+            foreignField: "_id",
+            as: "capsuleInfo",
+          },
+        },
+        {
+          $unwind: "$capsuleInfo",
+        },
+        {
+          $project: {
+            capsuleNamecn: "$capsuleInfo.namecn",
+            capsuleNameen: "$capsuleInfo.nameen",
+            amount: 1,
+            number: 1,
+            capsuleId: 1,
+          },
+        },
+      ]);
+      ctx.body = response(true, data, "成功");
     } catch (err) {
       ctx.body = response(false, null, err.message);
     }
   };
-  
 
 export const del = async (ctx, next) => {
   try {
@@ -557,7 +601,7 @@ const writeFile = (json) => {
 };
 
 export const download = async (ctx, next) => {
-  //   console.log("download");
+  console.log("download");
   const baseUrl = "https://we-idesign.com";
   try {
     const { _id, rateSign = "¥", rateVal = 1 } = ctx.request.query;
@@ -643,12 +687,12 @@ export const download = async (ctx, next) => {
           .toString();
 
         let colorCodes = item.favorite.styleAndColor
-          .map((x) => x.colorIds.map((c) => c.code).toString())
-          .toString();
+          .map((x) => x.colorIds.map((c) => c.code))
+        colorCodes = _.difference(_.flattenDeep(colorCodes))
         console.log("colorCodes", colorCodes);
         ws.cell(row, 1).number(styleCount++);
         ws.cell(row, 2).string(styleNos);
-        ws.cell(row, 3).string(colorCodes);
+        ws.cell(row, 3).string(colorCodes.join('/'));
         ws.cell(row, 4).link(
           `${baseUrl}/demo?id=${item.favorite._id}&rid=${order._id}`,
           "款式图"
@@ -726,10 +770,8 @@ export const postDownload = async (ctx, next) => {
     const { _id, orderItemImages } = ctx.request.body;
     const order = await Order.findById({ _id })
       .populate({
-        path: "orderData.items.favorite",
-        populate: "styleAndColor.styleId styleAndColor.colorIds",
+        path: "orderData.items.capsuleStyle",
       })
-      .populate("children")
       .populate("user")
       .lean();
 
@@ -776,52 +818,28 @@ export const postDownload = async (ctx, next) => {
     let row = 1;
 
     let maxSize = 2;
-    let maxPic = 1;
-    let userRole = order.user.role;
-    let roleNoMap = {
-      1: 1,
-      3: 2,
-      4: 3,
-    };
     order.orderData.map((o) => {
       console.log(o.size, "size");
       let sizeArr = [];
-      if (Array.isArray(o.items) && o.items.length > 0) {
-        sizeArr = Object.keys(o.items[0].sizeInfoObject);
+      if (o.size) {
+        sizeArr = o.size.split("/");
         let itemMax = sizeArr.length;
-        let itemMaxPic = o.items.length;
         console.log(itemMax, "itemMax");
         maxSize = maxSize > itemMax ? maxSize : itemMax;
-        maxPic = maxPic > itemMaxPic ? maxPic : itemMaxPic;
       }
-      o.sizeArr = sizeArr;
     });
     maxSize = maxSize - 1;
     console.log("maxSize", maxSize);
-    let productCols = 5 + (maxPic - 4);
+    let productCols = 3;
 
-    ws.cell(row, 1).string("产品经理订单编码").style(headerStyle);
-    ws.cell(row, 2).string("产品代理订单编码").style(headerStyle);
-    ws.cell(row, 3).string("零售客户订单编码").style(headerStyle);
-    for (let i = 0; i < maxPic; i++) {
-      ws.column(i + 4).setWidth(16);
-    }
-
+    ws.column(1).setWidth(16);
+    ws.column(2).setWidth(16);
+    ws.column(3).setWidth(16);
     ws.column(4).setWidth(16);
-    ws.column(5).setWidth(16);
-    ws.column(6).setWidth(16);
-    ws.column(7).setWidth(16);
-    ws.cell(
-      row,
-      4,
-      row,
-      3 + maxPic,
-
-      true
-    )
-      .string("产品图片")
+    ws.cell(row, 1, row, 4, true).string("产品图片").style(headerStyle);
+    ws.cell(row, 2 + productCols)
+      .string("订单编码")
       .style(headerStyle);
-
     ws.cell(row, 3 + productCols)
       .string("批注")
       .style(headerStyle);
@@ -855,9 +873,6 @@ export const postDownload = async (ctx, next) => {
     ws.cell(row, 13 + productCols + maxSize)
       .string("箱数(大约)")
       .style(headerStyle);
-    ws.cell(row, 14 + productCols + maxSize)
-      .string("包装方式")
-      .style(headerStyle);
 
     for (let i = 0; i < order.orderData.length; i++) {
       let groupData = order.orderData[i];
@@ -865,13 +880,21 @@ export const postDownload = async (ctx, next) => {
 
       //尺码行
       row++;
-      ws.cell(row, 1, row, 14 + productCols + maxSize).style(deepStyle);
-      let sizeArr = groupData.sizeArr ? groupData.sizeArr : [];
+      ws.cell(row, 1, row, 13 + productCols + maxSize).style(deepStyle);
+      let sizeArr = groupData.size ? groupData.size.split("/") : [];
       for (let k = 0; k < sizeArr.length; k++) {
         ws.cell(row, 6 + productCols + k).string(sizeArr[k]);
       }
-
-      console.log("//产品图");
+      //包装方式
+      if (groupData.pickType) {
+        ws.cell(
+          row,
+          7 + productCols + maxSize,
+          row,
+          9 + productCols + maxSize,
+          true
+        ).string(pickInfos[groupData.pickType.val].label);
+      }
       //产品图
       let j = 0;
       let imgRow = 0;
@@ -884,34 +907,21 @@ export const postDownload = async (ctx, next) => {
             url: productImgUrl,
             encoding: null,
           };
-          console.log("productImgUrl", productImgUrl);
           let r1 = await downImg(opts);
-          imgRow = row + k * 5;
+          imgRow = row + Math.floor(j / 4) * 5 + k * 5;
           ws.addImage({
             image: r1,
             type: "picture",
             position: {
               type: "oneCellAnchor",
               from: {
-                col: j + 4,
+                col: (j % 4) + 1,
                 row: imgRow,
               },
             },
           });
         }
       }
-      console.log("//订单编号");
-      //订单编号
-      ws.cell(row, 1, imgRow + 4, 1, true);
-      ws.cell(row, 2, imgRow + 4, 2, true);
-      ws.cell(row, 3, imgRow + 4, 3, true);
-      ws.cell(
-        row,
-        roleNoMap[userRole],
-        imgRow + 4,
-        roleNoMap[userRole],
-        true
-      ).string(order.orderNo);
       //批注
       ws.cell(row, 3 + productCols, imgRow + 4, 3 + productCols, true).string(
         groupData.rowRemarks
@@ -919,7 +929,6 @@ export const postDownload = async (ctx, next) => {
       //款号
       ws.cell(row, 4 + productCols).string(groupData.styleNos);
 
-      console.log("//花号、色号；尺码配比；小计；份数");
       //花号、色号；尺码配比；小计；份数
       for (let k = 0; k < groupData.items.length; k++) {
         const item = groupData.items[k];
@@ -929,21 +938,7 @@ export const postDownload = async (ctx, next) => {
           let sizeCol = 6 + productCols + i;
           ws.cell(itemRow, sizeCol).number(sizeInfoObject[s]);
         });
-
-        // console.log('item', item)
-
-        // let colorCodes = item.favorite.styleAndColor
-        //   .map((x) => x.colorIds.map((c) => c.code))
-        // colorCodes = _.difference(_.flattenDeep(colorCodes))
-        // console.log("colorCodes", colorCodes);
-        ws.cell(itemRow, 5 + productCols).string(
-          item.colorCodes ? item.colorCodes : ""
-        );
-
         console.log("groupData.pickType.val == 1", groupData.pickType.val);
-        // if (groupData.pickType.val == 1) {
-        //   //包装方式 为混色混码
-        // } else {
         ws.cell(itemRow, 7 + productCols + maxSize).number(total);
         ws.cell(itemRow, 8 + productCols + maxSize).number(
           groupData.pickType.pieceCount
@@ -952,11 +947,8 @@ export const postDownload = async (ctx, next) => {
           total * groupData.pickType.pieceCount
         );
         ws.cell(itemRow, 10 + productCols + maxSize).number(groupData.price);
-        // }
       }
 
-      //   if (groupData.pickType.val == 1) {
-      //包装方式 为混色混码
       ws.cell(imgRow + 4, 7 + productCols + maxSize).number(
         groupData.pickType.pieceCount
           ? groupData.rowTotal / groupData.pickType.pieceCount
@@ -1010,7 +1002,6 @@ export const postDownload = async (ctx, next) => {
       //   ws.cell(itemRow, 13 + productCols + maxSize).number(groupData.price);
     }
 
-    ws.cell(row + 1, 11 + productCols + maxSize).number(order.sumCount);
     let date = new Date();
     let timeString = date.getTime();
     // const relativePath = writeFile(json)
@@ -1019,15 +1010,8 @@ export const postDownload = async (ctx, next) => {
       __dirname,
       "../public/xlsx" + `/${order.orderNo}-${timeString}.xlsx`
     );
-    console.log("downloadPath->", downloadPath);
-
     let orderFilePath = path.join(__dirname, "../public/xlsx");
-
-    console.log("orderFilePath->", orderFilePath);
-
     let isExist = fs.existsSync(orderFilePath);
-
-    console.log("isExist->", isExist);
     if (!isExist) {
       fs.mkdirSync(orderFilePath);
     }
@@ -1037,7 +1021,6 @@ export const postDownload = async (ctx, next) => {
 
     ctx.body = response(true, {
       url: `xlsx/${order.orderNo}-${timeString}.xlsx`,
-      maxPic,
     });
 
     // orderItemImages
