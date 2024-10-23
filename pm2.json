@@ -4,10 +4,12 @@
 			"name": "koa",
 			"script": "yarn start",
 			"append_env_to_name": true,
+            "autorestart": true,   
 			"env_production": {
 				"NODE_ENV": "production",
 				"PORT": 3002
 			},
+
 			"env_test": {
 				"NODE_ENV": "test",
 				"PORT": 3001
