@@ -1,9 +1,11 @@
+import { get, includes } from "lodash";
+
 import Channel from "../models/channel";
-import Color from "../models/color";
-import User from "../models/user";
+import { addMessage } from '../utils/message';
+import { logChange } from '../utils/changeLogger';
 import { response } from "../utils";
 import { getCurrentUser } from "./user";
-/**导出excel */
+/** 导出excel **/
 // var json2xls = require("json2xls")
 // import fs from "fs"
 // var xls = json2xls(data)
@@ -11,9 +13,11 @@ import { getCurrentUser } from "./user";
 
 export const add = async (ctx, next) => {
   try {
-    const body = ctx.request.body;
+    const currentUser = await getCurrentUser(ctx);
+    const owner = currentUser._id;
+    const body = { ...ctx.request.body, owner };
     let channel = new Channel(body);
-    let data = await channel.save();
+    const data = await channel.save();
     ctx.body = response(true, data);
   } catch (err) {
     console.log(err);
@@ -54,29 +58,58 @@ export const del = async (ctx, next) => {
 
 export const update = async (ctx, next) => {
   try {
-    const { _id, assignedId, codename, ...others } = ctx.request.body;
+    const { _id, ...others } = ctx.request.body;
     const currentUser = await getCurrentUser(ctx);
-    const owner = currentUser._id;
-    let data = null;
+    const currentUserId = currentUser._id;
     if (_id) {
-      data = await Channel.findByIdAndUpdate({ _id }, others);
+      const originalDoc = await Channel.findById(_id);
+      const data = await Channel.findByIdAndUpdate({ _id }, others);
+      logChange(originalDoc.toObject(), data.toObject(), 'channel', _id, currentUserId)
       ctx.body = response(true, data);
-    } else {
-      data = await Channel.findOne({ assignedId, codename, owner });
-      if (data && data._id) {
-        data = await Channel.findByIdAndUpdate({ _id: data._id }, others);
-        ctx.body = response(true, data);
-      } else {
-        const body = { ...ctx.request.body, owner };
-        let channel = new Channel(body);
-        data = await channel.save();
-        ctx.body = response(true, data);
-      }
     }
   } catch (err) {
     console.log(err);
     ctx.body = response(false, null, err.message);
   }
+};
+
+export const updateCapsules = async (ctx, next) => {
+    try {
+      const { _id, capsules } = ctx.request.body;
+      const currentUser = await getCurrentUser(ctx);
+      const currentUserId = currentUser._id;
+   
+      if (_id) {
+        // 查询当前的 channel 文档
+        const originalDoc = await Channel.findById(_id);
+        const originalCapsules = get(originalDoc, 'capsules', [])
+        const newCapsules = capsules.filter(cid => !includes(originalCapsules, cid))
+        const data = await Channel.findByIdAndUpdate({ _id }, { capsules });
+
+        // 如果有新增的 capsule ID，发送消息
+        if (newCapsules.length > 0) {
+            for (const newCapsuleId of newCapsules) {
+                // 向 channel 的所有用户发送消息
+                for (const userId of data.users) {
+                    await addMessage({
+                        userId,
+                        content: `胶囊上新： ${doc.name}，请点击 <a href="/capsules/${newCapsuleId}">查看详情</a>。`,
+                        type: 'new-capsule-notice',
+                        objectModelId: newCapsuleId,
+                        objectModel: 'capsule',
+                    });
+                }
+            }
+        }
+
+        logChange(originalDoc.toObject(), data.toObject(), 'channel', _id, currentUserId)
+        // console.log("newCapsules", newCapsules)
+        ctx.body = response(true, data);
+      }
+    } catch (err) {
+      console.log(err);
+      ctx.body = response(false, null, err.message);
+    }
 };
 
 export const findAll = async (ctx, next) => {
@@ -100,197 +133,3 @@ export const findById = async (ctx, next) => {
   }
 };
 
-export const assign = async (ctx, next) => {
-  try {
-    const { channelId, styleId, plainColor, flowerColor } = ctx.request.body;
-    let res = await Channel.findById({ _id: channelId });
-    let index = res.styles.findIndex((x) => x.styleId === styleId);
-    if (index > -1) {
-      let current = res.styles[index];
-      if (!current.plainColors.includes(plainColor)) {
-        current.plainColors.push(plainColor);
-      }
-      if (!current.flowerColors.includes(flowerColor)) {
-        current.flowerColors.push(flowerColor);
-      }
-    } else {
-      res.styles.push({
-        styleId,
-        plainColors: [plainColor],
-        flowerColors: [flowerColor],
-      });
-    }
-    let data = await res.save();
-    ctx.body = response(true, {});
-  } catch (err) {
-    console.log(err);
-    ctx.body = response(false, null, err.message);
-  }
-};
-
-export const groupAssign = async (ctx, next) => {
-  try {
-    const { options, channelId } = ctx.request.body;
-    let res = await Channel.findById({ _id: channelId });
-    let removeIndex = res.styles.findIndex((x) => x.styleId === "0000");
-    if (removeIndex > -1) {
-      res.styles.splice(removeIndex, 1);
-    }
-
-    for (let i = 0; i < options.length; i++) {
-      let { styleId, plainColor, flowerColor } = options[i];
-      let index = res.styles.findIndex((x) => x.styleId === styleId);
-
-      if (index > -1) {
-        let current = res.styles[index];
-        if (!current.plainColors.includes(plainColor) && plainColor) {
-          current.plainColors.push(plainColor);
-        }
-        if (!current.flowerColors.includes(flowerColor) && flowerColor) {
-          current.flowerColors.push(flowerColor);
-        }
-      } else {
-        res.styles.push({
-          styleId,
-          plainColors: [plainColor],
-          flowerColors: [flowerColor],
-        });
-      }
-    }
-
-    let data = await res.save();
-    ctx.body = response(true, {});
-  } catch (err) {
-    console.log(err);
-    ctx.body = response(false, null, err.message);
-  }
-};
-
-export const groupUnassign = async (ctx, next) => {
-  try {
-    const { channelId, options } = ctx.request.body;
-    let res = await Channel.findById({ _id: channelId });
-    for (let i = 0; i < options.length; i++) {
-      let { styleId, plainColor, flowerColor } = options[i];
-      let index = res.styles.findIndex((x) => x.styleId === styleId);
-      if (index > -1) {
-        let current = res.styles[index];
-        let ip = current.plainColors.findIndex((p) => p === plainColor);
-        const ic = current.flowerColors.findIndex((f) => f === flowerColor);
-        if (ip > -1) {
-          current.plainColors.splice(ip, 1);
-        }
-        if (ic > -1) {
-          current.flowerColors.splice(ic, 1);
-        }
-      }
-    }
-
-    let data = res.save();
-    ctx.body = response(true, {});
-  } catch (err) {
-    console.log(err);
-    ctx.body = response(false, null, err.message);
-  }
-};
-
-export const unassign = async (ctx, next) => {
-  try {
-    const { channelId, styleId, plainColor, flowerColor } = ctx.request.body;
-    let res = await Channel.findById({ _id: channelId });
-    let index = res.styles.findIndex((x) => x.styleId === styleId);
-    if (index > -1) {
-      let current = res.styles[index];
-      let ip = current.plainColors.findIndex((p) => p === plainColor);
-      const ic = current.flowerColors.findIndex((f) => f === flowerColor);
-      if (ip > -1) {
-        current.plainColors.splice(ip, 1);
-      }
-      if (ic > -1) {
-        current.flowerColors.splice(ic, 1);
-      }
-    }
-    let data = res.save();
-    ctx.body = response(true, {});
-  } catch (err) {
-    console.log(err);
-    ctx.body = response(false, null, err.message);
-  }
-};
-
-export const getAssign = async (ctx, next) => {
-  try {
-    const { channelId, styleId } = ctx.request.query;
-    let res = await Channel.findById({ _id: channelId }).populate();
-    let data = res.styles.find((x) => x.styleId === styleId);
-    if (!data) {
-      data = {};
-    }
-    let plainColors = await Color.find({
-      _id: {
-        $in: data.plainColors,
-      },
-    });
-
-    let flowerColors = await Color.find({
-      _id: {
-        $in: data.flowerColors,
-      },
-    });
-    console.log(plainColors, flowerColors, "colors");
-    data.plainColors = plainColors;
-    data.flowerColors = flowerColors;
-    ctx.body = response(true, data);
-  } catch (err) {
-    console.log(err);
-    ctx.body = response(false, null, err.message);
-  }
-};
-
-export const assignCategory = async (ctx, next) => {
-  try {
-    const { channelId, categoryId } = ctx.request.body;
-    let res = await Channel.findById({ _id: channelId });
-    let index = res.categories.findIndex((x) => x === categoryId);
-    if (index > -1) {
-      return;
-    } else {
-      res.categories.push(categoryId);
-    }
-    let data = await res.save();
-    ctx.body = response(true, data);
-  } catch (err) {
-    console.log(err);
-    ctx.body = response(false, null, err.message);
-  }
-};
-
-export const getAssignCategory = async (ctx, next) => {
-  try {
-    const { channelId } = ctx.request.query;
-    let res = await Channel.findById({ _id: channelId });
-
-    ctx.body = response(true, {
-      categories: res.categories,
-    });
-  } catch (err) {
-    console.log(err);
-    ctx.body = response(false, null, err.message);
-  }
-};
-
-export const unassignCategory = async (ctx, next) => {
-  try {
-    const { channelId, categoryId } = ctx.request.body;
-    let res = await Channel.findById({ _id: channelId });
-    let index = res.categories.findIndex((x) => x === categoryId);
-    if (index > -1) {
-      res.categories.splice(index, 1);
-    }
-    let data = res.save();
-    ctx.body = response(true, {});
-  } catch (err) {
-    console.log(err);
-    ctx.body = response(false, null, err.message);
-  }
-};

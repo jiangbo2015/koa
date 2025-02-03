@@ -3,8 +3,8 @@ import lodash from "lodash";
 import Channel from "../models/channel";
 
 import { response } from "../utils";
+import { addMessage } from '../utils/message';
 import { getCurrentUser } from "./user";
-import { getList as csGetList } from "./capsule-style";
 
 const codePrefix = {
   0: "S-",
@@ -70,11 +70,13 @@ export const getList = async (ctx) => {
 export const update = async (ctx, next) => {
   try {
     const { _id, ...others } = ctx.request.body;
+    const originalDoc = await Capsule.findById(_id);
     let data = await Capsule.findByIdAndUpdate(
       { _id },
       { ...others },
       { new: true }
     );
+    logChange(originalDoc.toObject(), data.toObject(), 'capsule', _id, currentUserId)
     ctx.body = response(true, data, "成功");
   } catch (err) {
     console.log(err);
@@ -107,26 +109,6 @@ export const getVisibleList = async (ctx, next) => {
       result = data;
     } else {
       result = data.filter((d) => user.capsules.indexOf(d._id) >= 0);
-    }
-
-    for (let i = 0; i < result.length; i++) {
-      let capsuleStyles = await csGetList({
-        ...ctx,
-        request: { ...ctx.request, query: { capsule: result[i]._id } },
-      });
-      let group = lodash.groupBy(
-        capsuleStyles.filter((x) => !!x.goodCategory),
-        (cs) => cs.goodCategory.name
-      );
-      let children = Object.values(group).map((x) => ({
-        _id: `${x[0].goodCategory.name}-${result[i]._id}`,
-        namecn: x[0].goodCategory.name,
-        nameen: x[0].goodCategory.enname,
-        branch: result[i]._id,
-      }));
-      console.log("capsuleStyles", capsuleStyles);
-      console.log("children", children);
-      result[i].children = children;
     }
 
     ctx.body = response(true, result);

@@ -5,19 +5,17 @@ import * as Capsule from "../controlers/capsule";
 const router = new Router();
 
 /**
- * @api {post} /Capsule/add 添加素色或花色
+ * @api {post} /Capsule/add 创建胶囊
  * @apiName add
  * @apiGroup Capsule
  *
- * @apiParam  {Number} type 0-素色，1-花色
- * @apiParam  {String} value url或者RGB颜色
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
 router.post("/add", Capsule.add);
 
 /**
- * @api {get} /Capsule/getList 获取颜色列表
+ * @api {get} /Capsule/getList 获取胶囊列表
  * @apiName getList
  * @apiGroup Capsule
  *

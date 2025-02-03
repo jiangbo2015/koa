@@ -1,7 +1,9 @@
 import Color from "../models/color";
-import { response } from "../utils";
 import Channel from "../models/channel";
 import { getCurrentUser } from "./user";
+
+import { response } from "../utils";
+import { logChange } from '../utils/changeLogger';
 
 const codePrefix = {
   0: "S-",
@@ -112,22 +114,40 @@ export const update = async (ctx, next) => {
     const { _id, ids, ...others } = ctx.request.body;
     let data = {};
     if (ids) {
-      data = await Color.updateMany(
-        {
-          _id: {
-            $in: ids,
-          },
-        },
-        {
-          ...others,
+        const originalDocs = await Color.find({ _id: { $in: ids } });
+
+        // 2. 执行批量更新
+        await Color.updateMany(
+          { _id: { $in: ids } },
+          { ...others }
+        );
+  
+        // 3. 查询更新后的文档
+        const updatedDocs = await Color.find({ _id: { $in: ids } });
+  
+        // 4. 对比更新前后的文档，记录变更日志
+        for (let i = 0; i < originalDocs.length; i++) {
+          const originalDoc = originalDocs[i];
+          const updatedDoc = updatedDocs.find(doc => doc._id.equals(originalDoc._id));
+  
+          if (updatedDoc) {
+            await logChange(
+              originalDoc.toObject(),
+              updatedDoc.toObject(),
+              'color',
+              originalDoc._id,
+              currentUserId
+            );
+          }
         }
-      );
     } else {
+        const originalDoc = await Color.findById(_id);
       data = await Color.findByIdAndUpdate(
         { _id },
         { ...others },
         { new: true }
-      );
+      ); 
+      logChange(originalDoc.toObject(), data.toObject(), 'color', _id, currentUserId)
     }
 
     ctx.body = response(true, data, "成功");

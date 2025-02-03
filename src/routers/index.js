@@ -5,19 +5,14 @@ import common from "./common";
 import goods from "./goods";
 import goodsbase from "./goodsbase";
 import capsule from "./capsule";
-import capsuleStyle from "./capsule-style";
-import capsuleOrder from "./capsule-order";
-import shopStyle from "./shop-style";
-import shopOrder from "./shop-order";
-import shopCart from "./shop-cart";
+import capsuleItem from "./capsule-item";
+import favorite from "./favorite";
 import color from "./color";
 import style from "./style";
 import system from "./system";
-import order from "./order";
-import branch from "./branch";
-import branchKind from "./branch-kind";
 import test from "./test";
 import channel from "./channel";
+import message from "./message";
 
 const router = new Router({
   prefix: "/api",
@@ -28,18 +23,14 @@ router.use("/common", common);
 router.use("/channel", channel);
 router.use("/goods", goods);
 router.use("/goodsbase", goodsbase);
-router.use("/branch", branch);
-router.use("/branchKind", branchKind);
 router.use("/capsule", capsule);
-router.use("/capsuleStyle", capsuleStyle);
-router.use("/capsuleOrder", capsuleOrder);
-router.use("/shopStyle", shopStyle);
-router.use("/shopCart", shopCart);
-router.use("/shopOrder", shopOrder);
 router.use("/color", color);
 router.use("/style", style);
 router.use("/system", system);
-router.use("/order", order);
 router.use("/test", test);
+
+router.use("/v2/capsule", capsuleItem);
+router.use("/v2", favorite);
+router.use("/v2", message);
 
 export default router;

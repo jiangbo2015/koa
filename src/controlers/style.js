@@ -161,11 +161,13 @@ export const getUserStyleList = async (ctx, next) => {
 export const update = async (ctx, next) => {
   try {
     const { _id, ...others } = ctx.request.body;
+    const originalDoc = Style.findById(_id);
     let data = await Style.findByIdAndUpdate(
       { _id },
       { ...others },
       { new: true }
     );
+    logChange(originalDoc.toObject(), data.toObject(), 'style', _id, currentUserId);  
     ctx.body = response(true, data, "成功");
   } catch (err) {
     console.log(err);
