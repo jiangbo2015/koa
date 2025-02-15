@@ -4,8 +4,8 @@ import uniqueValidator from "mongoose-unique-validator";
 
 const changeLogSchema = new mongoose.Schema(
   {
-    model: String, // 修改的模型名称（如 "Color"）
-    modelId: mongoose.Schema.Types.ObjectId, // 修改的文档 ID
+    objectModelName: String, // 修改的模型名称（如 "Color"）
+    objectModelId: mongoose.Schema.Types.ObjectId, // 修改的文档 ID
     changes: [{
       field: String, // 修改的字段名称
       oldValue: mongoose.Schema.Types.Mixed, // 修改前的值

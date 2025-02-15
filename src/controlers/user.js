@@ -188,15 +188,13 @@ export const updateUsers = async (ctx, next) => {
  */
 export const getList = async (ctx, next) => {
   try {
-    const { role, page = 1, limit = 20 } = ctx.request.query;
+    const { role } = ctx.request.query;
     let q = {};
     if (typeof role !== "undefined") {
       q.role = role;
     }
-    let data = await User.paginate(q, {
-      page,
-      limit: parseInt(limit),
-    });
+    let data = await User.find(q).populate(['owner','channel']) // 填充 channel 字段
+    .exec();
     ctx.body = response(true, data);
   } catch (err) {
     ctx.body = response(false, null, err.message);

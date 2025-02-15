@@ -5,7 +5,6 @@ import { response } from "../utils";
 export const createCapsuleItem = async (ctx) => {
   try {
     const { type, fileUrl, capsule, style, colors } = ctx.request.body;
-
     let capsuleItem;
     if (type === 'style') {
       capsuleItem = new CapsuleItem({ type, capsule, style, colors });

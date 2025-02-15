@@ -1,7 +1,8 @@
 import Capsule from "../models/capsule";
-import lodash from "lodash";
+import CapsuleItem from "../models/capsule-itme";
+import { get } from "lodash";
 import Channel from "../models/channel";
-
+import { logChange } from '../utils/changeLogger';
 import { response } from "../utils";
 import { addMessage } from '../utils/message';
 import { getCurrentUser } from "./user";
@@ -52,6 +53,19 @@ export const getList = async (ctx) => {
       },
     });
 
+    const promises = [];
+    for (const doc of data.docs) {
+        promises.push(
+            CapsuleItem.findOne({ isDel: 0, capsule: doc._id })
+            .then(item => ({
+                ...doc.toObject(),
+                imgUrl: item ? item.fileUrl : null // 如果 item 为 null，则设置 imgUrl 为 null
+            }))
+        );
+    }
+ 
+    data.docs = await Promise.all(promises);
+    
     ctx.body = response(
       true,
       {
@@ -70,6 +84,8 @@ export const getList = async (ctx) => {
 export const update = async (ctx, next) => {
   try {
     const { _id, ...others } = ctx.request.body;
+    const currentUser = await getCurrentUser(ctx);
+    const currentUserId = currentUser._id;
     const originalDoc = await Capsule.findById(_id);
     let data = await Capsule.findByIdAndUpdate(
       { _id },

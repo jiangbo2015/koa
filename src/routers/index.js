@@ -13,6 +13,7 @@ import system from "./system";
 import test from "./test";
 import channel from "./channel";
 import message from "./message";
+import changeLog from "./change-log";
 
 const router = new Router({
   prefix: "/api",
@@ -32,5 +33,6 @@ router.use("/test", test);
 router.use("/v2/capsule", capsuleItem);
 router.use("/v2", favorite);
 router.use("/v2", message);
+router.use("/v2", changeLog);
 
 export default router;

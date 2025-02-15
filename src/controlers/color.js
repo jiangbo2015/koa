@@ -112,6 +112,8 @@ export const getList = async (ctx, next) => {
 export const update = async (ctx, next) => {
   try {
     const { _id, ids, ...others } = ctx.request.body;
+    const currentUser = await getCurrentUser(ctx);
+    const currentUserId = currentUser._id;
     let data = {};
     if (ids) {
         const originalDocs = await Color.find({ _id: { $in: ids } });

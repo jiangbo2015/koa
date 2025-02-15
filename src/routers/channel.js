@@ -26,6 +26,7 @@ router.post("/add", Channel.add);
  *    {"success": true, "data": {}}
  */
 router.get("/getMyAdminList", Channel.getMyAdminList);
+router.get("/findById", Channel.findById);
 
 /**
  * @api {post} /Channel/update 更新
@@ -50,6 +51,7 @@ router.post("/update", Channel.update);
  *    {"success": true, "data": {}}
  */
 router.post("/updateCapsules", Channel.updateCapsules);
+router.post("/updateCostomers", Channel.updateCostomers);
 
 /**
  * @api {post} /Channel/delete 删除

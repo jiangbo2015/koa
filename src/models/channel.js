@@ -5,16 +5,12 @@ import uniqueValidator from "mongoose-unique-validator";
 const channelSchema = new mongoose.Schema(
   {
     name: String,
-    codename: String, // 代号
+    code: String, // 代号
     remark: String, // 备注
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
     }, //所属人
-    users: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
-    }],
     styles: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -36,7 +32,7 @@ const channelSchema = new mongoose.Schema(
     capsules: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "capsules",
+            ref: "capsule",
         },
     ]
   },

@@ -2,6 +2,16 @@ import mongoose from "mongoose";
 import paginate from "mongoose-paginate";
 import uniqueValidator from "mongoose-unique-validator";
 
+const RoleToAuthority = {
+    0 : 'admin',
+    1 : 'productor',
+    2 : 'designer',
+    3 : 'customer',
+    4 : 'customer2', // 原二级客户，现已废弃
+    5 : 'graphicDesigner',
+}
+
+
 /**
  * role: 0-超级管理员，1-产品经理，2-视觉设计，3-用户
  */
@@ -15,6 +25,7 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     password: { type: String, required: true },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+    channel: { type: mongoose.Schema.Types.ObjectId, ref: "channels" },
     role: {
         type: Number,
         required: true,

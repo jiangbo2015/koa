@@ -28,6 +28,9 @@ export const logChange = async (oldObj, newObj, model, modelId, changedBy) => {
 
   // 遍历新对象的字段，找出变化的字段
   for (const key in newObj) {
+    if (key === 'updatedAt') {
+        continue;
+    }
     if (newObj.hasOwnProperty(key) && oldObj.hasOwnProperty(key)) {
       if (!isEqual(newObj[key], oldObj[key])) {
         changes.push({
@@ -59,11 +62,15 @@ export const logChange = async (oldObj, newObj, model, modelId, changedBy) => {
 
   // 如果有变更，则记录日志
   if (changes.length > 0) {
+    console.log("model:", model)
+    console.log("modelId:", modelId)
+    console.log("changedBy:", changedBy)
+    console.log("changes:", changes)
     const changeLog = new ChangeLog({
-      model,
-      modelId,
+      objectModelName: model,
+      objectModelId: mongoose.Types.ObjectId(modelId),
       changes,
-      changedBy,
+      changedBy: mongoose.Types.ObjectId(changedBy),
     });
     await changeLog.save();
     // logger.info('Change log saved:', changeLog);
