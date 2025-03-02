@@ -10,6 +10,14 @@ const capsuleItmeStyleSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "capsuleItmeStyle",
     },
+    imgUrl: {
+        type: String,
+        required: true,
+      },
+    imgUrlBack: {
+        type: String,
+        required: true,
+    },
     colorIds: [ { type: mongoose.Schema.Types.ObjectId, ref: "color" } ]
   },
   {

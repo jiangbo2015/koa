@@ -180,7 +180,7 @@ export const update = async (ctx, next) => {
     const { _id, ...others } = ctx.request.body;
     const currentUser = await getCurrentUser(ctx);
     const currentUserId = currentUser._id;
-    const originalDoc = Style.findById(_id);
+    const originalDoc = await Style.findById(_id);
     let data = await Style.findByIdAndUpdate(
       { _id },
       { ...others },

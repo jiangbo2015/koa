@@ -50,4 +50,6 @@ router.post("/update", Capsule.update);
  */
 router.post("/delete", Capsule.del);
 
+router.get("/findById", Capsule.findById);
+
 export default router.routes();

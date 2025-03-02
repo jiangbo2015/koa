@@ -132,3 +132,37 @@ export const getVisibleList = async (ctx, next) => {
     ctx.body = response(false, null, err.message);
   }
 };
+
+export const findById = async (ctx, next) => {
+    try {
+        const { _id } = ctx.request.query;
+        const data = await Capsule
+          .findById(_id)
+          .populate("author") // 填充 author 字段
+          .populate("plainColors") 
+          .populate("flowerColors") 
+          .populate({
+            path: "capsuleItems.style", // 填充 capsuleItems 中的 style 字段
+            model: "style", // 指定关联的模型
+          })
+          .populate({
+            path: "capsuleItems.finishedStyleColorsList.colors", // 填充 colors 字段
+            model: "color", // 指定关联的模型
+          })
+          .populate({
+            path: "capsuleItems.finishedStyleColorsList.texture", // 填充 texture 字段
+            model: "color", // 指定关联的模型
+          })
+          .exec();
+    
+        if (!data) {
+          throw new Error("Capsule not found");
+        }
+    
+      // 返回查询结果
+      ctx.body = response(true, data);
+    } catch (err) {
+      console.log(err);
+      ctx.body = response(false, null, err.message);
+    }
+}

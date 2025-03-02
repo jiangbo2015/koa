@@ -10,10 +10,21 @@ const capsuleItemSchema = new mongoose.Schema(
     isDel: { type: Number,default: 0 }, 
     capsule: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "capsule",
+        ref: "capsules",
     },
-    styleId: { type: mongoose.Schema.Types.ObjectId, ref: "style" },
-    colorIds: [ { type: mongoose.Schema.Types.ObjectId, ref: "color" } ]
+    style: { type: mongoose.Schema.Types.ObjectId, ref: "styles" },
+    finishedStyleColorsList: [ { 
+            imgUrlFront: {
+                type: String,
+                required: true,
+            },
+            imgUrlBack: {
+                type: String,
+                required: true,
+            },
+            colors: [ { type: mongoose.Schema.Types.ObjectId, ref: "colors" } ],
+            texture: { type: mongoose.Schema.Types.ObjectId, ref: "colors" }
+     } ]
   },
   {
     versionKey: false,
