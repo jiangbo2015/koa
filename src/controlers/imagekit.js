@@ -22,9 +22,9 @@ import ImageKit from "imagekit";
 // SDK initialization
 
 var imagekit = new ImageKit({
-  publicKey: "public_47rFcYKV4YPd6O1qfepig7VVYbA=",
-  privateKey: "private_AmkFWw4UFrfus91MT4UYM3WeJ+g=",
-  urlEndpoint: "https://ik.imagekit.io/mrmiss",
+  publicKey: "public_rTQxXkUMXPzRWNyDUW79qhGUCTM=",
+  privateKey: "private_l+FmU62dyXxyek/OUyLHWNTrN2M=",
+  urlEndpoint: "https://ik.imagekit.io/weidesign",
 });
 
 export const handleUploadKit = async (ctx) => {
@@ -39,5 +39,5 @@ export const handleUploadKit = async (ctx) => {
     fileName, //required
   });
 //   console.log(res);
-  return `mrmiss/${res.name}`;
+  return `weidesign/${res.name}`;
 };
