@@ -19,7 +19,7 @@
 			"name": "hook",
 			"script": "node hook.js",
 			"env": {
-				"PORT": 3001
+				"PORT": 3000
 			}
 		}
 	]
