@@ -4,22 +4,18 @@ import uniqueValidator from "mongoose-unique-validator";
 
 const channelSchema = new mongoose.Schema(
   {
+    name: String,
+    code: String, // 代号
     remark: String, // 备注
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: "users",
     }, //所属人
-    assignedId: String, //被分配ID
-    codename: String, //代号
-    // empower: Number,
     styles: [
-      {
-        style: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "style",
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "style",
         },
-        price: Number,
-      },
     ],
     plainColors: [
       {
@@ -33,35 +29,22 @@ const channelSchema = new mongoose.Schema(
         ref: "color",
       },
     ],
-    capsuleStyles: [
-      {
-        style: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "capsuleStyle",
+    capsules: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "capsule",
         },
-        price: Number,
-      },
-    ],
-    shopStyles: [
-      {
-        style: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "shopStyle",
-        },
-
-        price: Number,
-      },
-    ],
-    categories: Array,
+    ]
   },
   {
     versionKey: false,
-    timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
+    timestamps: true,
   }
 );
 
 channelSchema.plugin(uniqueValidator);
 channelSchema.plugin(paginate);
+
 const ChannelModel = mongoose.model("channels", channelSchema);
 
 export default ChannelModel;

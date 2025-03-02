@@ -20,3 +20,5 @@ miss 4000 test
 miss 4001 prod
 
 hooks 3000
+
+mongod --fork --dbpath /Users/paige/data/db --logpath /Users/paige/data/log/mongod.log --logappend

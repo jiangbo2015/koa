@@ -2,34 +2,39 @@ import mongoose from "mongoose";
 import paginate from "mongoose-paginate";
 import uniqueValidator from "mongoose-unique-validator";
 
-/**
- * status规则, 0-发布，1-发布
- */
 const capsuleSchema = new mongoose.Schema(
   {
-    status: {
-      type: Number,
-      required: true,
-      enum: [0, 1],
-    },
+    name: String,
+    status: { type: String, enum: ['draft', 'pending', 'published'], default: 'draft' },
     isDel: {
       type: Number,
       default: 0,
     },
+    capsuleItems: [
+        {    
+            type: { type: String, enum: ['style', 'img', 'video'], default: 'style' },
+            fileUrl: String,
+            style: { type: mongoose.Schema.Types.ObjectId, ref: "style" },
+            finishedStyleColorsList: [ { 
+                    imgUrlFront: {
+                        type: String,
+                        required: true,
+                    },
+                    imgUrlBack: {
+                        type: String,
+                        required: true,
+                    },
+                    colors: [ { type: mongoose.Schema.Types.ObjectId, ref: "color" } ],
+                    texture: { type: mongoose.Schema.Types.ObjectId, ref: "color" }
+            } ],
+        }
+    ],
+    plainColors: [ { type: mongoose.Schema.Types.ObjectId, ref: "color" } ],
+    flowerColors: [ { type: mongoose.Schema.Types.ObjectId, ref: "color" } ],
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: "users",
     },
-    namecn: String,
-    nameen: String,
-    covermap: String,
-    description: String,
-    descriptionen: String,
-    exhibition1: String,
-    exhibition2: String,
-    exhibition3: String,
-    exhibition4: String,
-    exhibition5: String,
   },
   {
     versionKey: false,

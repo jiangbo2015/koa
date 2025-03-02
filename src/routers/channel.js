@@ -26,6 +26,7 @@ router.post("/add", Channel.add);
  *    {"success": true, "data": {}}
  */
 router.get("/getMyAdminList", Channel.getMyAdminList);
+router.get("/findById", Channel.findById);
 
 /**
  * @api {post} /Channel/update 更新
@@ -38,6 +39,19 @@ router.get("/getMyAdminList", Channel.getMyAdminList);
  *    {"success": true, "data": {}}
  */
 router.post("/update", Channel.update);
+
+/**
+ * @api {post} /Channel/updateCapsules 更新
+ * @apiName updateCapsules
+ * @apiGroup Channel
+ *
+ * @apiParam  {String} _id
+ * @apiParam  {Array} capsules 胶囊ID列表
+ * @apiSuccessExample {json} Success-Response:
+ *    {"success": true, "data": {}}
+ */
+router.post("/updateCapsules", Channel.updateCapsules);
+router.post("/updateCostomers", Channel.updateCostomers);
 
 /**
  * @api {post} /Channel/delete 删除

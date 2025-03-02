@@ -1,71 +1,25 @@
 import mongoose from "mongoose";
-const uniqueValidator = require("mongoose-unique-validator");
+import paginate from "mongoose-paginate";
+import uniqueValidator from "mongoose-unique-validator";
+
 
 const favoriteSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+    isDel: { type: Number,default: 0 }, 
+    capsule: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "capsule",
     },
-    goodId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "good",
-    },
-    goodCategory: Object,
-    styleAndColor: [
-      {
-        styleId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "style",
-        },
-        colorIds: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "color",
-          },
-        ],
-        favoriteImgUrl: String
-        // front: String
-      },
-    ],
-    isDel: {
-      type: Number,
-      default: 0,
-    },
-    extend: String,
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
   },
   {
     versionKey: false,
-    timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
-    toJSON: {
-      virtuals: true,
-      // transform: function(doc, ret) {
-      // 	console.log(ret, "ret")
-      // }
-    },
-    toObject: {
-      virtuals: true,
-      // transform: function(doc, ret) {
-      // 	console.log(ret, "ret")
-      // }
-    },
+    timestamps: true,
   }
 );
 
-favoriteSchema.virtual("styleAndColor.style", {
-  ref: "style",
-  localField: "styleAndColor.styleId",
-  foreignField: "_id",
-  justOne: true,
-});
-// favoriteSchema.virtual("styleAndColor.colorIds", {
-// 	ref: "color",
-// 	localField: "styleAndColor.colorIds",
-// 	foreignField: "_id",
-// 	justOne: true
-// })
-
 favoriteSchema.plugin(uniqueValidator);
+favoriteSchema.plugin(paginate);
 
 const favoriteModel = mongoose.model("favorite", favoriteSchema);
 

@@ -1,10 +1,11 @@
 import Capsule from "../models/capsule";
-import lodash from "lodash";
+import CapsuleItem from "../models/capsule-itme";
+import { get } from "lodash";
 import Channel from "../models/channel";
-
+import { logChange } from '../utils/changeLogger';
 import { response } from "../utils";
+import { addMessage } from '../utils/message';
 import { getCurrentUser } from "./user";
-import { getList as csGetList } from "./capsule-style";
 
 const codePrefix = {
   0: "S-",
@@ -52,6 +53,19 @@ export const getList = async (ctx) => {
       },
     });
 
+    const promises = [];
+    for (const doc of data.docs) {
+        promises.push(
+            CapsuleItem.findOne({ isDel: 0, capsule: doc._id })
+            .then(item => ({
+                ...doc.toObject(),
+                imgUrl: item ? item.fileUrl : null // 如果 item 为 null，则设置 imgUrl 为 null
+            }))
+        );
+    }
+ 
+    data.docs = await Promise.all(promises);
+    
     ctx.body = response(
       true,
       {
@@ -70,11 +84,15 @@ export const getList = async (ctx) => {
 export const update = async (ctx, next) => {
   try {
     const { _id, ...others } = ctx.request.body;
+    const currentUser = await getCurrentUser(ctx);
+    const currentUserId = currentUser._id;
+    const originalDoc = await Capsule.findById(_id);
     let data = await Capsule.findByIdAndUpdate(
       { _id },
       { ...others },
       { new: true }
     );
+    logChange(originalDoc.toObject(), data.toObject(), 'capsule', _id, currentUserId)
     ctx.body = response(true, data, "成功");
   } catch (err) {
     console.log(err);
@@ -109,28 +127,42 @@ export const getVisibleList = async (ctx, next) => {
       result = data.filter((d) => user.capsules.indexOf(d._id) >= 0);
     }
 
-    for (let i = 0; i < result.length; i++) {
-      let capsuleStyles = await csGetList({
-        ...ctx,
-        request: { ...ctx.request, query: { capsule: result[i]._id } },
-      });
-      let group = lodash.groupBy(
-        capsuleStyles.filter((x) => !!x.goodCategory),
-        (cs) => cs.goodCategory.name
-      );
-      let children = Object.values(group).map((x) => ({
-        _id: `${x[0].goodCategory.name}-${result[i]._id}`,
-        namecn: x[0].goodCategory.name,
-        nameen: x[0].goodCategory.enname,
-        branch: result[i]._id,
-      }));
-      console.log("capsuleStyles", capsuleStyles);
-      console.log("children", children);
-      result[i].children = children;
-    }
-
     ctx.body = response(true, result);
   } catch (err) {
     ctx.body = response(false, null, err.message);
   }
 };
+
+export const findById = async (ctx, next) => {
+    try {
+        const { _id } = ctx.request.query;
+        const data = await Capsule
+          .findById(_id)
+          .populate("author") // 填充 author 字段
+          .populate("plainColors") 
+          .populate("flowerColors") 
+          .populate({
+            path: "capsuleItems.style", // 填充 capsuleItems 中的 style 字段
+            model: "style", // 指定关联的模型
+          })
+          .populate({
+            path: "capsuleItems.finishedStyleColorsList.colors", // 填充 colors 字段
+            model: "color", // 指定关联的模型
+          })
+          .populate({
+            path: "capsuleItems.finishedStyleColorsList.texture", // 填充 texture 字段
+            model: "color", // 指定关联的模型
+          })
+          .exec();
+    
+        if (!data) {
+          throw new Error("Capsule not found");
+        }
+    
+      // 返回查询结果
+      ctx.body = response(true, data);
+    } catch (err) {
+      console.log(err);
+      ctx.body = response(false, null, err.message);
+    }
+}

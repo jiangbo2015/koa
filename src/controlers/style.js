@@ -1,7 +1,8 @@
 import Style from "../models/style";
 import Channel from "../models/channel";
 import Goods from "../models/goods";
-// import User from "../models/user";
+
+import { logChange } from '../utils/changeLogger';
 import { response } from "../utils";
 import { getCurrentUser } from "./user";
 import _ from "lodash";
@@ -21,6 +22,8 @@ export const getList = async (ctx, next) => {
     // let { tag, styleNo } = ctx.request.query
     let {
       tag,
+      goodId,
+      categoryId,
       styleNo,
       page = 1,
       limit = 20,
@@ -35,6 +38,20 @@ export const getList = async (ctx, next) => {
           $in: [tag],
         },
       };
+    }
+    if(goodId) {
+        q = {
+            goodsId: {
+                $in: [goodId]
+            },
+          };
+    }
+    if(categoryId) {
+        q = {
+            categoryId: {
+                $in: [categoryId]
+            },
+          };
     }
     if (styleNo) {
       q.styleNo = {
@@ -161,11 +178,15 @@ export const getUserStyleList = async (ctx, next) => {
 export const update = async (ctx, next) => {
   try {
     const { _id, ...others } = ctx.request.body;
+    const currentUser = await getCurrentUser(ctx);
+    const currentUserId = currentUser._id;
+    const originalDoc = await Style.findById(_id);
     let data = await Style.findByIdAndUpdate(
       { _id },
       { ...others },
       { new: true }
     );
+    logChange(originalDoc.toObject(), data.toObject(), 'style', _id, currentUserId);  
     ctx.body = response(true, data, "成功");
   } catch (err) {
     console.log(err);

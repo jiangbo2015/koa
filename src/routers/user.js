@@ -47,7 +47,6 @@ router.post("/login", User.login);
  * }
  *
  */
-
 router.post("/add", User.add);
 
 /**
@@ -66,9 +65,7 @@ router.get("/getList", User.getList);
  * @apiSuccessExample {json} Success-Response:
  *    {"success": true, "data": {}}
  */
-router.get("/getOwnList", User.getOwnList);
-router.get("/getOwnUnReadedOrder", User.getOwnUnReadedOrder);
-router.post("/delOwnUser", User.delOwnUser);
+router.get("/getOwnList", User.getOwnList)
 
 /**
  * @api {post} /user/delete 删除用户
@@ -107,77 +104,12 @@ router.get("/getCurrentUser", User.getCurrentUser);
  */
 router.post("/update", User.update);
 
-/**
- * @api {post} /user/addFavorite 添加收藏
- * @apiName addFavorite
- * @apiGroup User
- *
- * @apiParam  {String} styleAndColor 对象数组
- *
- * @apiParamExample  {json} Request-Example:
- *    {
- *  styleAndColor: [{
- *      styleId: "款式id",
- *      colorId: "款式对应的颜色id"
- * }]
- * }
- *
- * @apiSuccessExample {json} Success-Response:
- *    {"success": true, "data": {}}
- *
- */
-router.post("/addFavorite", User.addFavorite);
-
-/**
- * @api {post} /user/updateFavorite 修改某个收藏
- * @apiName updateFavorite
- * @apiGroup User
- *
- * @apiParam  {String} _id 该收藏的id
- * @apiParam  {String} styleAndColor 款式和花色的对象数组
- *
- * @apiSuccessExample {json} Success-Response:
- *    {"success": true, "data": {}}
- *
- */
-router.post("/updateFavorite", User.updateFavorite);
-
-/**
- * @api {post} /user/deleteFavorite 删除某个收藏
- * @apiName deleteFavorite
- * @apiGroup User
- *
- * @apiParam  {String} _id 该收藏的id
- *
- * @apiSuccessExample {json} Success-Response:
- *    {"success": true, "data": {}}
- *
- */
-router.post("/deleteFavorite", User.deleteFavorite);
-
-/**
- * @api {post} /user/getFavoriteList 获取收藏列表
- * @apiName deleteFavgetFavoriteListorite
- * @apiGroup User
- *
- *
- * @apiSuccessExample {json} Success-Response:
- *    {"success": true, "data": {}}
- *
- */
-router.get("/getFavoriteList", User.getFavoriteList);
-router.get("/selectFavoriteList", User.selectFavoriteList);
-router.get("/getMySelectFavorite", User.getMySelectFavorite);
-router.post("/addSelectFavorite", User.addSelectFavorite);
-router.post("/deleteSelectFavorite", User.deleteSelectFavorite);
-router.post("/updateMany", User.updateMany);
 router.get("/getUserChannels", User.getUserChannels);
 router.post("/feedback", User.feedback);
 router.post("/changePwd", User.changePwd);
 router.get("/download", User.download);
-router.get("/getOwnOrderList", User.getOwnOrderList);
-router.post("/delOwnOrder", User.delOwnOrder);
+
 router.post("/updateUsers", User.updateUsers);
-router.post("/addFavorites", User.addFavorites);
+
 
 export default router.routes();

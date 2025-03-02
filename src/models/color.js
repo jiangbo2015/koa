@@ -40,6 +40,14 @@ const colorSchema = new mongoose.Schema(
         ref: "color",
       },
     ],
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+    },
+    isCostom: {
+        type: Number,
+        default: 0,
+    },
   },
   {
     versionKey: false,

@@ -22,9 +22,9 @@ import ImageKit from "imagekit";
 // SDK initialization
 
 var imagekit = new ImageKit({
-  publicKey: "public_47rFcYKV4YPd6O1qfepig7VVYbA=",
-  privateKey: "private_AmkFWw4UFrfus91MT4UYM3WeJ+g=",
-  urlEndpoint: "https://ik.imagekit.io/mrmiss",
+  publicKey: "public_rTQxXkUMXPzRWNyDUW79qhGUCTM=",
+  privateKey: "private_l+FmU62dyXxyek/OUyLHWNTrN2M=",
+  urlEndpoint: "https://ik.imagekit.io/weidesign",
 });
 
 export const handleUploadKit = async (ctx) => {
@@ -34,14 +34,10 @@ export const handleUploadKit = async (ctx) => {
 
   let fileName = `${new Date().getTime()}${path.extname(file.name)}`;
   console.log("handleUploadKit");
-  try {
-    const res = await imagekit.upload({
-        file: fse.readFileSync(file.path), //required
-        fileName, //required
-      });
-    //   console.log(res);
-      return `mrmiss/${res.name}`;
-  } catch(e) {
-    console.error(e, '上传错误')
-  }
+  const res = await imagekit.upload({
+    file: fse.readFileSync(file.path), //required
+    fileName, //required
+  });
+//   console.log(res);
+  return `weidesign/${res.name}`;
 };
