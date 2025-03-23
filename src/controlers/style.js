@@ -34,25 +34,19 @@ export const getList = async (ctx, next) => {
     let data = [];
     let q = { isDel: 0 };
     if (tag) {
-      q = {
-        tags: {
-          $in: [tag],
-        },
-      };
+      q.tags = {
+        $in: [tag],
+      }
     }
     if(goodId) {
-        q = {
-            goodsId: {
-                $in: [goodId]
-            },
-          };
+        q.goodsId = {
+            $in: [goodId]
+        }
     }
     if(categoryId) {
-        q = {
-            categoryId: {
+        q.categoryId = {
                 $in: [categoryId]
-            },
-          };
+            }
     }
     if (styleNo) {
       q.styleNo = {
