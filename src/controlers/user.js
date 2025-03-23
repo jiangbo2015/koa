@@ -188,11 +188,14 @@ export const updateUsers = async (ctx, next) => {
  */
 export const getList = async (ctx, next) => {
   try {
-    const { role } = ctx.request.query;
+    const { role, owner } = ctx.request.query;
     let q = {};
     if (typeof role !== "undefined") {
       q.role = role;
     }
+    if (typeof owner !== "undefined") {
+        q.owner = owner;
+      }
     let data = await User.find(q).populate(['owner','channel']) // 填充 channel 字段
     .exec();
     ctx.body = response(true, data);

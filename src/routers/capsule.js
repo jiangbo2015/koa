@@ -24,6 +24,9 @@ router.post("/add", Capsule.add);
  *    {"success": true, "data": {}}
  */
 router.get("/getList", Capsule.getList);
+router.get("/getPublicList", Capsule.getPublicList);
+
+router.get("/getAdminList", Capsule.getAdminList);
 
 router.get("/getVisibleList", Capsule.getVisibleList);
 
@@ -51,5 +54,10 @@ router.post("/update", Capsule.update);
 router.post("/delete", Capsule.del);
 
 router.get("/findById", Capsule.findById);
+
+router.post("/applyForPublication", Capsule.applyForPublication);
+
+router.get("/getMyFavoriteList", Capsule.getMyFavoriteList);
+
 
 export default router.routes();

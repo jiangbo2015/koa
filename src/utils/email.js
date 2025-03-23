@@ -2,11 +2,18 @@ import nodemailer from 'nodemailer';
 
 // 创建邮件传输器
 const transporter = nodemailer.createTransport({
-  service: 'Gmail', // 使用 Gmail 服务
-  auth: {
-    user: process.env.EMAIL_USER, // 发件人邮箱
-    pass: process.env.EMAIL_PASSWORD, // 发件人邮箱密码
-  },
+	host: "smtp.163.com",
+	port: 465,
+	secureConnection: true,
+	// 我们需要登录到网页邮箱中，然后配置SMTP和POP3服务器的密码
+	// auth: {
+	// 	user: "772051431@qq.com",
+	// 	pass: "ltancxbuqqrjbgab",
+	// },
+	auth: {
+		user: "joincan-spain@163.com",
+		pass: "SNOMKBXFVWOKNCYW",
+	},
 });
 
 /**
@@ -18,7 +25,7 @@ const transporter = nodemailer.createTransport({
  */
 export const sendEmail = async ({ to, subject, text }) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: '"mrmiss" joincan-spain@163.com',
     to,
     subject,
     text,

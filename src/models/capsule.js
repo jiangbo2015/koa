@@ -5,7 +5,7 @@ import uniqueValidator from "mongoose-unique-validator";
 const capsuleSchema = new mongoose.Schema(
   {
     name: String,
-    status: { type: String, enum: ['draft', 'pending', 'published'], default: 'draft' },
+    status: { type: String, enum: ['pending', 'draft', 'published'], default: 'draft' },
     isDel: {
       type: Number,
       default: 0,

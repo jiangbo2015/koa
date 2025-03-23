@@ -13,7 +13,7 @@ export const getUserMessages = async (ctx) => {
 
     console.log("getUserMessages", userId)
     // 构建查询条件
-    const query = { userId };
+    const query = { userId, isRead: false };
     if (modelId) query.modelId = modelId;
     if (type) query.type = type;
 

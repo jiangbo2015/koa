@@ -44,7 +44,7 @@ const colorSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
     },
-    isCostom: {
+    isCustom: {
         type: Number,
         default: 0,
     },

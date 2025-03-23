@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 
 import User from "../models/user";
 import Channel from "../models/channel";
+import Capsule from "../models/capsule";
+
 import { addMessage } from '../utils/message';
 import { logChange } from '../utils/changeLogger';
 import { response } from "../utils";
@@ -80,6 +82,8 @@ export const updateCapsules = async (ctx, next) => {
       const { _id, capsules } = ctx.request.body;
       const currentUser = await getCurrentUser(ctx);
       const currentUserId = currentUser._id;
+      console.log('_id', _id)
+      console.log('capsules', capsules)
    
       if (_id) {
         // 查询当前的 channel 文档
@@ -87,18 +91,29 @@ export const updateCapsules = async (ctx, next) => {
         const originalCapsules = get(originalDoc, 'capsules', [])
         const newCapsules = capsules.filter(cid => !includes(originalCapsules, cid))
         const data = await Channel.findByIdAndUpdate({ _id }, { capsules });
-
+        const costomers = await User.find({
+            channel: _id
+        })
+        
         // 如果有新增的 capsule ID，发送消息
         if (newCapsules.length > 0) {
             for (const newCapsuleId of newCapsules) {
+                
+                const newCapsuleData = await Capsule.findById(newCapsuleId)
+                const coverImage = get(newCapsuleData, 'capsuleItems.0.fileUrl') || 
+                get(newCapsuleData, 'capsuleItems.0.finishedStyleColorsList.0.imgUrlFront')
+                console.log('newCapsuleData', newCapsuleData)
+                console.log('coverImage', coverImage)
                 // 向 channel 的所有用户发送消息
-                for (const userId of data.users) {
+                for (const costomer of costomers) {
+                    console.log('userId', costomer._id)
                     await addMessage({
-                        userId,
-                        content: `胶囊上新： ${doc.name}，请点击 <a href="/capsules/${newCapsuleId}">查看详情</a>。`,
+                        userId: costomer._id,
+                        content: `胶囊上新！`,
                         type: 'new-capsule-notice',
                         objectModelId: newCapsuleId,
                         objectModel: 'capsule',
+                        coverImage
                     });
                 }
             }

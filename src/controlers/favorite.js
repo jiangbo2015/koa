@@ -1,10 +1,15 @@
 import Favorite from "../models/favorite";
 import { response } from "../utils";
+import { getCurrentUser } from "./user";
 
 // 创建 Favorite
 export const createFavorite = async (ctx) => {
   try {
-    const favorite = new Favorite({ ...ctx.request.body });
+    const currentUser = await getCurrentUser(ctx);
+    const favorite = new Favorite({ 
+        owner: currentUser._id,
+        ...ctx.request.body
+    });
 
     await favorite.save();
     ctx.status = 201;
@@ -18,7 +23,8 @@ export const createFavorite = async (ctx) => {
 // 获取所有 Favorite
 export const getAllFavorites = async (ctx) => {
   try {
-    const favorites = await Favorite.find({ isDel: 0 });
+    const currentUser = await getCurrentUser(ctx);
+    const favorites = await Favorite.find({ owner: currentUser._id, isDel: 0 });
 
     ctx.status = 200;
     ctx.body = response(true, favorites, "成功");

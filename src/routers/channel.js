@@ -26,6 +26,7 @@ router.post("/add", Channel.add);
  *    {"success": true, "data": {}}
  */
 router.get("/getMyAdminList", Channel.getMyAdminList);
+router.get("/getList", Channel.findAll);
 router.get("/findById", Channel.findById);
 
 /**

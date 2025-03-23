@@ -1,3 +1,4 @@
+import moment from 'moment'
 import Color from "../models/color";
 import Channel from "../models/channel";
 import { getCurrentUser } from "./user";
@@ -12,12 +13,15 @@ const codePrefix = {
 
 export const add = async (ctx, next) => {
   try {
-    const { type, code, value, ...others } = ctx.request.body;
-    // const code = codePrefix[type] + moment().format("YYMMDDHHMMss")
+    const { type, code, value, isCustom, ...others } = ctx.request.body;
+    const currentUser = await getCurrentUser(ctx);
+    const costomCode = `Costom-${currentUser.account}-${moment().format("YYMMDDHHmmss")}`
     let color = new Color({
       type,
       value,
-      code,
+      code: isCustom ? costomCode : code,
+      isCustom,
+      creator:  currentUser._id,
       ...others,
     });
     let data = await color.save();
@@ -32,10 +36,12 @@ export const getList = async (ctx, next) => {
     let {
       type,
       code,
+      isCustom = 0,
       page = 1,
       limit = 20,
       goodsId,
       sort = "time",
+      creator,
     } = ctx.request.query;
 
     let sortProps =
@@ -46,7 +52,11 @@ export const getList = async (ctx, next) => {
         : {
             colorSystem: -1,
           };
-    let q = {isDel: { $ne : 1 } };
+
+    let q = {isDel: { $ne : 1 }, isCustom: { $ne : 1 } };
+    if (isCustom) {
+        q.isCustom = isCustom
+    }
     if (typeof code !== "undefined") {
       q.code = {
         $regex: new RegExp(code, "i"),
@@ -55,6 +65,9 @@ export const getList = async (ctx, next) => {
     if (typeof type !== "undefined") {
       q.type = type;
     }
+    if (typeof creator !== "undefined") {
+        q.creator = creator;
+      }
 
     if (goodsId) {
       q.goodsId = {
@@ -63,29 +76,24 @@ export const getList = async (ctx, next) => {
     }
     const currentUser = await getCurrentUser(ctx);
     let myChannel = null;
-    if (currentUser.role === 3 || currentUser.role === 4) {
-      let channel = currentUser.channels.find((x) => x.assignedId === goodsId);
+    if ((currentUser.role === 3 || currentUser.role === 4) && !isCustom && type != 2) {
+      const channel = currentUser.channel
       let ids = [];
       if (channel) {
         if (channel.codename !== "A") {
           myChannel = await Channel.findOne({
-            assignedId: channel.assignedId,
-            codename: channel.codename,
-            owner: currentUser.owner,
+            _id: channel._id,
           }).lean();
           ids =
             type == 1
               ? myChannel.flowerColors.map((x) => x.toString())
               : myChannel.plainColors.map((x) => x.toString());
-          q._id = {
-            $in: ids,
-          };
+          
         }
-      } else {
-        q._id = {
-          $in: ids,
-        };
       }
+      q._id = {
+        $in: ids,
+      };
     }
     let data = await Color.paginate(q, {
       page,

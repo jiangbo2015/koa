@@ -6,6 +6,7 @@ import { logChange } from '../utils/changeLogger';
 import { response } from "../utils";
 import { getCurrentUser } from "./user";
 import _ from "lodash";
+
 export const add = async (ctx, next) => {
   try {
     const { body } = ctx.request;
@@ -27,7 +28,7 @@ export const getList = async (ctx, next) => {
       styleNo,
       page = 1,
       limit = 20,
-      styleIds = "",
+    //   styleIds = "",
     } = ctx.request.query;
     const currentUser = await getCurrentUser(ctx);
     let data = [];
@@ -60,17 +61,13 @@ export const getList = async (ctx, next) => {
     }
 
     if (currentUser.role === 3) {
-      // let channel = await Channel.findById({ _id: currentUser.channels[0] })
-      // channel.styles.map((x) => styleIds.push(x.styleId))
-      data = await Style.find({
-        _id: {
-          $in: styleIds.split(","),
-        },
-
-        ...q,
-      });
-    } else {
-      data = await Style.paginate(q, {
+      let channel = await Channel.findById({ _id: currentUser.channel })
+    //   const styleIds = channel.styles.map((x) => styleIds.push())
+      q._id = {
+        $in: channel.styles,
+      };
+    }
+    data = await Style.paginate(q, {
         page,
         // 如果没有limit字段，不分页
         // limit: limit ? limit : 10000,
@@ -78,8 +75,7 @@ export const getList = async (ctx, next) => {
         sort: {
           createdAt: -1,
         },
-      });
-    }
+    });
 
     ctx.body = response(true, data, "成功");
   } catch (err) {
@@ -195,7 +191,6 @@ export const update = async (ctx, next) => {
 };
 
 /**
- *
  * @param {object} res 直接文档对象
  * @param {string} field 要操作的字段
  * @param {string} key 要操作的该字段的对象属性
@@ -251,7 +246,6 @@ export const assign = async (ctx, next) => {
 };
 
 export const updateMany = async (ctx, next) => {
-    // updateMany
   try {
     const { _id, ids, ...others } = ctx.request.body;
     let data = {};
@@ -266,7 +260,7 @@ export const updateMany = async (ctx, next) => {
           ...others,
         }
       );
-    } 
+    }
     ctx.body = response(true, data, "成功");
   } catch (err) {
     console.log(err);

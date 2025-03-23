@@ -1,4 +1,5 @@
 import Message from '../models/message';
+import mongoose from 'mongoose'
 import { sendEmail } from '../utils/email'; // 假设有一个发送邮件的工具函数
 
 /**
