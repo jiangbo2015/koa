@@ -96,6 +96,10 @@ const styleSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+    },
   },
   {
     versionKey: false,

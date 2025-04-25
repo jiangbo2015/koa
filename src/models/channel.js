@@ -29,6 +29,12 @@ const channelSchema = new mongoose.Schema(
         ref: "color",
       },
     ],
+    textures: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "color",
+        },
+    ],
     capsules: [
         {
             type: mongoose.Schema.Types.ObjectId,

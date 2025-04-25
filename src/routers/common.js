@@ -62,8 +62,12 @@ router.post("/uploadkit", async (ctx, next) => {
 		} else {
 			relativePath = await handleUploadKit(ctx)
 		}
-
-		ctx.body = response(true, { url: relativePath }, "成功")
+        if(relativePath) {
+            ctx.body = response(true, { url: relativePath }, "成功")
+        }else {
+            ctx.body = response(false, null, 'upload error')
+        }
+		
 	} catch (err) {
 		ctx.body = response(false, null, err.message)
 	}

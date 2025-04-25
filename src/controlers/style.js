@@ -9,8 +9,9 @@ import _ from "lodash";
 
 export const add = async (ctx, next) => {
   try {
+    const currentUser = await getCurrentUser(ctx);
     const { body } = ctx.request;
-    let style = new Style(body);
+    let style = new Style({...body, creator:  currentUser._id,});
     let data = await style.save();
     ctx.body = response(true, data, "成功");
   } catch (err) {

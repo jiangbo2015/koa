@@ -28,16 +28,23 @@ var imagekit = new ImageKit({
 });
 
 export const handleUploadKit = async (ctx) => {
-  const file = ctx.request.files.file;
-  // 创建可读流
-  // const reader = fse.createReadStream(file.path)
+    try {
+        const file = ctx.request.files.file;
+        // 创建可读流
+        // const reader = fse.createReadStream(file.path)
 
-  let fileName = `${new Date().getTime()}${path.extname(file.name)}`;
-  console.log("handleUploadKit");
-  const res = await imagekit.upload({
-    file: fse.readFileSync(file.path), //required
-    fileName, //required
-  });
-//   console.log(res);
-  return `weidesign/${res.name}`;
-};
+        let fileName = `${new Date().getTime()}${path.extname(file.name)}`;
+        console.log("handleUploadKit");
+        const res = await imagekit.upload({
+            file: fse.readFileSync(file.path), //required
+            fileName, //required
+        });
+        //   console.log(res);
+        return `weidesign/${res.name}`;
+
+    }catch (err) {
+        console.log(err)
+            return null
+    }
+}
+

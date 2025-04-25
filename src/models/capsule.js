@@ -10,6 +10,10 @@ const capsuleSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    arrangement: {
+        type: String,
+        default: '5',
+    },
     capsuleItems: [
         {    
             type: { type: String, enum: ['style', 'img', 'video'], default: 'style' },

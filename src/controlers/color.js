@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { get, map } from 'lodash'
 import Color from "../models/color";
 import Channel from "../models/channel";
 import { getCurrentUser } from "./user";
@@ -10,6 +11,12 @@ const codePrefix = {
   0: "S-",
   1: "H-",
 };
+
+const ColorTypeToKey = {
+    0: 'plainColors',
+    1: 'flowerColors',
+    2: 'textures'
+}
 
 export const add = async (ctx, next) => {
   try {
@@ -76,7 +83,7 @@ export const getList = async (ctx, next) => {
     }
     const currentUser = await getCurrentUser(ctx);
     let myChannel = null;
-    if ((currentUser.role === 3 || currentUser.role === 4) && !isCustom && type != 2) {
+    if ((currentUser.role === 3 || currentUser.role === 4) && !isCustom) {
       const channel = currentUser.channel
       let ids = [];
       if (channel) {
@@ -84,11 +91,7 @@ export const getList = async (ctx, next) => {
           myChannel = await Channel.findOne({
             _id: channel._id,
           }).lean();
-          ids =
-            type == 1
-              ? myChannel.flowerColors.map((x) => x.toString())
-              : myChannel.plainColors.map((x) => x.toString());
-          
+          ids = map(get(myChannel, ColorTypeToKey[type], []), (x) => x.toString())          
         }
       }
       q._id = {
@@ -101,6 +104,7 @@ export const getList = async (ctx, next) => {
       // limit: limit ? limit : 10000,
       limit: parseInt(limit),
       sort: sortProps,
+      populate: "creator"
     });
     ctx.body = response(
       true,
@@ -108,6 +112,8 @@ export const getList = async (ctx, next) => {
         ...data,
         v: "1.6",
         q,
+        code,
+        sort
       },
       "成功v2"
     );

@@ -221,6 +221,14 @@ export const findById = async (ctx, next) => {
           },
         },
         {
+            $lookup: {
+              from: 'colors', // flowerColors 集合的名称
+              localField: 'textures', // Channel 的 flowerColors 字段
+              foreignField: '_id', // flowerColors 的 _id 字段
+              as: 'populatedTextures', // 将查询结果存储回 flowerColors 字段
+            },
+        },
+        {
           $lookup: {
             from: 'capsules', // capsules 集合的名称
             localField: 'capsules', // Channel 的 capsules 字段
