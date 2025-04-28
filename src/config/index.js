@@ -5,6 +5,7 @@ export default {
 		/\/user\/login/,
 		/\/user\/add/,
 		/\/user\/register/,
+		/\/user\/feedback/,
 		/\/order\/detail/,
 		/\/common\/upload/,
 		/\/system\/detail/,

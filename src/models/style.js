@@ -45,11 +45,15 @@ const styleSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    displaySizePer: {
+        type: Number,
+        default: 100,
+    },
     imgUrl: {
       type: String,
       required: true,
     },
-    scale: Number,
+    scale: Number, //废弃
     svgUrl: {
       type: String,
       required: true,

@@ -15,14 +15,14 @@ var transporter = nodemailer.createTransport({
 	},
 })
 
-module.exports = function (html, email) {
+module.exports = function (html, email, subject="你有一个新的订单") {
 	var mailOptions = {
 		// 发送邮件的地址
 		from: '"mrmiss" joincan-spain@163.com', // login user must equal to this user
 		// 接收邮件的地址
 		to: email, // xrj0830@gmail.com
 		// 邮件主题
-		subject: "你有一个新的订单",
+		subject: subject,
 		// 以HTML的格式显示，这样可以显示图片、链接、字体颜色等信息
 		html,
 	}

@@ -2247,7 +2247,7 @@ koa-static@^5.0.0:
     debug "^3.1.0"
     koa-send "^5.0.0"
 
-koa-unless@1.0.7:
+koa-unless@1.0.7, koa-unless@^1.0.7:
   version "1.0.7"
   resolved "https://registry.npmjs.org/koa-unless/-/koa-unless-1.0.7.tgz#b9df375e2b4da3043918d48622520c2c0b79f032"
   integrity sha1-ud83XitNowQ5GNSGIlIMLAt58DI=

@@ -2,6 +2,7 @@ import fs from "fs";
 import json2xls from "json2xls";
 import jwt from "jsonwebtoken";
 import path from "path";
+import { get } from 'lodash'
 // import Channel from "../models/channel"
 import config from "../config";
 import System from "../models/system";
@@ -232,20 +233,27 @@ export const deleteById = async (ctx, next) => {
   }
 };
 
+const FeedbackKeyToText = {
+    email: "邮箱",
+    mensaje: "内容",
+    name: "姓名",
+    subject: "主题",
+}
+
 export const feedback = async (ctx, next) => {
   try {
     const { body } = ctx.request;
-    const res = await System.find();
-    const { email } = res[0];
+    const adminUser = await User.findOne({role: 0});
+    const { email } = adminUser;
     if (!email) {
       ctx.body = response(false, {}, "邮箱不存在");
       return;
     }
     let html = "";
     const keys = Object.keys(body);
-    keys.map((x) => (html += `<div>${body[x]}</div>`));
+    keys.map((x) => (html += `<div>${get(FeedbackKeyToText ,x, '')}：${body[x]}</div>`));
 
-    Mail(html, email);
+    Mail(html, email, "来自We-idesign的访客消息");
     ctx.body = response(true, {});
   } catch (err) {
     ctx.body = response(false, null, err.message);
