@@ -41,6 +41,11 @@ export const getList = async (ctx, next) => {
     const styleInCategoryIds = []
     if (currentUser.role === 3) {
         let channel = await Channel.findById({ _id: currentUser.channel })
+        if(!channel) {
+            ctx.body = response(false, null, 'Unallocated channel');
+            return
+
+        }
       //   const styleIds = channel.styles.map((x) => styleIds.push())
       const styles = await Style.find({_id: { $in: channel.styles }}).sort({ sort: 1 });
         
