@@ -36,38 +36,10 @@ export const getList = async (ctx, next) => {
     if (name) {
       q.name = name;
     }
-    const currentUser = await getCurrentUser(ctx);
-    const styleInGoodIds = []
-    const styleInCategoryIds = []
-    if (currentUser.role === 3) {
-        let channel = await Channel.findById({ _id: currentUser.channel })
-        if(!channel) {
-            ctx.body = response(false, null, 'Unallocated channel');
-            return
 
-        }
-      //   const styleIds = channel.styles.map((x) => styleIds.push())
-      const styles = await Style.find({_id: { $in: channel.styles }}).sort({ sort: 1 });
-        
-
-        _.map(styles, s => {
-          styleInGoodIds.push(..._.get(s, 'goodsId', []))
-          styleInCategoryIds.push(..._.get(s, 'categoryId', []))
-        })
-        q._id = {
-            $in: styleInGoodIds,
-        };
-    }
     let data = await Goods.find(q).sort({ sort: 1 }).lean();
     let result = data;
-    if (currentUser.role === 3) {
-        result = _.map(data, d => {
-            return {
-                ...d,
-                category: _.filter(_.get(d, 'category'), c => styleInCategoryIds.includes(String(c._id)))
-            }
-        })
-    }
+
 
     ctx.body = response(true, result);
   } catch (err) {
@@ -76,22 +48,48 @@ export const getList = async (ctx, next) => {
 };
 
 export const getVisibleList = async (ctx, next) => {
-  try {
-    const { name } = ctx.request.query;
-    let q = {};
-    if (name) {
-      q.name = name;
-    }
-    let data = await Goods.find(q).sort({ sort: 1 });
-    const account = verify(ctx.headers.authorization);
-    const user = await User.findOne({ account });
-    let result = [];
-    result = data.filter((d) => user.goods.indexOf(d._id) >= 0);
-
-    ctx.body = response(true, result);
-  } catch (err) {
-    ctx.body = response(false, null, err.message);
-  }
+    try {
+        const { name } = ctx.request.query;
+        let q = {};
+        if (name) {
+          q.name = name;
+        }
+        const currentUser = await getCurrentUser(ctx);
+        const styleInGoodIds = []
+        const styleInCategoryIds = []
+        if (currentUser.role === 3) {
+            let ids = []
+            if(currentUser.channel ) {
+                let channel = await Channel.findById({ _id: currentUser.channel })
+                ids = channel.styles
+            }
+            
+          const styles = await Style.find({_id: { $in:  ids}}).sort({ sort: 1 });
+            
+    
+            _.map(styles, s => {
+              styleInGoodIds.push(..._.get(s, 'goodsId', []))
+              styleInCategoryIds.push(..._.get(s, 'categoryId', []))
+            })
+            q._id = {
+                $in: styleInGoodIds,
+            };
+        }
+        let data = await Goods.find(q).sort({ sort: 1 }).lean();
+        let result = data;
+        if (currentUser.role === 3) {
+            result = _.map(data, d => {
+                return {
+                    ...d,
+                    category: _.filter(_.get(d, 'category'), c => styleInCategoryIds.includes(String(c._id)))
+                }
+            })
+        }
+    
+        ctx.body = response(true, result);
+      } catch (err) {
+        ctx.body = response(false, null, err.message);
+      }
 };
 
 export const update = async (ctx, next) => {

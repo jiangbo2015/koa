@@ -87,12 +87,10 @@ export const getList = async (ctx, next) => {
       const channel = currentUser.channel
       let ids = [];
       if (channel) {
-        if (channel.codename !== "A") {
           myChannel = await Channel.findOne({
             _id: channel._id,
           }).lean();
           ids = map(get(myChannel, ColorTypeToKey[type], []), (x) => x.toString())          
-        }
       }
       q._id = {
         $in: ids,

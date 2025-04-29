@@ -56,11 +56,15 @@ export const getList = async (ctx, next) => {
     }
 
     if (currentUser.role === 3) {
-      let channel = await Channel.findById({ _id: currentUser.channel })
-    //   const styleIds = channel.styles.map((x) => styleIds.push())
-      q._id = {
-        $in: channel.styles,
-      };
+        let ids = [];
+        if(currentUser.channel) {
+            let channel = await Channel.findById({ _id: currentUser.channel })
+            //   const styleIds = channel.styles.map((x) => styleIds.push())
+            ids = channel.styles
+        }
+        q._id = {
+            $in: ids,
+        };
     }
     data = await Style.paginate(q, {
         page,
