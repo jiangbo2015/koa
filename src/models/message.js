@@ -17,6 +17,7 @@ const messageSchema = new mongoose.Schema(
         ], default: 'new-capsule-notice' 
     },
     coverImage: { type: String }, // 封面图 URL（可选）
+    coverType: { type: String }, // 封面类型
     content: { type: String, required: true },
     isRead: { type: Boolean, default: false },
   },

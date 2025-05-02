@@ -279,6 +279,7 @@ export const applyForPublication = async (ctx, next) => {
       );
       const admin = await User.findOne({ role: 0})
       if(admin) {
+        const coverType = get(data, 'capsuleItems.0.type')
         const coverImage = get(data, 'capsuleItems.0.fileUrl') || 
         get(data, 'capsuleItems.0.finishedStyleColorsList.0.imgUrlFront')
         addMessage({
@@ -287,6 +288,7 @@ export const applyForPublication = async (ctx, next) => {
             type: 'capsule-publishing-application',
             objectModelId: _id,
             coverImage,
+            coverType,
         }, true)
       }
       
