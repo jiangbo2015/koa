@@ -1,4 +1,4 @@
-import { get, includes } from "lodash";
+import { get, includes, map } from "lodash";
 import mongoose from "mongoose";
 
 import User from "../models/user";
@@ -89,7 +89,10 @@ export const updateCapsules = async (ctx, next) => {
         // 查询当前的 channel 文档
         const originalDoc = await Channel.findById(_id);
         const originalCapsules = get(originalDoc, 'capsules', [])
-        const newCapsules = capsules.filter(cid => !includes(originalCapsules, cid))
+        const originalStrCapsules = map(originalCapsules, o => String(o))
+        const newCapsules = capsules.filter(cid => {
+            return !includes(originalStrCapsules, cid)
+        })
         const data = await Channel.findByIdAndUpdate({ _id }, { capsules });
         const costomers = await User.find({
             channel: _id
