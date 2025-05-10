@@ -33,7 +33,7 @@
         "koa-static": "^5.0.0",
         "koa-unless": "^1.0.7",
         "moment": "^2.24.0",
-        "mongoose": "^5.7.1",
+        "mongoose": "^5.7.5",
         "mongoose-hidden": "^1.8.1",
         "mongoose-paginate": "^5.0.3",
         "mongoose-unique-validator": "^2.0.3",
