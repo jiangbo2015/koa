@@ -2669,10 +2669,10 @@ node-zip@1.x:
   dependencies:
     jszip "2.5.0"
 
-nodemailer@^6.4.5:
-  version "6.4.5"
-  resolved "https://registry.npm.taobao.org/nodemailer/download/nodemailer-6.4.5.tgz?cache=0&sync_timestamp=1583868098690&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fnodemailer%2Fdownload%2Fnodemailer-6.4.5.tgz#45614c6454d1a947242105eeddae03df87e29916"
-  integrity sha1-RWFMZFTRqUckIQXu3a4D34fimRY=
+nodemailer@^6.4.16:
+  version "6.4.16"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.4.16.tgz#5cb6391b1d79ab7eff32d6f9f48366b5a7117293"
+  integrity sha512-68K0LgZ6hmZ7PVmwL78gzNdjpj5viqBdFqKrTtr9bZbJYj6BRj5W6WGkxXrEnUl3Co3CBXi3CZBUlpV/foGnOQ==
 
 nodemon@^1.19.2:
   version "1.19.2"
