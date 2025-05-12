@@ -16,7 +16,7 @@ const colorSchema = new mongoose.Schema(
     code: {
       type: String,
       required: true,
-      unique: true,
+    //   unique: true,
     },
     isDel: {
         type: Number,
@@ -54,7 +54,14 @@ const colorSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
+// colorSchema.index({ code: 1 }, { unique: false }); // 确保不再创建全局唯一索引
+colorSchema.index(
+    { code: 1, isDel: 1 },
+    {
+      unique: true,
+      partialFilterExpression: { isDel: 0 } // 仅对 isDel=0 的文档生效
+    }
+  );
 colorSchema.plugin(uniqueValidator);
 colorSchema.plugin(paginate);
 
