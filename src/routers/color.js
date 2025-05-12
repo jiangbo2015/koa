@@ -50,4 +50,6 @@ router.post("/update", Color.update)
  */
 router.post("/delete", Color.del)
 
+router.get("/getAllList", Color.getAllList)
+
 export default router.routes()

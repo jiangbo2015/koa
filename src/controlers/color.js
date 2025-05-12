@@ -197,3 +197,71 @@ export const del = async (ctx, next) => {
     ctx.body = response(false, null, err.message);
   }
 };
+
+export const getAllList = async (ctx, next) => {
+    try {
+      let {
+        type,
+        code,
+        isCustom = 0,
+        page = 1,
+        limit = 20,
+        goodsId,
+        sort = "time",
+        creator,
+        isDel
+      } = ctx.request.query;
+  
+      let sortProps =
+        sort === "time"
+          ? {
+              createdAt: -1,
+            }
+          : {
+              colorSystem: -1,
+            };
+  
+      let q = {};
+      if (isCustom) {
+          q.isCustom = isCustom
+      }
+      if (typeof code !== "undefined") {
+        q.code = {
+          $regex: new RegExp(code, "i"),
+        };
+      }
+      if (typeof type !== "undefined") {
+        q.type = type;
+      }
+      if (typeof isDel !== "undefined") {
+        q.isDel = isDel;
+      }
+      if (typeof creator !== "undefined") {
+          q.creator = creator;
+        }
+  
+      if (goodsId) {
+        q.goodsId = {
+          $in: [goodsId],
+        };
+      }
+
+
+      let data = await Color.paginate(q, {
+        page,
+        // 如果没有limit字段，不分页
+        // limit: limit ? limit : 10000,
+        limit: parseInt(limit),
+        sort: sortProps,
+        populate: "creator"
+      });
+      ctx.body = response(
+        true,
+        data,
+        "成功v2"
+      );
+    } catch (err) {
+      console.log(err);
+      ctx.body = response(false, null, err.message);
+    }
+  };
