@@ -35,6 +35,8 @@ const capsuleSchema = new mongoose.Schema(
     ],
     plainColors: [ { type: mongoose.Schema.Types.ObjectId, ref: "color" } ],
     flowerColors: [ { type: mongoose.Schema.Types.ObjectId, ref: "color" } ],
+    customPlainColors: [ { type: mongoose.Schema.Types.ObjectId, ref: "color" } ],
+    customFlowerColors: [ { type: mongoose.Schema.Types.ObjectId, ref: "color" } ],
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",

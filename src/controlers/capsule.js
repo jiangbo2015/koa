@@ -240,6 +240,8 @@ export const findById = async (ctx, next) => {
           .populate("author") // 填充 author 字段
           .populate("plainColors") 
           .populate("flowerColors") 
+          .populate("customPlainColors") 
+          .populate("customFlowerColors") 
           .populate({
             path: "capsuleItems.style", // 填充 capsuleItems 中的 style 字段
             model: "style", // 指定关联的模型
